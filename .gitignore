@@ -1,0 +1,27 @@
+# Environment variables (ΠΟΤΕ commit — περιέχει το Anthropic API key)
+.env
+.env.local
+
+# Dependencies (κατεβάζονται αυτόματα με npm install, δεν χρειάζεται να ανέβουν)
+node_modules/
+
+# Build output
+dist/
+build/
+
+# Cache / local DB (αν χρησιμοποιηθεί SQLite ή αρχείο cache)
+*.sqlite
+*.db
+cache/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS / editor files
+.DS_Store
+.vscode/
+.idea/
+
+# Test coverage reports
+coverage/
