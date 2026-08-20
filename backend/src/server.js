@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import Anthropic from '@anthropic-ai/sdk';
+import { generateRouter } from './routes/generate.js';
 
 const app = express();
 app.use(cors());
@@ -9,6 +10,8 @@ app.use(express.json());
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const PORT = process.env.PORT || 3000;
+
+app.use('/api/generate', generateRouter(anthropic));
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
