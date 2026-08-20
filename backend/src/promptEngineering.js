@@ -17,6 +17,8 @@ Split output strictly into two parts:
 Respond with ONLY a JSON object, no markdown code fences, no explanation, no text before or after, in exactly this shape:
 {"html": "<body content only, as a string>", "css": "<all CSS rules, as a string>"}`;
 
+const JSON_PREFILL = { role: 'assistant', content: '{' };
+
 export function buildGenerateMessages(userPrompt) {
   return [
     {
@@ -25,6 +27,49 @@ export function buildGenerateMessages(userPrompt) {
     },
     // Prefill: αναγκάζει την απάντηση να ξεκινήσει με "{" ώστε να μην
     // τυλίγεται σε ```markdown code fence.
-    { role: 'assistant', content: '{' },
+    JSON_PREFILL,
+  ];
+}
+
+// Βήμα 7: /refine — στέλνεται πάντα ο τρέχων κώδικας ως context, ώστε η
+// αλλαγή να είναι surgical (targeted) αντί για πλήρη επανα-δημιουργία.
+export function buildRefineMessages(currentHtml, currentCss, instruction) {
+  return [
+    {
+      role: 'user',
+      content: `Here is the current page.
+
+Current html field:
+${currentHtml}
+
+Current css field:
+${currentCss}
+
+Apply this change: ${instruction}
+
+Keep everything else about the design the same — only change what the instruction asks for. Still obey all the hard requirements from the system prompt (semantic HTML5, alt text, responsive @media rules, contrast, etc).`,
+    },
+    JSON_PREFILL,
+  ];
+}
+
+// Βήμα 10: feedback loop — περιγράφεται ρητά ποιοι έλεγχοι απέτυχαν, ζητείται
+// διόρθωση διατηρώντας το υπόλοιπο design.
+export function buildFixMessages(currentHtml, currentCss, issueSummary) {
+  return [
+    {
+      role: 'user',
+      content: `The following code failed these automated checks:
+${issueSummary.map((i) => `- ${i}`).join('\n')}
+
+Current html field:
+${currentHtml}
+
+Current css field:
+${currentCss}
+
+Fix ONLY what is needed to pass these checks. Keep the rest of the design (layout, colors, content, wording) the same.`,
+    },
+    JSON_PREFILL,
   ];
 }

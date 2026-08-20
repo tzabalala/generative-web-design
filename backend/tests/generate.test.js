@@ -2,12 +2,14 @@ import express from 'express';
 import request from 'supertest';
 import { jest } from '@jest/globals';
 import { generateRouter } from '../src/routes/generate.js';
+import { closeBrowser } from '../src/validation/browserManager.js';
 
 function buildAppWithMockAnthropic(mockResponseText) {
   const anthropic = {
     messages: {
       create: jest.fn().mockResolvedValue({
         content: [{ text: mockResponseText }],
+        usage: { input_tokens: 10, output_tokens: 20 },
       }),
     },
   };
@@ -17,32 +19,44 @@ function buildAppWithMockAnthropic(mockResponseText) {
   return { app, anthropic };
 }
 
+// Ένα πλήρες, semantic, responsive HTML/CSS που θα περάσει το validation
+// loop χωρίς retries, ώστε τα tests να μη χρειάζεται να περιμένουν 3 fix-κύκλους.
+const VALID_HTML =
+  '<main><h1>Hi</h1><img src="a.jpg" alt="A descriptive photo"></main>';
+const VALID_CSS =
+  'body{color:#000;background:#fff;font-size:1rem}.x{display:flex}@media (max-width:600px){body{font-size:0.9rem}}@media (min-width:601px){body{font-size:1.1rem}}';
+
+afterAll(async () => {
+  await closeBrowser();
+});
+
 describe('POST /api/generate', () => {
-  it('returns html/css and a sessionId for a valid prompt', async () => {
+  it('returns html/css, a sessionId, and a validation result for a valid prompt', async () => {
     const { app } = buildAppWithMockAnthropic(
-      '"html": "<p>hi</p>", "css": "p { color: red; }"}'
+      `"html": ${JSON.stringify(VALID_HTML)}, "css": ${JSON.stringify(VALID_CSS)}}`
     );
     const res = await request(app)
       .post('/api/generate')
-      .send({ prompt: 'a small landing page' });
+      .send({ prompt: 'unique prompt one — small landing page' });
 
     expect(res.status).toBe(200);
     expect(res.body.sessionId).toBeDefined();
-    expect(res.body.html).toBe('<p>hi</p>');
-    expect(res.body.css).toBe('p { color: red; }');
-  });
+    expect(res.body.html).toBe(VALID_HTML);
+    expect(res.body.validation).toBeDefined();
+    expect(res.body.validation.responsive.passed).toBe(true);
+  }, 30000);
 
   it('strips markdown code fences before parsing', async () => {
     const { app } = buildAppWithMockAnthropic(
-      '"html": "<p>hi</p>", "css": ""}\n```'
+      `"html": ${JSON.stringify(VALID_HTML)}, "css": ${JSON.stringify(VALID_CSS)}}\n\`\`\``
     );
     const res = await request(app)
       .post('/api/generate')
-      .send({ prompt: 'a small landing page' });
+      .send({ prompt: 'unique prompt two — fence stripping check' });
 
     expect(res.status).toBe(200);
-    expect(res.body.html).toBe('<p>hi</p>');
-  });
+    expect(res.body.html).toBe(VALID_HTML);
+  }, 30000);
 
   it('rejects an empty prompt', async () => {
     const { app } = buildAppWithMockAnthropic('irrelevant');
@@ -54,7 +68,20 @@ describe('POST /api/generate', () => {
     const { app } = buildAppWithMockAnthropic('not json at all"}');
     const res = await request(app)
       .post('/api/generate')
-      .send({ prompt: 'a small landing page' });
+      .send({ prompt: 'unique prompt three — invalid json' });
     expect(res.status).toBe(502);
   });
+
+  it('serves the second identical request from cache', async () => {
+    const { app, anthropic } = buildAppWithMockAnthropic(
+      `"html": ${JSON.stringify(VALID_HTML)}, "css": ${JSON.stringify(VALID_CSS)}}`
+    );
+    const prompt = 'unique prompt four — cache check';
+    const first = await request(app).post('/api/generate').send({ prompt });
+    const second = await request(app).post('/api/generate').send({ prompt });
+
+    expect(first.body.fromCache).toBe(false);
+    expect(second.body.fromCache).toBe(true);
+    expect(anthropic.messages.create).toHaveBeenCalledTimes(1);
+  }, 30000);
 });

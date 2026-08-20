@@ -3,15 +3,19 @@ import express from 'express';
 import cors from 'cors';
 import Anthropic from '@anthropic-ai/sdk';
 import { generateRouter } from './routes/generate.js';
+import { refineRouter } from './routes/refine.js';
+import { sessionRouter } from './routes/session.js';
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '2mb' }));
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const PORT = process.env.PORT || 3000;
 
 app.use('/api/generate', generateRouter(anthropic));
+app.use('/api/refine', refineRouter(anthropic));
+app.use('/api/session', sessionRouter());
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });

@@ -1,6 +1,9 @@
 import { Router } from 'express';
-import { SYSTEM_PROMPT, buildGenerateMessages } from '../promptEngineering.js';
+import { buildGenerateMessages } from '../promptEngineering.js';
+import { callClaudeForCode, ClaudeOutputError } from '../claudeCodeClient.js';
+import { runWithValidation } from '../validationLoop.js';
 import { createSession, addHistoryEntry } from '../sessionStore.js';
+import { generateCacheKey, getCached, setCached } from '../cache.js';
 
 export function generateRouter(anthropic) {
   const router = Router();
@@ -12,33 +15,37 @@ export function generateRouter(anthropic) {
     }
 
     try {
-      const message = await anthropic.messages.create({
-        model: process.env.CLAUDE_MODEL_DEV,
-        max_tokens: 4096,
-        system: SYSTEM_PROMPT,
-        messages: buildGenerateMessages(prompt),
-      });
+      const cacheKey = generateCacheKey(prompt);
+      let result = getCached(cacheKey);
+      let fromCache = true;
 
-      // Το prefill ("{") δεν επαναλαμβάνεται στην απάντηση, οπότε το προσθέτουμε πίσω.
-      // Αν παρόλα αυτά η απάντηση καταλήξει σε ```code fence, το αφαιρούμε ως safety net.
-      const raw = ('{' + message.content[0].text).trim().replace(/^```(?:json)?\s*|\s*```$/g, '');
-      let parsed;
-      try {
-        parsed = JSON.parse(raw);
-      } catch {
-        return res.status(502).json({ error: 'Claude returned non-JSON output', raw });
-      }
-
-      const { html, css } = parsed;
-      if (typeof html !== 'string' || typeof css !== 'string') {
-        return res.status(502).json({ error: 'Claude JSON is missing html/css fields', raw: parsed });
+      if (!result) {
+        fromCache = false;
+        const initial = await callClaudeForCode(anthropic, buildGenerateMessages(prompt));
+        result = await runWithValidation(anthropic, initial);
+        setCached(cacheKey, result);
       }
 
       const sessionId = createSession();
-      addHistoryEntry(sessionId, { prompt, html, css, validation: null });
+      addHistoryEntry(sessionId, {
+        prompt,
+        html: result.html,
+        css: result.css,
+        validation: result.validation,
+        usage: fromCache ? { inputTokens: 0, outputTokens: 0 } : result.usage,
+      });
 
-      res.json({ sessionId, html, css });
+      res.json({
+        sessionId,
+        html: result.html,
+        css: result.css,
+        validation: result.validation,
+        fromCache,
+      });
     } catch (err) {
+      if (err instanceof ClaudeOutputError) {
+        return res.status(502).json({ error: err.message, raw: err.raw });
+      }
       res.status(500).json({ error: err.message });
     }
   });
