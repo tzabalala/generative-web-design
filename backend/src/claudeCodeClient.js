@@ -13,7 +13,7 @@ class ClaudeOutputError extends Error {
 export async function callClaudeForCode(anthropic, messages) {
   const message = await anthropic.messages.create({
     model: process.env.CLAUDE_MODEL_DEV,
-    max_tokens: 4096,
+    max_tokens: 8192,
     system: SYSTEM_PROMPT,
     messages,
   });
@@ -23,7 +23,11 @@ export async function callClaudeForCode(anthropic, messages) {
   try {
     parsed = JSON.parse(raw);
   } catch {
-    throw new ClaudeOutputError('Claude returned non-JSON output', raw);
+    const reason =
+      message.stop_reason === 'max_tokens'
+        ? 'Claude output was cut off (hit the max_tokens limit) before valid JSON was completed'
+        : 'Claude returned non-JSON output';
+    throw new ClaudeOutputError(reason, raw);
   }
 
   const { html, css } = parsed;

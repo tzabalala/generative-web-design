@@ -1,0 +1,160 @@
+{
+  "generatedAt": "2026-08-20T01:46:55.356Z",
+  "summary": {
+    "sampleSize": 10,
+    "failedCount": 0,
+    "before": {
+      "avgAccessibilityViolations": 0.7,
+      "avgResponsiveIssues": 0,
+      "pctFullyPassing": 30
+    },
+    "after": {
+      "avgAccessibilityViolations": 0.1,
+      "avgResponsiveIssues": 0,
+      "pctFullyPassing": 90
+    },
+    "avgRetriesNeeded": 1.4
+  },
+  "rows": [
+    {
+      "prompt": "a one-page portfolio for a freelance photographer, with a gallery and a contact form",
+      "before": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "passed": true
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "passed": true
+      },
+      "retries": 0
+    },
+    {
+      "prompt": "a landing page for a local yoga studio with a class schedule and a sign-up button",
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "passed": false
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "passed": true
+      },
+      "retries": 2
+    },
+    {
+      "prompt": "a contact page for a small bakery, with a form and opening hours",
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "passed": false
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "passed": true
+      },
+      "retries": 1
+    },
+    {
+      "prompt": "a simple blog homepage listing 5 recent posts with titles and short excerpts",
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "passed": false
+      },
+      "after": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "passed": false
+      },
+      "retries": 3
+    },
+    {
+      "prompt": "a product landing page for a reusable water bottle, with a buy button and features list",
+      "before": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "passed": true
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "passed": true
+      },
+      "retries": 0
+    },
+    {
+      "prompt": "an event page for a community charity fundraiser, with a date, location, and RSVP form",
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "passed": false
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "passed": true
+      },
+      "retries": 3
+    },
+    {
+      "prompt": "a personal resume/CV page with an about section, skills, and work experience",
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "passed": false
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "passed": true
+      },
+      "retries": 1
+    },
+    {
+      "prompt": "a restaurant homepage with a menu section and a reservation form",
+      "before": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "passed": true
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "passed": true
+      },
+      "retries": 0
+    },
+    {
+      "prompt": "a nonprofit organisation homepage explaining its mission and a donate button",
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "passed": false
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "passed": true
+      },
+      "retries": 1
+    },
+    {
+      "prompt": "a small business services page listing 3 services with pricing",
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "passed": false
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "passed": true
+      },
+      "retries": 3
+    }
+  ]
+}
