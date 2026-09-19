@@ -1,7 +1,7 @@
 import { chromium } from 'playwright';
 
-// Ένα μόνο headless browser instance, ξανά-χρησιμοποιούμενο σε όλα τα requests
-// (πιο γρήγορο από το να ανοίγει/κλείνει browser σε κάθε κλήση validation).
+// A single headless browser instance, reused across all requests (faster than
+// opening/closing a browser on every validation call).
 let browserPromise = null;
 
 function getBrowser() {

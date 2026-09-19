@@ -1,8 +1,8 @@
-// Το αρχείο που κατεβάζει ο χρήστης. Περιέχει στην αρχή ένα σχόλιο HTML με τον
-// οδηγό αντικατάστασης των δοκιμαστικών στοιχείων, ώστε ο οδηγός να ΜΕΝΕΙ μαζί
-// με το αρχείο ακόμα κι αν ο χρήστης το ανοίξει μήνες αργότερα, εκτός εργαλείου.
+// The file the user downloads. It starts with an HTML comment holding the guide for
+// replacing the dummy content, so the guide STAYS with the file even if the user opens
+// it months later, outside the tool.
 
-// Μέσα σε σχόλιο HTML η ακολουθία "--" (και το "-->") τερματίζει/χαλάει το σχόλιο.
+// Inside an HTML comment the sequence "--" (and "-->") ends/breaks the comment.
 function safe(text) {
   return String(text ?? '').replace(/-{2,}/g, '-').replace(/\s+/g, ' ').trim();
 }
@@ -33,15 +33,15 @@ ${items}
 }
 
 const stripTags = (s) => s.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
-// Το κείμενο του h1 προέρχεται ήδη από HTML (τα & είναι ήδη entities), οπότε εδώ
-// εξουδετερώνουμε μόνο τα < και >.
+// The h1 text already comes from HTML (the & are already entities), so here we
+// neutralise only < and >.
 const escapeHtml = (s) => s.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-// Η γλώσσα και ο τίτλος προκύπτουν από το ίδιο το περιεχόμενο (ελληνικοί
-// χαρακτήρες → el, αλλιώς en· τίτλος = πρώτο <h1>) ώστε να μη δηλώνεται λάθος
-// γλώσσα σελίδας (θέμα προσβασιμότητας για screen readers).
+// Language and title are derived from the content itself (Greek characters → el,
+// otherwise en; title = first <h1>) so the page never declares the wrong language
+// (an accessibility issue for screen readers).
 export function detectLangAndTitle(html) {
-  const lang = /[Ͱ-Ͽ]/.test(stripTags(html)) ? 'el' : 'en';
+  const lang = /[\u0370-\u03FF]/.test(stripTags(html)) ? 'el' : 'en';
   const h1 = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
   const fromH1 = h1 ? stripTags(h1[1]) : '';
   const title = fromH1 || (lang === 'el' ? 'Η σελίδα μου' : 'My page');

@@ -3,8 +3,8 @@ const props = defineProps({
   validation: { type: Object, default: null },
 });
 
-// Βήμα 16: plain-language summary — ο μη τεχνικός χρήστης δεν χρειάζεται να
-// ξέρει τι σημαίνει "axe-core" ή "WCAG", μόνο τι ελέγχθηκε και αν πέρασε.
+// Step 16: plain-language summary — the non-technical user does not need to know
+// what "axe-core" or "WCAG" mean, only what was checked and whether it passed.
 const CHECKS = [
   {
     key: 'accessibility',

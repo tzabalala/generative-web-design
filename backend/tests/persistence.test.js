@@ -9,11 +9,11 @@ import { createSession, getSession, addHistoryEntry, undoLastEntry } from '../sr
 import { generateCacheKey, getCached, setCached } from '../src/cache.js';
 import { sessionRouter } from '../src/routes/session.js';
 
-// Πραγματικό ΑΡΧΕΙΟ (όχι :memory:) ώστε να δοκιμάζεται η επιβίωση σε "restart".
+// A real FILE (not :memory:) so survival across a "restart" is actually tested.
 const dbFile = join(tmpdir(), `gaw-test-${randomUUID()}.sqlite`);
 process.env.DB_PATH = dbFile;
 
-// Προσομοίωση επανεκκίνησης: κλείνει τη σύνδεση· η επόμενη κλήση ξανανοίγει το αρχείο.
+// Simulated restart: closes the connection; the next call reopens the file.
 const restartServer = () => closeDb();
 
 afterAll(() => {
@@ -86,7 +86,7 @@ describe('undo', () => {
     restartServer();
     const session = getSession(id);
     expect(session.history.map((h) => h.prompt)).toEqual(['v1']);
-    expect(session.iterationCount).toBe(2); // αλλιώς το όριο παρακάμπτεται με refine/undo
+    expect(session.iterationCount).toBe(2); // otherwise the limit could be bypassed with refine/undo
   });
 
   it('returns null when there is nothing older to go back to', () => {

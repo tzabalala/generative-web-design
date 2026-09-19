@@ -40,7 +40,7 @@ function onSubmit() {
     <button class="prompt-form__submit" type="submit" :disabled="loading || disabled || !text.trim()">
       {{ loading ? 'Επεξεργασία…' : (mode === 'generate' ? 'Δημιουργία σελίδας' : 'Εφαρμογή αλλαγής') }}
     </button>
-    <!-- role="status": οι screen readers ανακοινώνουν το μήνυμα χωρίς να χρειάζεται focus -->
+    <!-- role="status": screen readers announce the message without needing focus -->
     <p v-if="loading" class="prompt-form__working" role="status">
       <span class="prompt-form__spinner" aria-hidden="true" />
       Δουλεύω πάνω σε αυτό… μπορεί να πάρει λίγο χρόνο (συνήθως 1-2 λεπτά), γιατί η σελίδα ελέγχεται
@@ -109,7 +109,7 @@ function onSubmit() {
     transform: rotate(360deg);
   }
 }
-/* Όσοι έχουν ζητήσει λιγότερη κίνηση από το σύστημα δεν βλέπουν περιστροφή */
+/* Users who asked their system for reduced motion do not see the spinner rotate */
 @media (prefers-reduced-motion: reduce) {
   .prompt-form__spinner {
     animation: none;

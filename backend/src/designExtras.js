@@ -1,7 +1,6 @@
-// Καθαρισμός/επικύρωση των "extras" που επιστρέφει το Claude πέρα από html/css:
-// το design rationale (marketing σκεπτικό) και ο οδηγός αντικατάστασης dummy
-// δεδομένων. Είναι ΑΝΟΧΗ σε ελλιπή απάντηση — ένα σπασμένο rationale δεν πρέπει
-// ποτέ να αποτρέψει την παράδοση της σελίδας.
+// Cleaning/validation of the "extras" Claude returns besides html/css: the design
+// rationale (marketing reasoning) and the dummy-data replacement guide. Tolerant of
+// incomplete answers — a broken rationale must never prevent the page from being delivered.
 const HEX = /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/;
 const MAX_COLORS = 8;
 const MAX_PLACEHOLDERS = 30;
@@ -40,9 +39,9 @@ export function normalizeRationale(raw) {
   return hasContent ? rationale : null;
 }
 
-// Το searchText πρέπει να υπάρχει ΑΥΤΟΥΣΙΟ στον κώδικα, αλλιώς ο χρήστης θα ψάχνει
-// στο Ctrl+F κάτι που δεν υπάρχει. Αν δεν βρεθεί, το αφήνουμε κενό (κρατάμε την
-// υπόλοιπη οδηγία).
+// searchText must appear VERBATIM in the code, otherwise the user would Ctrl+F for
+// something that does not exist. If it is not found we blank it (keeping the rest of
+// the instruction).
 export function normalizePlaceholders(raw, html, css) {
   if (!Array.isArray(raw)) return [];
   const haystack = `${html}\n${css}`;

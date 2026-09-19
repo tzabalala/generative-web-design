@@ -17,8 +17,8 @@ function buildFullPage(html, css) {
 </html>`;
 }
 
-// Βήμα 8: axe-core τρέχει πάνω σε headless browser (Playwright) που φορτώνει
-// το HTML και εκτελεί τον accessibility έλεγχο. ΔΕΝ χρειάζεται κλήση API.
+// Step 8: axe-core runs on a headless browser (Playwright) that loads the HTML and
+// performs the accessibility check. No API call needed.
 export async function checkAccessibility(html, css) {
   const fullPage = buildFullPage(html, css);
 

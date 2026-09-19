@@ -8,12 +8,11 @@ import { validateCode } from '../src/validation/index.js';
 import { runWithValidation } from '../src/validationLoop.js';
 import { closeBrowser } from '../src/validation/browserManager.js';
 
-// Βήμα 21 του Technical Implementation Plan: απαντά στο ερευνητικό ερώτημα
-// "πόσο βελτιώνεται το accessibility score με το validation loop σε σχέση
-// με raw LLM output;" — συγκρίνει (α) raw Claude output χωρίς κανένα
-// validation/fix, έναντι (β) το ίδιο output περασμένο από το πλήρες
-// validation/fix pipeline. Μετρά: axe-core violations πριν/μετά, ποσοστό
-// σελίδων που περνούν πλήρως, μέσος αριθμός retries.
+// Step 21 of the Technical Implementation Plan: answers the evaluation research question
+// "how much does the validation loop improve the accessibility score compared with raw
+// LLM output?" by comparing (a) raw Claude output with no validation/fix against (b) the
+// same output run through the full validation/fix pipeline. Measures: axe-core violations
+// before/after, the share of pages that pass fully, and the average number of retries.
 
 const DEFAULT_PROMPTS = [
   'a one-page portfolio for a freelance photographer, with a gallery and a contact form',

@@ -3,11 +3,11 @@ import { mkdirSync } from 'fs';
 import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
-// Μόνιμη αποθήκευση (SQLite, ένα αρχείο). Χρησιμοποιούμε το ενσωματωμένο
-// node:sqlite του Node (χωρίς εξωτερικό πακέτο / μεταγλώττιση C++).
-//   - Παραγωγή/ανάπτυξη: backend/data/app.sqlite  (εκτός git, βλ. .gitignore)
-//   - Tests: μνήμη (:memory:) ώστε να μη γράφουν στο πραγματικό αρχείο
-//   - Override: μεταβλητή DB_PATH
+// Persistent storage (SQLite, a single file). Uses Node's built-in node:sqlite
+// (no external package / C++ compilation).
+//   - Production/development: backend/data/app.sqlite  (not in git, see .gitignore)
+//   - Tests: memory (:memory:) so they never write to the real file
+//   - Override: the DB_PATH environment variable
 const here = dirname(fileURLToPath(import.meta.url));
 
 function resolveDbPath() {
@@ -67,7 +67,7 @@ export function closeDb() {
   }
 }
 
-// Εκτελεί το fn μέσα σε συναλλαγή: ή γίνονται όλες οι αλλαγές ή καμία.
+// Runs fn inside a transaction: either all changes are applied or none.
 export function transaction(fn) {
   const conn = getDb();
   conn.exec('BEGIN');

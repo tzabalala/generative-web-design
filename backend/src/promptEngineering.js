@@ -1,8 +1,8 @@
-// Constraint-aware prompt injection (Βήμα 5 & 6, Technical Implementation Plan).
-// Ο χρήστης δεν γράφει ποτέ αυτές τις οδηγίες ο ίδιος — προστίθενται αυτόματα
-// πριν το prompt φύγει προς το Claude API.
-// Ανέβασέ το ΟΠΟΤΕ αλλάζεις τα prompts παρακάτω: μπαίνει στο κλειδί του cache, ώστε
-// αποθηκευμένες απαντήσεις που φτιάχτηκαν με παλιές οδηγίες να μη σερβίρονται ξανά.
+// Constraint-aware prompt injection (Steps 5 & 6, Technical Implementation Plan).
+// The user never writes these instructions themselves; they are added automatically
+// before the prompt is sent to the Claude API.
+// Bump this WHENEVER the prompts below change: it is part of the cache key, so answers
+// stored under old instructions are never served again.
 export const PROMPT_VERSION = 'v2-design-guide';
 
 export const SYSTEM_PROMPT = `You are a web page generator. Given a natural-language description, produce a single self-contained web page.
@@ -23,10 +23,10 @@ Split output strictly into two parts:
 Respond with ONLY a JSON object, no markdown code fences, no explanation, no text before or after, in exactly this shape:
 {"html": "<body content only, as a string>", "css": "<all CSS rules, as a string>"}`;
 
-// Δεύτερη, ξεχωριστή κλήση: περιγράφει τον ΤΕΛΙΚΟ (ήδη ελεγμένο) κώδικα. Ξεχωριστή
-// από τη δημιουργία ώστε (α) το σκεπτικό να ταιριάζει με ό,τι όντως παραδίδεται,
-// (β) το validation loop να μη κουβαλά έξτρα tokens σε κάθε επανάληψη, (γ) μια
-// αποτυχία εδώ να μη χαλά τη σελίδα.
+// Second, separate call: describes the FINAL (already validated) code. Kept apart from
+// generation so that (a) the rationale matches what is actually delivered, (b) the
+// validation loop does not carry extra tokens on every retry, and (c) a failure here
+// cannot break the page.
 export const DESIGN_SYSTEM_PROMPT = `You are a design consultant. You are given a finished web page (html + css) and the request it was built for. Explain it to a NON-TECHNICAL business owner and tell them what dummy content to replace.
 
 Return a JSON object with two fields:
@@ -54,14 +54,14 @@ export function buildGenerateMessages(userPrompt) {
       role: 'user',
       content: `Generate a web page for this request: ${userPrompt}`,
     },
-    // Prefill: αναγκάζει την απάντηση να ξεκινήσει με "{" ώστε να μην
-    // τυλίγεται σε ```markdown code fence.
+    // Prefill: forces the answer to start with "{" so it is not wrapped in a
+    // ```markdown code fence.
     JSON_PREFILL,
   ];
 }
 
-// Βήμα 7: /refine — στέλνεται πάντα ο τρέχων κώδικας ως context, ώστε η
-// αλλαγή να είναι surgical (targeted) αντί για πλήρη επανα-δημιουργία.
+// Step 7: /refine — the current code is always sent as context so the change is
+// surgical (targeted) rather than a full regeneration.
 export function buildRefineMessages(currentHtml, currentCss, instruction) {
   return [
     {
@@ -82,8 +82,8 @@ Keep everything else about the design the same — only change what the instruct
   ];
 }
 
-// Βήμα 10: feedback loop — περιγράφεται ρητά ποιοι έλεγχοι απέτυχαν, ζητείται
-// διόρθωση διατηρώντας το υπόλοιπο design.
+// Step 10: feedback loop — states explicitly which checks failed and asks for a fix
+// that preserves the rest of the design.
 export function buildFixMessages(currentHtml, currentCss, issueSummary) {
   return [
     {
@@ -103,15 +103,15 @@ Fix ONLY what is needed to pass these checks. Keep the rest of the design (layou
   ];
 }
 
-// Η γλώσσα καθορίζεται ντετερμινιστικά από τον κώδικα (όχι από το μοντέλο): το
-// μοντέλο τείνει να απαντά στα αγγλικά όταν οι οδηγίες του είναι αγγλικές.
+// The output language is decided deterministically in code (not by the model): the
+// model tends to answer in English when its instructions are in English.
 function languageInstruction(request) {
-  return /[Ͱ-Ͽ]/.test(request) // ελληνικοί χαρακτήρες
+  return /[\u0370-\u03FF]/.test(request) // Greek characters
     ? 'Write ALL text values (summary, audience, colour names and reasons, typography, layout, conversion, and the what/where/replaceWith of every placeholder) in Greek (Ελληνικά). Keep "searchText" exactly as it appears in the code.'
     : 'Write all text values in the same language as the request. Keep "searchText" exactly as it appears in the code.';
 }
 
-// request: το αρχικό αίτημα του χρήστη (και, σε refine, η τελευταία αλλαγή).
+// request: the user's original request (and, on refine, the latest change).
 export function buildDesignMessages(html, css, request) {
   return [
     {

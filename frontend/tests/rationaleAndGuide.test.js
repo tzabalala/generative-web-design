@@ -78,7 +78,7 @@ describe('downloadPage', () => {
 
   it('cannot be broken out of the comment by "--" or "-->" in placeholder text', () => {
     const comment = buildGuideComment([{ what: 'x --> <script>alert(1)</script>', where: 'a--b' }]);
-    const inner = comment.slice(4, -4); // χωρίς το <!-- και το -->
+    const inner = comment.slice(4, -4); // without the <!-- and -->
     expect(inner).not.toContain('--');
     expect(comment.endsWith('-->\n')).toBe(true);
   });

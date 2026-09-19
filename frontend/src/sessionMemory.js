@@ -1,9 +1,9 @@
-// Θυμάται στον browser ΠΟΙΟ session ήταν ανοιχτό, ώστε ένα reload (ή κλείσιμο/άνοιγμα
-// του tab) να μη χάνει τη δουλειά. Τα ίδια τα δεδομένα μένουν στη βάση του backend·
-// εδώ κρατάμε μόνο το id.
+// Remembers in the browser WHICH session was open, so a reload (or closing/reopening
+// the tab) does not lose the work. The data itself stays in the backend database;
+// here we keep only the id.
 //
-// Το localStorage μπορεί να είναι μπλοκαρισμένο (ιδιωτική περιήγηση, πολιτικές
-// browser): σε κάθε περίπτωση η εφαρμογή δουλεύει κανονικά, απλώς χωρίς μνήμη.
+// localStorage may be blocked (private browsing, browser policies): in every case the
+// app works normally, just without memory.
 const KEY = 'gaw.sessionId';
 
 export function loadSessionId() {
@@ -18,7 +18,7 @@ export function saveSessionId(id) {
   try {
     window.localStorage.setItem(KEY, id);
   } catch {
-    /* αγνοείται: απλώς δεν θα επιβιώσει το reload */
+    /* ignored: the session simply will not survive a reload */
   }
 }
 
@@ -26,6 +26,6 @@ export function forgetSessionId() {
   try {
     window.localStorage.removeItem(KEY);
   } catch {
-    /* αγνοείται */
+    /* ignored */
   }
 }

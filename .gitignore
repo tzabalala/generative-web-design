@@ -1,15 +1,15 @@
-# Environment variables (ΠΟΤΕ commit — περιέχει το Anthropic API key)
+# Environment variables (NEVER commit — contains the Anthropic API key)
 .env
 .env.local
 
-# Dependencies (κατεβάζονται αυτόματα με npm install, δεν χρειάζεται να ανέβουν)
+# Dependencies (installed automatically by npm install, no need to commit them)
 node_modules/
 
 # Build output
 dist/
 build/
 
-# Cache / local DB (SQLite: backend/data/ περιέχει και τα -wal/-shm αρχεία)
+# Cache / local DB (SQLite: backend/data/ also holds the -wal/-shm files)
 data/
 *.sqlite
 *.db

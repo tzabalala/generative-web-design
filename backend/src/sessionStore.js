@@ -1,14 +1,13 @@
 import { randomUUID } from 'crypto';
 import { getDb, transaction } from './db.js';
 
-// Μόνιμο session store (SQLite). Βήμα 3 data model: κάθε session έχει ένα history
-// από (prompt, generated_code, validation_result) τριάδες, τώρα μαζί με το σκεπτικό
-// σχεδιασμού και τον οδηγό dummy δεδομένων. Κρατάει επίσης το μετρητή iterations
-// (Βήμα 12: rate limiting) και το συνολικό token usage.
+// Persistent session store (SQLite). Step 3 data model: each session has a history of
+// (prompt, generated_code, validation_result) triples, now together with the design
+// rationale and the dummy-data guide. It also keeps the iteration counter
+// (Step 12: rate limiting) and the total token usage.
 //
-// ΠΡΟΣΟΧΗ: το getSession() επιστρέφει ΣΤΙΓΜΙΟΤΥΠΟ, όχι ζωντανό αντικείμενο. Για τον
-// ενημερωμένο μετρητή μετά από αλλαγή χρησιμοποίησε την τιμή που επιστρέφει το
-// addHistoryEntry().
+// WARNING: getSession() returns a SNAPSHOT, not a live object. To get the updated
+// counter after a change, use the value returned by addHistoryEntry().
 
 const toJson = (v) => (v === undefined || v === null ? null : JSON.stringify(v));
 const fromJson = (s, fallback) => (s === null || s === undefined ? fallback : JSON.parse(s));
@@ -84,9 +83,9 @@ export function addHistoryEntry(id, entry) {
   return getSession(id);
 }
 
-// Βήμα 15 (Undo): γυρίζει στην προηγούμενη, ήδη-παραχθείσα έκδοση από το
-// history — καμία νέα κλήση API. Ο μετρητής iterations ΔΕΝ μειώνεται (αλλιώς
-// το όριο θα παρακαμπτόταν με refine → undo → refine → undo...).
+// Step 15 (Undo): goes back to the previous, already-generated version from the
+// history — no new API call. The iteration counter is NOT decremented (otherwise the
+// limit could be bypassed with refine → undo → refine → undo...).
 export function undoLastEntry(id) {
   return transaction((db) => {
     if (!db.prepare('SELECT 1 FROM sessions WHERE id = ?').get(id)) {
@@ -94,7 +93,7 @@ export function undoLastEntry(id) {
     }
 
     const { n } = db.prepare('SELECT COUNT(*) AS n FROM history WHERE session_id = ?').get(id);
-    if (n <= 1) return null; // δεν υπάρχει τίποτα παλαιότερο για undo
+    if (n <= 1) return null; // nothing older to undo to
 
     db.prepare(
       `DELETE FROM history

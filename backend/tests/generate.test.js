@@ -19,8 +19,8 @@ function buildAppWithMockAnthropic(mockResponseText) {
   return { app, anthropic };
 }
 
-// Ένα πλήρες, semantic, responsive HTML/CSS που θα περάσει το validation
-// loop χωρίς retries, ώστε τα tests να μη χρειάζεται να περιμένουν 3 fix-κύκλους.
+// A complete, semantic, responsive HTML/CSS that passes the validation loop with no
+// retries, so the tests do not have to wait for 3 fix cycles.
 const VALID_HTML =
   '<main><h1>Hi</h1><img src="a.jpg" alt="A descriptive photo"></main>';
 const VALID_CSS =
@@ -60,8 +60,8 @@ describe('POST /api/generate', () => {
 
   it('returns the design rationale and placeholder guide, and tolerates their absence', async () => {
     const extras = {
-      rationale: { summary: 'Ζεστό concept', colors: [{ hex: '#112233', name: 'Navy', why: 'Εμπιστοσύνη' }] },
-      placeholders: [{ what: 'Τίτλος', where: 'Κορυφή', searchText: 'Hi', replaceWith: 'Το όνομά σου' }],
+      rationale: { summary: 'Warm concept', colors: [{ hex: '#112233', name: 'Navy', why: 'Trust' }] },
+      placeholders: [{ what: 'Title', where: 'Top', searchText: 'Hi', replaceWith: 'Your name' }],
     };
     const { app } = buildAppWithMockAnthropic(
       `"html": ${JSON.stringify(VALID_HTML)}, "css": ${JSON.stringify(VALID_CSS)}, "rationale": ${JSON.stringify(
@@ -76,7 +76,7 @@ describe('POST /api/generate', () => {
     expect(res.body.rationale.colors[0].hex).toBe('#112233');
     expect(res.body.placeholders[0].searchText).toBe('Hi');
 
-    // Χωρίς extras η σελίδα παραδίδεται κανονικά
+    // Without extras the page is still delivered normally
     const { app: app2 } = buildAppWithMockAnthropic(
       `"html": ${JSON.stringify(VALID_HTML)}, "css": ${JSON.stringify(VALID_CSS)}}`
     );
@@ -112,7 +112,7 @@ describe('POST /api/generate', () => {
 
     expect(first.body.fromCache).toBe(false);
     expect(second.body.fromCache).toBe(true);
-    // 2 κλήσεις για τη ΜΙΑ δημιουργία (κώδικας + σκεπτικό)· η 2η ίδια αίτηση δεν καλεί τίποτα
+    // 2 calls for the ONE generation (code + rationale); the 2nd identical request calls nothing
     expect(anthropic.messages.create).toHaveBeenCalledTimes(2);
   }, 30000);
 

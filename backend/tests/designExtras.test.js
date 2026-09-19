@@ -3,15 +3,15 @@ import { normalizeRationale, normalizePlaceholders } from '../src/designExtras.j
 describe('normalizeRationale', () => {
   it('keeps well-formed fields and trims strings', () => {
     const r = normalizeRationale({
-      summary: '  Ζεστή, οικεία εικόνα  ',
-      audience: 'Ντόπιοι',
-      colors: [{ hex: '#1A2B3C', name: 'Navy', why: 'Εμπιστοσύνη' }],
+      summary: '  Warm, familiar feel  ',
+      audience: 'Locals',
+      colors: [{ hex: '#1A2B3C', name: 'Navy', why: 'Trust' }],
       typography: 'Serif',
-      layout: 'Hero πρώτα',
-      conversion: 'Κουμπί κράτησης',
+      layout: 'Hero first',
+      conversion: 'Booking button',
     });
-    expect(r.summary).toBe('Ζεστή, οικεία εικόνα');
-    expect(r.colors).toEqual([{ hex: '#1A2B3C', name: 'Navy', why: 'Εμπιστοσύνη' }]);
+    expect(r.summary).toBe('Warm, familiar feel');
+    expect(r.colors).toEqual([{ hex: '#1A2B3C', name: 'Navy', why: 'Trust' }]);
   });
 
   it('returns null for missing/garbage input instead of throwing', () => {
@@ -40,15 +40,15 @@ describe('normalizePlaceholders', () => {
   it('keeps searchText only when it appears verbatim in the code', () => {
     const list = normalizePlaceholders(
       [
-        { what: 'Όνομα', where: 'Τίτλος', searchText: 'Cinema Astra', replaceWith: 'Το όνομά σου' },
-        { what: 'Τηλέφωνο', where: 'Footer', searchText: '210 1234567', replaceWith: 'Το τηλέφωνό σου' },
+        { what: 'Name', where: 'Title', searchText: 'Cinema Astra', replaceWith: 'Your name' },
+        { what: 'Phone', where: 'Footer', searchText: '210 1234567', replaceWith: 'Your phone number' },
       ],
       html,
       ''
     );
     expect(list[0].searchText).toBe('Cinema Astra');
     expect(list[1].searchText).toBe('');
-    expect(list[1].what).toBe('Τηλέφωνο');
+    expect(list[1].what).toBe('Phone');
   });
 
   it('drops entries with no "what" and tolerates non-arrays', () => {

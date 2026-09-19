@@ -9,8 +9,8 @@ class ClaudeOutputError extends Error {
   }
 }
 
-// Κοινό κομμάτι: κλήση + επαναφορά του "{" του prefill + αφαίρεση code fences +
-// JSON.parse, με ξεχωριστό μήνυμα όταν η απάντηση κόπηκε από το όριο tokens.
+// Shared part: the call, re-adding the prefill's "{", stripping code fences and
+// JSON.parse, with a distinct message when the answer was cut off by the token limit.
 async function callClaudeForJson(anthropic, { system, messages, maxTokens }) {
   const message = await anthropic.messages.create({
     model: process.env.CLAUDE_MODEL_DEV,
@@ -40,8 +40,8 @@ async function callClaudeForJson(anthropic, { system, messages, maxTokens }) {
   };
 }
 
-// Κοινή λογική κλήσης Claude + parsing, χρησιμοποιείται από generate, refine,
-// και το fix-βήμα του validation feedback loop.
+// Shared Claude call + parsing, used by generate, refine and the fix step of the
+// validation feedback loop.
 export async function callClaudeForCode(anthropic, messages) {
   const { parsed, usage } = await callClaudeForJson(anthropic, {
     system: SYSTEM_PROMPT,
@@ -57,7 +57,7 @@ export async function callClaudeForCode(anthropic, messages) {
   return { html, css, usage };
 }
 
-// Δεύτερη κλήση: σκεπτικό σχεδιασμού + οδηγός dummy δεδομένων για τον τελικό κώδικα.
+// Second call: design rationale + dummy-data guide for the final code.
 export async function callClaudeForDesign(anthropic, messages, { html, css }) {
   const { parsed, usage } = await callClaudeForJson(anthropic, {
     system: DESIGN_SYSTEM_PROMPT,

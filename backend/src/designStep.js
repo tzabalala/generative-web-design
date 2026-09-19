@@ -1,9 +1,9 @@
 import { buildDesignMessages } from './promptEngineering.js';
 import { callClaudeForDesign } from './claudeCodeClient.js';
 
-// Προσθέτει στο (ήδη ελεγμένο) αποτέλεσμα το σκεπτικό σχεδιασμού και τον οδηγό
-// dummy δεδομένων. ΠΟΤΕ δεν ρίχνει σφάλμα: το σκεπτικό είναι bonus — αν αποτύχει
-// (κομμένη απάντηση, δίκτυο), η σελίδα παραδίδεται κανονικά χωρίς αυτό.
+// Adds the design rationale and the dummy-data guide to the (already validated) result.
+// NEVER throws: the rationale is a bonus — if it fails (truncated answer, network),
+// the page is delivered normally without it.
 export async function addDesignGuide(anthropic, result, request) {
   try {
     const design = await callClaudeForDesign(

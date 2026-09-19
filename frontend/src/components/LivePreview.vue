@@ -6,8 +6,8 @@ const props = defineProps({
   css: { type: String, default: '' },
 });
 
-// Βήμα 14: το iframe + srcdoc είναι το sandboxing mechanism — απομονώνει το
-// CSS/JS του παραγόμενου κώδικα από το υπόλοιπο εργαλείο.
+// Step 14: the iframe + srcdoc is the sandboxing mechanism — it isolates the
+// generated code's CSS/JS from the rest of the tool.
 const srcdoc = computed(() => {
   if (!props.html && !props.css) return '';
   return `<!DOCTYPE html>

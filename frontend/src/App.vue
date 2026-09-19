@@ -77,8 +77,8 @@ async function handleUndo() {
   }
 }
 
-// Ξεκινά από το μηδέν: ξεχνά το τρέχον session ώστε το επόμενο κείμενο να πάει
-// στο /generate (νέα σελίδα) και όχι στο /refine (αλλαγή της ίδιας σελίδας).
+// Starts from scratch: forgets the current session so the next text goes to
+// /generate (a new page) and not to /refine (a change to the same page).
 function handleNewPage() {
   sessionId.value = null;
   html.value = '';
@@ -93,9 +93,9 @@ function handleNewPage() {
   forgetSessionId();
 }
 
-// Επαναφορά μετά από reload: ζητά το session από το backend (που το έχει στη βάση).
-// Μόνο ένα 404 (το session δεν υπάρχει πια) το «ξεχνά» — αν απλώς το backend είναι
-// προσωρινά εκτός, κρατάμε το id για να δουλέψει στην επόμενη προσπάθεια.
+// Restore after a reload: asks the backend (which stores it in the database) for the session.
+// Only a 404 (the session no longer exists) makes it forget the id — if the backend is
+// just temporarily down we keep the id so it works on the next attempt.
 async function restoreSession() {
   const savedId = loadSessionId();
   if (!savedId) return;
@@ -305,7 +305,7 @@ function handleDownload() {
   cursor: not-allowed;
 }
 
-/* Βήμα 18: το ίδιο το εργαλείο (όχι μόνο το generated output) πρέπει να είναι responsive */
+/* Step 18: the tool itself (not only the generated output) must be responsive */
 @media (max-width: 900px) {
   .app__layout {
     grid-template-columns: 1fr;

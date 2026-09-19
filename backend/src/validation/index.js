@@ -1,9 +1,9 @@
 import { checkAccessibility } from './accessibilityChecker.js';
 import { checkResponsive } from './responsiveChecker.js';
 
-// Ενοποιημένος έλεγχος: accessibility (axe-core, headless browser) +
-// responsive (custom parser). Κανένα από τα δύο δεν χρειάζεται νέα κλήση
-// στο Claude API — τρέχουν εξ ολοκλήρου τοπικά (Βήμα 11 σημείωση caching).
+// Combined check: accessibility (axe-core, headless browser) + responsive (custom
+// parser). Neither needs a new Claude API call — both run entirely locally (see the
+// Step 11 caching note).
 export async function validateCode(html, css) {
   const [accessibility, responsive] = await Promise.all([
     checkAccessibility(html, css),
@@ -12,7 +12,7 @@ export async function validateCode(html, css) {
 
   const issueSummary = [
     ...accessibility.violations.map(
-      (v) => `[accessibility] ${v.help} (${v.impact}, ${v.nodeCount} στοιχεία): ${v.targets.join(', ')}`
+      (v) => `[accessibility] ${v.help} (${v.impact}, ${v.nodeCount} elements): ${v.targets.join(', ')}`
     ),
     ...responsive.issues.map((i) => `[responsive] ${i}`),
   ];

@@ -21,8 +21,8 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
-// Βήμα 4 του Technical Implementation Plan: "Hello World" endpoint που καλεί
-// το Claude API και επιστρέφει απλή απάντηση, για επιβεβαίωση σύνδεσης.
+// Step 4 of the Technical Implementation Plan: a "Hello World" endpoint that calls
+// the Claude API and returns a simple reply, to confirm the connection works.
 app.get('/api/test-claude', async (req, res) => {
   try {
     const message = await anthropic.messages.create({

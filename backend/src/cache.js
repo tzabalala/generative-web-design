@@ -2,14 +2,14 @@ import { createHash } from 'crypto';
 import { getDb } from './db.js';
 import { PROMPT_VERSION } from './promptEngineering.js';
 
-// Βήμα 11: cache ζευγών (prompt+context) -> (ελεγμένο αποτέλεσμα). Πριν από
-// κάθε κλήση στο Claude ελέγχεται αν υπάρχει ήδη cached αποτέλεσμα.
+// Step 11: cache of (prompt+context) -> (validated result) pairs. Before every call to
+// Claude we check whether a cached result already exists.
 //
-// Πλέον είναι ΜΟΝΙΜΟ (SQLite): επιζεί των restart του server. Γι' αυτό το κλειδί
-// περιλαμβάνει το PROMPT_VERSION: όταν αλλάξουν τα prompts, οι παλιές απαντήσεις
-// (φτιαγμένες με άλλες οδηγίες) παύουν να ταιριάζουν και δεν σερβίρονται ξανά.
+// It is now PERSISTENT (SQLite) and survives server restarts. That is why the key
+// includes PROMPT_VERSION: when the prompts change, old answers (built with different
+// instructions) stop matching and are never served again.
 //
-// Σημείωση: το undo ΔΕΝ διαβάζει από εδώ· διαβάζει το history του session.
+// Note: undo does NOT read from here; it reads the session's history.
 
 function normalize(text) {
   return text.trim().replace(/\s+/g, ' ');

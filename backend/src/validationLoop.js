@@ -2,11 +2,10 @@ import { validateCode } from './validation/index.js';
 import { buildFixMessages } from './promptEngineering.js';
 import { callClaudeForCode } from './claudeCodeClient.js';
 
-// Βήμα 10: generate → check → fix → recheck. Αυτό είναι το πραγματικό
-// ερευνητικό συνεισφορά-κομμάτι — η αυτόματη σύνδεση παραγωγής και ελέγχου.
-// Μέγιστες προσπάθειες retry: MAX_VALIDATION_RETRIES (default 3). Αν
-// αποτύχει και μετά, επιστρέφεται ο κώδικας με σαφή προειδοποίηση των
-// εναπομεινάντων προβλημάτων — όχι ατέρμονος βρόχος.
+// Step 10: generate → check → fix → recheck. This is the actual research
+// contribution: the automatic link between generation and validation.
+// Maximum retries: MAX_VALIDATION_RETRIES (default 3). If it still fails, the code is
+// returned with a clear warning listing the remaining issues — never an endless loop.
 export async function runWithValidation(anthropic, initialResult) {
   const maxRetries = Number(process.env.MAX_VALIDATION_RETRIES) || 3;
 

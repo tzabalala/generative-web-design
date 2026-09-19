@@ -32,7 +32,7 @@ describe('App', () => {
 
     expect(api.generatePage).toHaveBeenCalledWith('a bakery contact page');
     expect(wrapper.find('iframe').attributes('srcdoc')).toContain('<p>v1</p>');
-    // Το placeholder του textarea αλλάζει σε refine mode μετά το πρώτο generate
+    // The textarea placeholder switches to refine mode after the first generate
     expect(wrapper.find('textarea').attributes('placeholder')).toContain('κουμπιού');
   });
 
@@ -101,7 +101,7 @@ describe('App', () => {
     await flushPromises();
 
     expect(api.undoPage).toHaveBeenCalledWith('s1');
-    // Το undo δεν «επιστρέφει» iterations: ο μετρητής μένει 2 όπως τον αναφέρει το backend
+    // Undo does not "refund" iterations: the counter stays at 2, as the backend reports it
     expect(wrapper.text()).toContain('2 / 15');
     expect(wrapper.find('iframe').attributes('srcdoc')).toContain('<p>v1</p>');
     expect(api.generatePage).toHaveBeenCalledTimes(1);
@@ -210,7 +210,7 @@ describe('App', () => {
       expect(wrapper.text()).toContain('2 / 15');
       expect(wrapper.text()).toContain('Γαλάζιο concept');
       expect(wrapper.text()).toContain('Συνεχίζεις από εκεί που είχες μείνει');
-      // επόμενο κείμενο = αλλαγή της ίδιας σελίδας, όχι νέα σελίδα
+      // next text = a change to the same page, not a new page
       expect(wrapper.find('textarea').attributes('placeholder')).toContain('κουμπιού');
     });
 
