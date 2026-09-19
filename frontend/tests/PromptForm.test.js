@@ -31,7 +31,7 @@ describe('PromptForm', () => {
     const wrapper = mount(PromptForm, { props: { mode: 'generate', loading: true } });
     const status = wrapper.find('[role="status"]');
     expect(status.exists()).toBe(true);
-    expect(status.text()).toContain('Δουλεύω πάνω σε αυτό');
+    expect(status.text()).toContain('Working on it');
 
     await wrapper.setProps({ loading: false });
     expect(wrapper.find('[role="status"]').exists()).toBe(false);
@@ -39,6 +39,6 @@ describe('PromptForm', () => {
 
   it('shows refine-specific copy when mode is "refine"', () => {
     const wrapper = mount(PromptForm, { props: { mode: 'refine' } });
-    expect(wrapper.text()).toContain('Τι θέλεις να αλλάξεις;');
+    expect(wrapper.text()).toContain('What do you want to change?');
   });
 });

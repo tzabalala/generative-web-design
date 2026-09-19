@@ -1,4 +1,5 @@
 <script setup>
+import { t } from '../i18n.js';
 import { computed } from 'vue';
 
 const props = defineProps({
@@ -25,14 +26,14 @@ const srcdoc = computed(() => {
 <template>
   <div class="live-preview">
     <div v-if="!srcdoc" class="live-preview__empty">
-      Η προεπισκόπηση θα εμφανιστεί εδώ μόλις παραχθεί η σελίδα σου.
+      {{ t('preview.empty') }}
     </div>
     <iframe
       v-else
       class="live-preview__frame"
       :srcdoc="srcdoc"
       sandbox="allow-same-origin"
-      title="Προεπισκόπηση παραγόμενης σελίδας"
+      :title="t('preview.frameTitle')"
     />
   </div>
 </template>

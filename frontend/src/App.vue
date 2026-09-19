@@ -2,6 +2,8 @@
 import { ref, computed, onMounted } from 'vue';
 import { generatePage, refinePage, undoPage, getSession } from './api.js';
 import { loadSessionId, saveSessionId, forgetSessionId } from './sessionMemory.js';
+import { t, locale, hasMessage } from './i18n.js';
+import LanguageToggle from './components/LanguageToggle.vue';
 import PromptForm from './components/PromptForm.vue';
 import LivePreview from './components/LivePreview.vue';
 import RefinementPanel from './components/RefinementPanel.vue';
@@ -22,6 +24,12 @@ const iterationsLimit = ref(15);
 const loading = ref(false);
 const error = ref(null);
 const notice = ref(null);
+
+// A known error code from the backend is translated; anything else shows its own message.
+function errorText(err) {
+  const key = err.code ? `error.${err.code}` : null;
+  return key && hasMessage(key) ? t(key, { limit: iterationsLimit.value }) : err.message;
+}
 
 const mode = computed(() => (sessionId.value ? 'refine' : 'generate'));
 const limitReached = computed(() => iterationsUsed.value >= iterationsLimit.value);
@@ -50,7 +58,7 @@ async function handleSubmit(text) {
     rationale.value = res.rationale ?? null;
     placeholders.value = res.placeholders ?? [];
   } catch (err) {
-    error.value = err.message;
+    error.value = err;
   } finally {
     loading.value = false;
   }
@@ -71,7 +79,7 @@ async function handleUndo() {
     if (typeof res.iterationsUsed === 'number') iterationsUsed.value = res.iterationsUsed;
     if (typeof res.iterationsLimit === 'number') iterationsLimit.value = res.iterationsLimit;
   } catch (err) {
-    error.value = err.message;
+    error.value = err;
   } finally {
     loading.value = false;
   }
@@ -113,13 +121,13 @@ async function restoreSession() {
     history.value = saved.history.map((e) => ({ prompt: e.prompt, validation: e.validation }));
     iterationsUsed.value = saved.iterationsUsed;
     iterationsLimit.value = saved.iterationsLimit;
-    notice.value = 'Συνεχίζεις από εκεί που είχες μείνει.';
+    notice.value = 'notice.resumed';
   } catch (err) {
     if (err.status === 404) {
       forgetSessionId();
-      notice.value = 'Η προηγούμενη σελίδα δεν βρέθηκε πια. Ξεκίνα μια νέα.';
+      notice.value = 'notice.notFound';
     } else {
-      notice.value = 'Δεν μπόρεσα να φορτώσω την προηγούμενη σελίδα (ο server δεν απαντά).';
+      notice.value = 'notice.unreachable';
     }
   }
 }
@@ -131,6 +139,7 @@ function handleDownload() {
     html: html.value,
     css: css.value,
     placeholders: placeholders.value,
+    locale: locale.value,
   });
   const blob = new Blob([fullPage], { type: 'text/html' });
   const url = URL.createObjectURL(blob);
@@ -145,15 +154,15 @@ function handleDownload() {
 <template>
   <div class="app">
     <header class="app__header">
-      <h1>Generative AI-Driven Web Design</h1>
-      <p class="app__subtitle">
-        Περιέγραψε μια σελίδα σε φυσική γλώσσα — ο κώδικας ελέγχεται αυτόματα για
-        προσβασιμότητα και responsive design πριν φτάσει σε σένα.
-      </p>
+      <div class="app__header-row">
+        <h1>Generative AI-Driven Web Design</h1>
+        <LanguageToggle />
+      </div>
+      <p class="app__subtitle">{{ t('app.subtitle') }}</p>
     </header>
 
-    <div v-if="error" class="app__error">{{ error }}</div>
-    <p v-if="notice" class="app__notice" role="status">{{ notice }}</p>
+    <div v-if="error" class="app__error">{{ errorText(error) }}</div>
+    <p v-if="notice" class="app__notice" role="status">{{ t(notice) }}</p>
 
     <main class="app__layout">
       <section class="app__column app__column--controls">
@@ -170,10 +179,10 @@ function handleDownload() {
           :disabled="loading"
           @click="handleNewPage"
         >
-          + Νέα σελίδα (ξεκίνα από την αρχή)
+          {{ t('app.newPage') }}
         </button>
         <p v-if="limitReached" class="app__limit-warning">
-          Έχεις φτάσει το μέγιστο αριθμό επεξεργασιών ({{ iterationsLimit }}) για αυτή τη σελίδα.
+          {{ t('app.limitReached', { limit: iterationsLimit }) }}
         </p>
 
         <RefinementPanel
@@ -189,14 +198,14 @@ function handleDownload() {
 
       <section class="app__column app__column--preview">
         <div class="app__preview-header">
-          <h2>Προεπισκόπηση</h2>
+          <h2>{{ t('app.preview') }}</h2>
           <button
             class="app__download"
             type="button"
             :disabled="!html"
             @click="handleDownload"
           >
-            ⬇ Λήψη HTML
+            {{ t('app.download') }}
           </button>
         </div>
         <LivePreview :html="html" :css="css" />
@@ -220,6 +229,13 @@ function handleDownload() {
 .app__header h1 {
   font-size: 1.6rem;
   margin: 0 0 0.25rem;
+}
+.app__header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
 }
 .app__subtitle {
   color: #555;

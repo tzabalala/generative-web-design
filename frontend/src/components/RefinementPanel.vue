@@ -1,4 +1,5 @@
 <script setup>
+import { t, tn } from '../i18n.js';
 defineProps({
   history: { type: Array, default: () => [] },
   iterationsUsed: { type: Number, default: 0 },
@@ -12,13 +13,17 @@ const emit = defineEmits(['undo']);
 <template>
   <div class="refinement-panel">
     <div class="refinement-panel__header">
-      <h2>Ιστορικό</h2>
-      <span class="refinement-panel__counter">{{ iterationsUsed }} / {{ iterationsLimit }} επεξεργασίες</span>
+      <h2>{{ t('history.title') }}</h2>
+      <span class="refinement-panel__counter">
+        {{ t('history.counter', { used: iterationsUsed, limit: iterationsLimit }) }}
+      </span>
     </div>
 
     <ol class="refinement-panel__list">
       <li v-for="(entry, i) in history" :key="i" class="refinement-panel__entry">
-        <span class="refinement-panel__badge">{{ i === 0 ? 'Αρχικό αίτημα' : `Βήμα ${i}` }}</span>
+        <span class="refinement-panel__badge">
+          {{ i === 0 ? t('history.initial') : t('history.step', { n: i }) }}
+        </span>
         <p class="refinement-panel__prompt">{{ entry.prompt }}</p>
         <p
           v-if="entry.validation"
@@ -26,8 +31,8 @@ const emit = defineEmits(['undo']);
           :class="entry.validation.passed ? 'is-ok' : 'is-warn'"
         >
           {{ entry.validation.passed
-            ? '✓ Πέρασε όλους τους ελέγχους'
-            : `⚠ ${entry.validation.remainingIssues.length} προβλήματα παραμένουν` }}
+            ? t('history.passed')
+            : tn('history.issues', entry.validation.remainingIssues.length) }}
         </p>
       </li>
     </ol>
@@ -38,7 +43,7 @@ const emit = defineEmits(['undo']);
       :disabled="!canUndo || undoDisabled"
       @click="emit('undo')"
     >
-      ↺ Undo (πίσω στην προηγούμενη έκδοση)
+      {{ t('history.undo') }}
     </button>
   </div>
 </template>

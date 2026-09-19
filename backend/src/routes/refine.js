@@ -25,7 +25,8 @@ export function refineRouter(anthropic) {
     }
     if (isOverLimit(session)) {
       return res.status(429).json({
-        error: `Έχεις φτάσει το μέγιστο αριθμό επεξεργασιών (${iterationLimit()}) για αυτή τη σελίδα.`,
+        code: 'ITERATION_LIMIT',
+        error: `Maximum number of edits (${iterationLimit()}) reached for this page.`,
       });
     }
 

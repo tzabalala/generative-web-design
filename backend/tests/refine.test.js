@@ -68,6 +68,7 @@ describe('POST /api/refine', () => {
       .send({ sessionId, instruction: 'change something' });
 
     expect(res.status).toBe(429);
+    expect(res.body.code).toBe('ITERATION_LIMIT'); // the UI translates this code
     delete process.env.MAX_ITERATIONS_PER_SESSION;
   });
 });
@@ -103,5 +104,6 @@ describe('Session + undo', () => {
     const { app } = buildApp('irrelevant');
     const res = await request(app).post(`/api/session/${sessionId}/undo`);
     expect(res.status).toBe(409);
+    expect(res.body.code).toBe('NOTHING_TO_UNDO');
   });
 });

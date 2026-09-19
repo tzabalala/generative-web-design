@@ -1,4 +1,6 @@
 <script setup>
+import { t } from '../i18n.js';
+import RichText from './RichText.vue';
 defineProps({
   placeholders: { type: Array, default: () => [] },
 });
@@ -6,46 +8,29 @@ defineProps({
 
 <template>
   <details class="guide" open>
-    <summary class="guide__title">Οδηγός: πώς αντικαθιστάς τα δοκιμαστικά στοιχεία</summary>
+    <summary class="guide__title">{{ t('guide.title') }}</summary>
 
-    <p class="guide__intro">
-      Για να δείχνει πλήρης, η σελίδα περιέχει <strong>δοκιμαστικό περιεχόμενο</strong> (ονόματα, τιμές,
-      τηλέφωνα, φωτογραφίες). Δεν είναι αληθινά στοιχεία: πρέπει να τα αντικαταστήσεις πριν τη
-      δημοσιεύσεις.
-    </p>
+    <p class="guide__intro"><RichText :text="t('guide.intro')" /></p>
 
-    <h3 class="guide__heading">Δύο τρόποι</h3>
+    <h3 class="guide__heading">{{ t('guide.waysTitle') }}</h3>
     <ol class="guide__steps">
-      <li>
-        <strong>Από εδώ, με το chat.</strong> Γράψε π.χ. «Άλλαξε την επωνυμία σε Κινηματογράφος Άστρα
-        και το τηλέφωνο σε 210 1234567». Η σελίδα ενημερώνεται και ελέγχεται ξανά αυτόματα.
-      </li>
-      <li>
-        <strong>Στο αρχείο που κατεβάζεις.</strong> Ανοίγεις το .html με Σημειωματάριο (ή VS Code),
-        πατάς <kbd>Ctrl</kbd>+<kbd>F</kbd>, επικολλάς το απόσπασμα από τον πίνακα παρακάτω και
-        αλλάζεις το κείμενο.
-      </li>
+      <li><RichText :text="t('guide.wayChat')" /></li>
+      <li><RichText :text="t('guide.wayFile')" /></li>
     </ol>
-    <p class="guide__tip">
-      <strong>Για τις φωτογραφίες:</strong> βάλε τις δικές σου εικόνες στον ίδιο φάκελο με το αρχείο
-      και άλλαξε το <code>src</code> σε όνομα αρχείου (π.χ. <code>src="foto1.jpg"</code>).
-      <strong>Άλλαξε και το <code>alt</code></strong> ώστε να περιγράφει την πραγματική φωτογραφία:
-      το χρειάζονται οι χρήστες με screen reader.
-    </p>
+    <p class="guide__tip"><RichText :text="t('guide.photos')" /></p>
 
-    <h3 class="guide__heading">Τι να αντικαταστήσεις σε αυτή τη σελίδα</h3>
-    <p v-if="!placeholders.length" class="guide__empty">
-      Το AI δεν επέστρεψε λίστα για αυτή τη σελίδα. Έλεγξε μόνος/η για ονόματα, τιμές, τηλέφωνα,
-      διευθύνσεις και εικόνες.
-    </p>
+    <h3 class="guide__heading">{{ t('guide.listTitle') }}</h3>
+    <p v-if="!placeholders.length" class="guide__empty">{{ t('guide.empty') }}</p>
     <ul v-else class="guide__list">
       <li v-for="(p, i) in placeholders" :key="i" class="guide__item">
         <p class="guide__what">{{ p.what }}</p>
-        <p v-if="p.where" class="guide__meta"><span>Πού:</span> {{ p.where }}</p>
+        <p v-if="p.where" class="guide__meta"><span>{{ t('guide.where') }}</span> {{ p.where }}</p>
         <p v-if="p.searchText" class="guide__meta">
-          <span>Αναζήτηση (Ctrl+F):</span> <code>{{ p.searchText }}</code>
+          <span>{{ t('guide.search') }}</span> <code>{{ p.searchText }}</code>
         </p>
-        <p v-if="p.replaceWith" class="guide__meta"><span>Βάλε:</span> {{ p.replaceWith }}</p>
+        <p v-if="p.replaceWith" class="guide__meta">
+          <span>{{ t('guide.replace') }}</span> {{ p.replaceWith }}
+        </p>
       </li>
     </ul>
   </details>

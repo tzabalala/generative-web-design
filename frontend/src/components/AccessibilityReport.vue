@@ -1,19 +1,16 @@
 <script setup>
-const props = defineProps({
+import { t, tn } from '../i18n.js';
+
+defineProps({
   validation: { type: Object, default: null },
 });
 
 // Step 16: plain-language summary — the non-technical user does not need to know
 // what "axe-core" or "WCAG" mean, only what was checked and whether it passed.
+// `label` is a translation key.
 const CHECKS = [
-  {
-    key: 'accessibility',
-    label: 'Προσβασιμότητα (π.χ. εικόνες με περιγραφή, αντίθεση χρωμάτων)',
-  },
-  {
-    key: 'responsive',
-    label: 'Λειτουργεί σε κινητό και υπολογιστή (responsive design)',
-  },
+  { key: 'accessibility', label: 'report.accessibility' },
+  { key: 'responsive', label: 'report.responsive' },
 ];
 
 function statusOf(validation, key) {
@@ -24,10 +21,8 @@ function statusOf(validation, key) {
 
 <template>
   <div class="a11y-report">
-    <h2>Τι ελέγξαμε</h2>
-    <p v-if="!validation" class="a11y-report__empty">
-      Δεν υπάρχει ακόμα έλεγχος — δημιούργησε μια σελίδα πρώτα.
-    </p>
+    <h2>{{ t('report.title') }}</h2>
+    <p v-if="!validation" class="a11y-report__empty">{{ t('report.empty') }}</p>
     <ul v-else class="a11y-report__list">
       <li v-for="check in CHECKS" :key="check.key" class="a11y-report__item">
         <span
@@ -36,16 +31,12 @@ function statusOf(validation, key) {
         >
           {{ statusOf(validation, check.key) ? '✓' : '⚠' }}
         </span>
-        <span>{{ check.label }}</span>
+        <span>{{ t(check.label) }}</span>
       </li>
     </ul>
 
     <div v-if="validation && !validation.passed" class="a11y-report__warning">
-      <p>
-        Η σελίδα δοκιμάστηκε {{ validation.attempts + 1 }}
-        {{ validation.attempts === 0 ? 'φορά' : 'φορές' }} αλλά κάποια σημεία δεν διορθώθηκαν πλήρως
-        αυτόματα:
-      </p>
+      <p>{{ tn('report.warning', validation.attempts + 1) }}</p>
       <ul>
         <li v-for="(issue, i) in validation.remainingIssues" :key="i">{{ issue }}</li>
       </ul>

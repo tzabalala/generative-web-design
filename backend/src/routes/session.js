@@ -24,7 +24,7 @@ export function sessionRouter() {
       return res.status(404).json({ error: `Unknown sessionId: ${req.params.id}` });
     }
     if (!previous) {
-      return res.status(409).json({ error: 'Δεν υπάρχει παλαιότερη έκδοση για undo.' });
+      return res.status(409).json({ code: 'NOTHING_TO_UNDO', error: 'There is no earlier version to undo to.' });
     }
     res.json({
       iterationsUsed: getSession(req.params.id).iterationCount,

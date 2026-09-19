@@ -1,4 +1,5 @@
 <script setup>
+import { t } from '../i18n.js';
 defineProps({
   rationale: { type: Object, default: null },
 });
@@ -6,18 +7,18 @@ defineProps({
 
 <template>
   <details v-if="rationale" class="rationale" open>
-    <summary class="rationale__title">Γιατί αυτές οι επιλογές (σκεπτικό σχεδιασμού)</summary>
+    <summary class="rationale__title">{{ t('rationale.title') }}</summary>
 
     <p v-if="rationale.summary" class="rationale__summary">{{ rationale.summary }}</p>
 
     <dl class="rationale__list">
       <template v-if="rationale.audience">
-        <dt>Σε ποιον απευθύνεται</dt>
+        <dt>{{ t('rationale.audience') }}</dt>
         <dd>{{ rationale.audience }}</dd>
       </template>
 
       <template v-if="rationale.colors.length">
-        <dt>Χρώματα</dt>
+        <dt>{{ t('rationale.colors') }}</dt>
         <dd>
           <ul class="rationale__colors">
             <li v-for="(c, i) in rationale.colors" :key="i" class="rationale__color">
@@ -38,25 +39,22 @@ defineProps({
       </template>
 
       <template v-if="rationale.typography">
-        <dt>Γραμματοσειρά</dt>
+        <dt>{{ t('rationale.typography') }}</dt>
         <dd>{{ rationale.typography }}</dd>
       </template>
 
       <template v-if="rationale.layout">
-        <dt>Διάταξη</dt>
+        <dt>{{ t('rationale.layout') }}</dt>
         <dd>{{ rationale.layout }}</dd>
       </template>
 
       <template v-if="rationale.conversion">
-        <dt>Πώς οδηγεί τον επισκέπτη στη δράση</dt>
+        <dt>{{ t('rationale.conversion') }}</dt>
         <dd>{{ rationale.conversion }}</dd>
       </template>
     </dl>
 
-    <p class="rationale__note">
-      Το σκεπτικό παράγεται από το AI βάσει γενικών αρχών σχεδιασμού. Είναι πρόταση, όχι μέτρηση
-      απόδοσης.
-    </p>
+    <p class="rationale__note">{{ t('rationale.note') }}</p>
   </details>
 </template>
 

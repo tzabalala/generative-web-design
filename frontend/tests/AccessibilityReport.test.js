@@ -5,7 +5,7 @@ import AccessibilityReport from '../src/components/AccessibilityReport.vue';
 describe('AccessibilityReport', () => {
   it('shows a neutral empty state before any validation has run', () => {
     const wrapper = mount(AccessibilityReport, { props: { validation: null } });
-    expect(wrapper.text()).toContain('Δεν υπάρχει ακόμα έλεγχος');
+    expect(wrapper.text()).toContain('Nothing checked yet');
   });
 
   it('shows both checks as passing when validation.passed is true', () => {

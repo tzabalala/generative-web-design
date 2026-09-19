@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import App from '../src/App.vue';
 import * as api from '../src/api.js';
+import { setLocale } from '../src/i18n.js';
 
 const okValidation = {
   passed: true,
@@ -13,6 +14,8 @@ const okValidation = {
 
 beforeEach(() => {
   vi.restoreAllMocks();
+  window.localStorage.clear();
+  setLocale('en');
   window.localStorage.clear();
 });
 
@@ -33,7 +36,7 @@ describe('App', () => {
     expect(api.generatePage).toHaveBeenCalledWith('a bakery contact page');
     expect(wrapper.find('iframe').attributes('srcdoc')).toContain('<p>v1</p>');
     // The textarea placeholder switches to refine mode after the first generate
-    expect(wrapper.find('textarea').attributes('placeholder')).toContain('κουμπιού');
+    expect(wrapper.find('textarea').attributes('placeholder')).toContain('button');
   });
 
   it('calls refinePage (not generatePage again) for a follow-up instruction', async () => {
@@ -114,24 +117,24 @@ describe('App', () => {
       html: '<h1>Cinema</h1>',
       css: '',
       validation: okValidation,
-      rationale: { summary: 'Νυχτερινή ατμόσφαιρα', colors: [], typography: '', layout: '', conversion: '', audience: '' },
-      placeholders: [{ what: 'Τίτλοι ταινιών', where: 'Πρόγραμμα', searchText: '', replaceWith: 'Δικές σου' }],
+      rationale: { summary: 'Night-time atmosphere', colors: [], typography: '', layout: '', conversion: '', audience: '' },
+      placeholders: [{ what: 'Movie titles', where: 'Schedule', searchText: '', replaceWith: 'Your own' }],
     });
 
     const wrapper = mount(App);
-    await wrapper.find('textarea').setValue('θερινός κινηματογράφος');
+    await wrapper.find('textarea').setValue('a summer cinema');
     await wrapper.find('form').trigger('submit');
     await flushPromises();
 
-    expect(wrapper.text()).toContain('Νυχτερινή ατμόσφαιρα');
-    expect(wrapper.text()).toContain('Τίτλοι ταινιών');
+    expect(wrapper.text()).toContain('Night-time atmosphere');
+    expect(wrapper.text()).toContain('Movie titles');
 
     await wrapper.find('.app__new-page').trigger('click');
-    expect(wrapper.text()).not.toContain('Νυχτερινή ατμόσφαιρα');
+    expect(wrapper.text()).not.toContain('Night-time atmosphere');
     expect(wrapper.find('.guide').exists()).toBe(false);
   });
 
-  it('"Νέα σελίδα" resets everything so the next prompt calls generatePage again', async () => {
+  it('"New page" resets everything so the next prompt calls generatePage again', async () => {
     vi.spyOn(api, 'generatePage').mockResolvedValue({
       sessionId: 's1',
       html: '<p>v1</p>',
@@ -180,8 +183,8 @@ describe('App', () => {
           html: '<h1>Blue Bakery</h1>',
           css: 'h1{color:blue}',
           validation: okValidation,
-          rationale: { summary: 'Γαλάζιο concept', colors: [], typography: '', layout: '', conversion: '', audience: '' },
-          placeholders: [{ what: 'Όνομα', where: 'Τίτλος', searchText: 'Bakery', replaceWith: 'Δικό σου' }],
+          rationale: { summary: 'Blue concept', colors: [], typography: '', layout: '', conversion: '', audience: '' },
+          placeholders: [{ what: 'Name', where: 'Title', searchText: 'Bakery', replaceWith: 'Your own' }],
         },
       ],
       iterationsUsed: 2,
@@ -208,10 +211,10 @@ describe('App', () => {
       expect(wrapper.find('iframe').attributes('srcdoc')).toContain('Blue Bakery');
       expect(wrapper.text()).toContain('make it blue');
       expect(wrapper.text()).toContain('2 / 15');
-      expect(wrapper.text()).toContain('Γαλάζιο concept');
-      expect(wrapper.text()).toContain('Συνεχίζεις από εκεί που είχες μείνει');
+      expect(wrapper.text()).toContain('Blue concept');
+      expect(wrapper.text()).toContain('Picking up where you left off');
       // next text = a change to the same page, not a new page
-      expect(wrapper.find('textarea').attributes('placeholder')).toContain('κουμπιού');
+      expect(wrapper.find('textarea').attributes('placeholder')).toContain('button');
     });
 
     it('forgets a session the server no longer has (404) and tells the user', async () => {
@@ -222,7 +225,7 @@ describe('App', () => {
       await flushPromises();
 
       expect(window.localStorage.getItem('gaw.sessionId')).toBeNull();
-      expect(wrapper.text()).toContain('δεν βρέθηκε πια');
+      expect(wrapper.text()).toContain('not found any more');
       expect(wrapper.find('iframe').exists()).toBe(false);
     });
 
@@ -234,7 +237,7 @@ describe('App', () => {
       await flushPromises();
 
       expect(window.localStorage.getItem('gaw.sessionId')).toBe('s-42');
-      expect(wrapper.text()).toContain('ο server δεν απαντά');
+      expect(wrapper.text()).toContain('server is not responding');
     });
 
     it('does not call the backend when nothing was saved', async () => {
@@ -244,7 +247,7 @@ describe('App', () => {
       expect(api.getSession).not.toHaveBeenCalled();
     });
 
-    it('"Νέα σελίδα" forgets the saved session', async () => {
+    it('"New page" forgets the saved session', async () => {
       window.localStorage.setItem('gaw.sessionId', 's-42');
       vi.spyOn(api, 'getSession').mockResolvedValue(savedSession);
       const wrapper = mount(App);

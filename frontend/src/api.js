@@ -5,6 +5,7 @@ async function handle(res) {
   if (!res.ok) {
     const err = new Error(body.error || `Request failed with status ${res.status}`);
     err.status = res.status;
+    err.code = body.code; // machine-readable code (e.g. ITERATION_LIMIT) that the UI can translate
     err.body = body;
     throw err;
   }

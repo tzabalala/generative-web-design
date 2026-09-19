@@ -1,4 +1,5 @@
 <script setup>
+import { t } from '../i18n.js';
 import { ref } from 'vue';
 
 const props = defineProps({
@@ -21,30 +22,25 @@ function onSubmit() {
 <template>
   <form class="prompt-form" @submit.prevent="onSubmit">
     <label class="prompt-form__label" for="prompt-input">
-      {{ mode === 'generate'
-        ? 'Περίγραψε τη σελίδα που θέλεις'
-        : 'Τι θέλεις να αλλάξεις;' }}
+      {{ mode === 'generate' ? t('form.labelGenerate') : t('form.labelRefine') }}
     </label>
     <textarea
       id="prompt-input"
       v-model="text"
       class="prompt-form__textarea"
-      :placeholder="mode === 'generate'
-        ? 'π.χ. μια σελίδα επικοινωνίας για μια μικρή καφετέρια, με φόρμα και ώρες λειτουργίας'
-        : 'π.χ. άλλαξε το χρώμα του κουμπιού σε πράσινο'"
+      :placeholder="mode === 'generate' ? t('form.placeholderGenerate') : t('form.placeholderRefine')"
       :disabled="loading || disabled"
       rows="3"
       @keydown.enter.meta.prevent="onSubmit"
       @keydown.enter.ctrl.prevent="onSubmit"
     />
     <button class="prompt-form__submit" type="submit" :disabled="loading || disabled || !text.trim()">
-      {{ loading ? 'Επεξεργασία…' : (mode === 'generate' ? 'Δημιουργία σελίδας' : 'Εφαρμογή αλλαγής') }}
+      {{ loading ? t('form.busy') : (mode === 'generate' ? t('form.submitGenerate') : t('form.submitRefine')) }}
     </button>
     <!-- role="status": screen readers announce the message without needing focus -->
     <p v-if="loading" class="prompt-form__working" role="status">
       <span class="prompt-form__spinner" aria-hidden="true" />
-      Δουλεύω πάνω σε αυτό… μπορεί να πάρει λίγο χρόνο (συνήθως 1-2 λεπτά), γιατί η σελίδα ελέγχεται
-      και διορθώνεται αυτόματα.
+      {{ t('form.working') }}
     </p>
   </form>
 </template>

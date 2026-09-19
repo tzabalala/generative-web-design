@@ -6,7 +6,7 @@ describe('LivePreview', () => {
   it('shows the empty state when there is no html/css yet', () => {
     const wrapper = mount(LivePreview, { props: { html: '', css: '' } });
     expect(wrapper.find('iframe').exists()).toBe(false);
-    expect(wrapper.text()).toContain('Η προεπισκόπηση θα εμφανιστεί εδώ');
+    expect(wrapper.text()).toContain('The preview will appear here');
   });
 
   it('renders an iframe with the html/css combined into srcdoc', () => {
