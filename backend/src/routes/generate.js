@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { buildGenerateMessages } from '../promptEngineering.js';
 import { callClaudeForCode, ClaudeOutputError } from '../claudeCodeClient.js';
 import { runWithValidation } from '../validationLoop.js';
+import { addDesignGuide } from '../designStep.js';
 import { createSession, addHistoryEntry } from '../sessionStore.js';
 import { generateCacheKey, getCached, setCached } from '../cache.js';
 
@@ -22,7 +23,8 @@ export function generateRouter(anthropic) {
       if (!result) {
         fromCache = false;
         const initial = await callClaudeForCode(anthropic, buildGenerateMessages(prompt));
-        result = await runWithValidation(anthropic, initial);
+        const validated = await runWithValidation(anthropic, initial);
+        result = await addDesignGuide(anthropic, validated, prompt);
         setCached(cacheKey, result);
       }
 
@@ -32,6 +34,8 @@ export function generateRouter(anthropic) {
         html: result.html,
         css: result.css,
         validation: result.validation,
+        rationale: result.rationale,
+        placeholders: result.placeholders,
         usage: fromCache ? { inputTokens: 0, outputTokens: 0 } : result.usage,
       });
 
@@ -40,6 +44,8 @@ export function generateRouter(anthropic) {
         html: result.html,
         css: result.css,
         validation: result.validation,
+        rationale: result.rationale,
+        placeholders: result.placeholders,
         fromCache,
       });
     } catch (err) {

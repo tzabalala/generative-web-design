@@ -26,7 +26,15 @@ export function sessionRouter() {
     if (!previous) {
       return res.status(409).json({ error: 'Δεν υπάρχει παλαιότερη έκδοση για undo.' });
     }
-    res.json({ html: previous.html, css: previous.css, validation: previous.validation });
+    res.json({
+      iterationsUsed: getSession(req.params.id).iterationCount,
+      iterationsLimit: iterationLimit(),
+      html: previous.html,
+      css: previous.css,
+      validation: previous.validation,
+      rationale: previous.rationale ?? null,
+      placeholders: previous.placeholders ?? [],
+    });
   });
 
   return router;

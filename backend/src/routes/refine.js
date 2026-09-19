@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { buildRefineMessages } from '../promptEngineering.js';
 import { callClaudeForCode, ClaudeOutputError } from '../claudeCodeClient.js';
 import { runWithValidation } from '../validationLoop.js';
+import { addDesignGuide } from '../designStep.js';
 import { getSession, addHistoryEntry } from '../sessionStore.js';
 import { refineCacheKey, getCached, setCached } from '../cache.js';
 import { isOverLimit, iterationLimit } from '../rateLimiter.js';
@@ -41,15 +42,23 @@ export function refineRouter(anthropic) {
           anthropic,
           buildRefineMessages(current.html, current.css, instruction)
         );
-        result = await runWithValidation(anthropic, initial);
+        const validated = await runWithValidation(anthropic, initial);
+        result = await addDesignGuide(
+          anthropic,
+          validated,
+          `${session.history[0].prompt}
+(Latest change requested by the user: ${instruction})`
+        );
         setCached(cacheKey, result);
       }
 
-      addHistoryEntry(sessionId, {
+      const updated = addHistoryEntry(sessionId, {
         prompt: instruction,
         html: result.html,
         css: result.css,
         validation: result.validation,
+        rationale: result.rationale,
+        placeholders: result.placeholders,
         usage: fromCache ? { inputTokens: 0, outputTokens: 0 } : result.usage,
       });
 
@@ -58,8 +67,10 @@ export function refineRouter(anthropic) {
         html: result.html,
         css: result.css,
         validation: result.validation,
+        rationale: result.rationale,
+        placeholders: result.placeholders,
         fromCache,
-        iterationsUsed: session.iterationCount,
+        iterationsUsed: updated.iterationCount,
         iterationsLimit: iterationLimit(),
       });
     } catch (err) {

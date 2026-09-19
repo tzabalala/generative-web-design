@@ -40,6 +40,12 @@ function onSubmit() {
     <button class="prompt-form__submit" type="submit" :disabled="loading || disabled || !text.trim()">
       {{ loading ? 'Επεξεργασία…' : (mode === 'generate' ? 'Δημιουργία σελίδας' : 'Εφαρμογή αλλαγής') }}
     </button>
+    <!-- role="status": οι screen readers ανακοινώνουν το μήνυμα χωρίς να χρειάζεται focus -->
+    <p v-if="loading" class="prompt-form__working" role="status">
+      <span class="prompt-form__spinner" aria-hidden="true" />
+      Δουλεύω πάνω σε αυτό… μπορεί να πάρει λίγο χρόνο (συνήθως 1-2 λεπτά), γιατί η σελίδα ελέγχεται
+      και διορθώνεται αυτόματα.
+    </p>
   </form>
 </template>
 
@@ -79,5 +85,34 @@ function onSubmit() {
 .prompt-form__submit:disabled {
   background: #9aa;
   cursor: not-allowed;
+}
+.prompt-form__working {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin: 0;
+  font-size: 0.85rem;
+  color: #444;
+}
+.prompt-form__spinner {
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+  margin-top: 0.15rem;
+  border: 2px solid #cfd8d3;
+  border-top-color: #2f6f4f;
+  border-radius: 50%;
+  animation: prompt-form-spin 0.8s linear infinite;
+}
+@keyframes prompt-form-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* Όσοι έχουν ζητήσει λιγότερη κίνηση από το σύστημα δεν βλέπουν περιστροφή */
+@media (prefers-reduced-motion: reduce) {
+  .prompt-form__spinner {
+    animation: none;
+  }
 }
 </style>

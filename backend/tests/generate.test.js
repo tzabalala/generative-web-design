@@ -58,6 +58,36 @@ describe('POST /api/generate', () => {
     expect(res.body.html).toBe(VALID_HTML);
   }, 30000);
 
+  it('returns the design rationale and placeholder guide, and tolerates their absence', async () => {
+    const extras = {
+      rationale: { summary: 'Ζεστό concept', colors: [{ hex: '#112233', name: 'Navy', why: 'Εμπιστοσύνη' }] },
+      placeholders: [{ what: 'Τίτλος', where: 'Κορυφή', searchText: 'Hi', replaceWith: 'Το όνομά σου' }],
+    };
+    const { app } = buildAppWithMockAnthropic(
+      `"html": ${JSON.stringify(VALID_HTML)}, "css": ${JSON.stringify(VALID_CSS)}, "rationale": ${JSON.stringify(
+        extras.rationale
+      )}, "placeholders": ${JSON.stringify(extras.placeholders)}}`
+    );
+    const res = await request(app)
+      .post('/api/generate')
+      .send({ prompt: 'unique prompt five — rationale check' });
+
+    expect(res.status).toBe(200);
+    expect(res.body.rationale.colors[0].hex).toBe('#112233');
+    expect(res.body.placeholders[0].searchText).toBe('Hi');
+
+    // Χωρίς extras η σελίδα παραδίδεται κανονικά
+    const { app: app2 } = buildAppWithMockAnthropic(
+      `"html": ${JSON.stringify(VALID_HTML)}, "css": ${JSON.stringify(VALID_CSS)}}`
+    );
+    const res2 = await request(app2)
+      .post('/api/generate')
+      .send({ prompt: 'unique prompt six — no extras' });
+    expect(res2.status).toBe(200);
+    expect(res2.body.rationale).toBeNull();
+    expect(res2.body.placeholders).toEqual([]);
+  }, 30000);
+
   it('rejects an empty prompt', async () => {
     const { app } = buildAppWithMockAnthropic('irrelevant');
     const res = await request(app).post('/api/generate').send({ prompt: '  ' });
@@ -82,6 +112,33 @@ describe('POST /api/generate', () => {
 
     expect(first.body.fromCache).toBe(false);
     expect(second.body.fromCache).toBe(true);
-    expect(anthropic.messages.create).toHaveBeenCalledTimes(1);
+    // 2 κλήσεις για τη ΜΙΑ δημιουργία (κώδικας + σκεπτικό)· η 2η ίδια αίτηση δεν καλεί τίποτα
+    expect(anthropic.messages.create).toHaveBeenCalledTimes(2);
+  }, 30000);
+
+  it('still delivers the page when the design-guide call fails', async () => {
+    const anthropic = {
+      messages: {
+        create: jest
+          .fn()
+          .mockResolvedValueOnce({
+            content: [{ text: `"html": ${JSON.stringify(VALID_HTML)}, "css": ${JSON.stringify(VALID_CSS)}}` }],
+            usage: { input_tokens: 1, output_tokens: 1 },
+          })
+          .mockRejectedValueOnce(new Error('network down')),
+      },
+    };
+    const app = express();
+    app.use(express.json());
+    app.use('/api/generate', generateRouter(anthropic));
+
+    const res = await request(app)
+      .post('/api/generate')
+      .send({ prompt: 'unique prompt seven — design call fails' });
+
+    expect(res.status).toBe(200);
+    expect(res.body.html).toBe(VALID_HTML);
+    expect(res.body.rationale).toBeNull();
+    expect(res.body.placeholders).toEqual([]);
   }, 30000);
 });

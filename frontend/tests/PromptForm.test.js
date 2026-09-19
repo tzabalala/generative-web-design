@@ -27,6 +27,16 @@ describe('PromptForm', () => {
     expect(wrapper.find('button').attributes('disabled')).toBeDefined();
   });
 
+  it('shows a "working on it" status message while loading, and hides it otherwise', async () => {
+    const wrapper = mount(PromptForm, { props: { mode: 'generate', loading: true } });
+    const status = wrapper.find('[role="status"]');
+    expect(status.exists()).toBe(true);
+    expect(status.text()).toContain('Δουλεύω πάνω σε αυτό');
+
+    await wrapper.setProps({ loading: false });
+    expect(wrapper.find('[role="status"]').exists()).toBe(false);
+  });
+
   it('shows refine-specific copy when mode is "refine"', () => {
     const wrapper = mount(PromptForm, { props: { mode: 'refine' } });
     expect(wrapper.text()).toContain('Τι θέλεις να αλλάξεις;');
