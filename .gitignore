@@ -9,7 +9,8 @@ node_modules/
 dist/
 build/
 
-# Cache / local DB (αν χρησιμοποιηθεί SQLite ή αρχείο cache)
+# Cache / local DB (SQLite: backend/data/ περιέχει και τα -wal/-shm αρχεία)
+data/
 *.sqlite
 *.db
 cache/
