@@ -1,4 +1,6 @@
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+import { resolveApiBase } from './apiBase.js';
+
+const BASE_URL = resolveApiBase();
 
 async function handle(res) {
   const body = await res.json();
@@ -12,19 +14,21 @@ async function handle(res) {
   return body;
 }
 
-export function generatePage(prompt) {
+// options.requestId: lets the page poll getProgress() while this call is running.
+// options.participant: anonymous study code (see studyContext.js), stored with the session.
+export function generatePage(prompt, { requestId, participant } = {}) {
   return fetch(`${BASE_URL}/api/generate`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ prompt }),
+    body: JSON.stringify({ prompt, requestId, participant }),
   }).then(handle);
 }
 
-export function refinePage(sessionId, instruction) {
+export function refinePage(sessionId, instruction, { requestId } = {}) {
   return fetch(`${BASE_URL}/api/refine`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ sessionId, instruction }),
+    body: JSON.stringify({ sessionId, instruction, requestId }),
   }).then(handle);
 }
 
@@ -34,4 +38,10 @@ export function undoPage(sessionId) {
 
 export function getSession(sessionId) {
   return fetch(`${BASE_URL}/api/session/${sessionId}`).then(handle);
+}
+
+// Which step a running request is on: { stage: 'generating' | 'checking' | 'fixing' |
+// 'designing' | 'cached' | null, attempt?, max? }.
+export function getProgress(requestId) {
+  return fetch(`${BASE_URL}/api/progress/${requestId}`).then(handle);
 }

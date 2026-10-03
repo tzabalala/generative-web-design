@@ -7,7 +7,10 @@
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
     "test": "cross-env NODE_ENV=test node --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "benchmark": "node scripts/benchmark.js"
+    "benchmark": "node scripts/benchmark.js",
+    "benchmark:compare": "node scripts/compareBenchmarks.js",
+    "export": "node scripts/exportStudyData.js",
+    "e2e": "node --test e2e/ui.e2e.js"
   },
   "keywords": [],
   "author": "",

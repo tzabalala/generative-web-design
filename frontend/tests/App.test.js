@@ -33,7 +33,10 @@ describe('App', () => {
     await wrapper.find('form').trigger('submit');
     await flushPromises();
 
-    expect(api.generatePage).toHaveBeenCalledWith('a bakery contact page');
+    expect(api.generatePage).toHaveBeenCalledWith(
+      'a bakery contact page',
+      expect.objectContaining({ requestId: expect.stringMatching(/^r[0-9a-f]{24}$/) })
+    );
     expect(wrapper.find('iframe').attributes('srcdoc')).toContain('<p>v1</p>');
     // The textarea placeholder switches to refine mode after the first generate
     expect(wrapper.find('textarea').attributes('placeholder')).toContain('button');
@@ -64,7 +67,11 @@ describe('App', () => {
     await wrapper.find('form').trigger('submit');
     await flushPromises();
 
-    expect(api.refinePage).toHaveBeenCalledWith('s1', 'make the button green');
+    expect(api.refinePage).toHaveBeenCalledWith(
+      's1',
+      'make the button green',
+      expect.objectContaining({ requestId: expect.any(String) })
+    );
     expect(wrapper.find('iframe').attributes('srcdoc')).toContain('<p>v2</p>');
     expect(wrapper.text()).toContain('2 / 15');
   });

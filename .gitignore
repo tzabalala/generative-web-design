@@ -24,5 +24,8 @@ npm-debug.log*
 .vscode/
 .idea/
 
+# Study data exports (contain participants' prompts, never commit)
+exports/
+
 # Test coverage reports
 coverage/

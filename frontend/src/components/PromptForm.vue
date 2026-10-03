@@ -1,15 +1,25 @@
 <script setup>
-import { t } from '../i18n.js';
-import { ref } from 'vue';
+import { t, hasMessage } from '../i18n.js';
+import { ref, computed } from 'vue';
 
 const props = defineProps({
   loading: { type: Boolean, default: false },
   mode: { type: String, default: 'generate' }, // 'generate' | 'refine'
   disabled: { type: Boolean, default: false },
+  // What the backend is doing right now, e.g. { stage: 'fixing', attempt: 1, max: 3 } (or null).
+  stage: { type: Object, default: null },
 });
 const emit = defineEmits(['submit']);
 
 const text = ref('');
+
+// Text for the current step. An unknown step name (e.g. from a newer backend) shows nothing
+// instead of a raw translation key.
+const stageText = computed(() => {
+  const name = props.stage && props.stage.stage;
+  if (!name || !hasMessage('progress.' + name)) return '';
+  return t('progress.' + name, { attempt: props.stage.attempt, max: props.stage.max });
+});
 
 function onSubmit() {
   const value = text.value.trim();
@@ -40,7 +50,10 @@ function onSubmit() {
     <!-- role="status": screen readers announce the message without needing focus -->
     <p v-if="loading" class="prompt-form__working" role="status">
       <span class="prompt-form__spinner" aria-hidden="true" />
-      {{ t('form.working') }}
+      <span>
+        <strong v-if="stageText" class="prompt-form__stage">{{ stageText }}</strong>
+        <span class="prompt-form__hint">{{ t('form.working') }}</span>
+      </span>
     </p>
   </form>
 </template>
@@ -90,6 +103,14 @@ function onSubmit() {
   font-size: 0.85rem;
   color: #444;
 }
+.prompt-form__stage {
+  display: block;
+  margin-bottom: 0.15rem;
+  color: #1f4d36;
+}
+.prompt-form__hint {
+  display: block;
+}
 .prompt-form__spinner {
   flex: none;
   width: 1rem;
@@ -107,7 +128,15 @@ function onSubmit() {
 }
 /* Users who asked their system for reduced motion do not see the spinner rotate */
 @media (prefers-reduced-motion: reduce) {
-  .prompt-form__spinner {
+  .prompt-form__stage {
+  display: block;
+  margin-bottom: 0.15rem;
+  color: #1f4d36;
+}
+.prompt-form__hint {
+  display: block;
+}
+.prompt-form__spinner {
     animation: none;
   }
 }

@@ -1,6 +1,8 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { generatePage, refinePage, undoPage, getSession } from './api.js';
+import { generatePage, refinePage, undoPage, getSession, getProgress } from './api.js';
+import { newRequestId } from './requestId.js';
+import { getParticipantCode } from './studyContext.js';
 import { loadSessionId, saveSessionId, forgetSessionId } from './sessionMemory.js';
 import { t, locale, hasMessage } from './i18n.js';
 import LanguageToggle from './components/LanguageToggle.vue';
@@ -24,6 +26,36 @@ const iterationsLimit = ref(15);
 const loading = ref(false);
 const error = ref(null);
 const notice = ref(null);
+const stage = ref(null); // live step of a running request, e.g. { stage: 'fixing', attempt: 1, max: 3 }
+
+const PROGRESS_POLL_MS = 800;
+
+// While a generate/refine request runs (1-2 minutes), ask the backend every moment which
+// step it is on. Best effort: a failed poll is ignored, the request itself is what matters.
+// Returns a function that stops the polling.
+function startProgress(requestId) {
+  stage.value = null;
+  let stopped = false;
+  let inFlight = false;
+  const tick = async () => {
+    if (stopped || inFlight) return;
+    inFlight = true;
+    try {
+      const progress = await getProgress(requestId);
+      if (!stopped && progress && progress.stage) stage.value = progress;
+    } catch {
+      /* ignored */
+    } finally {
+      inFlight = false;
+    }
+  };
+  const timer = setInterval(tick, PROGRESS_POLL_MS);
+  return () => {
+    stopped = true;
+    clearInterval(timer);
+    stage.value = null;
+  };
+}
 
 // A known error code from the backend is translated; anything else shows its own message.
 function errorText(err) {
@@ -38,16 +70,21 @@ async function handleSubmit(text) {
   loading.value = true;
   error.value = null;
   notice.value = null;
+  const requestId = newRequestId();
+  const stopProgress = startProgress(requestId);
   try {
     let res;
     if (!sessionId.value) {
-      res = await generatePage(text);
+      res = await generatePage(text, {
+        requestId,
+        participant: getParticipantCode() ?? undefined,
+      });
       sessionId.value = res.sessionId;
       saveSessionId(res.sessionId);
       iterationsUsed.value = 1;
       history.value = [{ prompt: text, validation: res.validation }];
     } else {
-      res = await refinePage(sessionId.value, text);
+      res = await refinePage(sessionId.value, text, { requestId });
       iterationsUsed.value = res.iterationsUsed;
       iterationsLimit.value = res.iterationsLimit;
       history.value = [...history.value, { prompt: text, validation: res.validation }];
@@ -60,6 +97,7 @@ async function handleSubmit(text) {
   } catch (err) {
     error.value = err;
   } finally {
+    stopProgress();
     loading.value = false;
   }
 }
@@ -161,13 +199,15 @@ function handleDownload() {
       <p class="app__subtitle">{{ t('app.subtitle') }}</p>
     </header>
 
-    <div v-if="error" class="app__error">{{ errorText(error) }}</div>
+    <!-- role="alert": screen readers announce an error as soon as it appears -->
+    <div v-if="error" class="app__error" role="alert">{{ errorText(error) }}</div>
     <p v-if="notice" class="app__notice" role="status">{{ t(notice) }}</p>
 
     <main class="app__layout">
       <section class="app__column app__column--controls">
         <PromptForm
           :loading="loading"
+          :stage="stage"
           :mode="mode"
           :disabled="limitReached"
           @submit="handleSubmit"

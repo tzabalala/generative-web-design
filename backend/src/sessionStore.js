@@ -23,9 +23,12 @@ function rowToEntry(r) {
   };
 }
 
-export function createSession() {
+// `participant` is an optional anonymous study code (already sanitised by the caller).
+export function createSession(participant = null) {
   const id = randomUUID();
-  getDb().prepare('INSERT INTO sessions (id, created_at) VALUES (?, ?)').run(id, Date.now());
+  getDb()
+    .prepare('INSERT INTO sessions (id, created_at, participant) VALUES (?, ?, ?)')
+    .run(id, Date.now(), participant);
   return id;
 }
 
@@ -39,6 +42,7 @@ export function getSession(id) {
     .all(id);
 
   return {
+    participant: s.participant ?? null,
     history: rows.map(rowToEntry),
     iterationCount: s.iteration_count,
     totalUsage: { inputTokens: s.input_tokens, outputTokens: s.output_tokens },

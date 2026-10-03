@@ -5,6 +5,8 @@ import Anthropic from '@anthropic-ai/sdk';
 import { generateRouter } from './routes/generate.js';
 import { refineRouter } from './routes/refine.js';
 import { sessionRouter } from './routes/session.js';
+import { progressRouter } from './routes/progress.js';
+import { modelProfile, resolveModel } from './config.js';
 
 const app = express();
 app.use(cors());
@@ -16,6 +18,7 @@ const PORT = process.env.PORT || 3000;
 app.use('/api/generate', generateRouter(anthropic));
 app.use('/api/refine', refineRouter(anthropic));
 app.use('/api/session', sessionRouter());
+app.use('/api/progress', progressRouter());
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
@@ -26,7 +29,7 @@ app.get('/api/health', (req, res) => {
 app.get('/api/test-claude', async (req, res) => {
   try {
     const message = await anthropic.messages.create({
-      model: process.env.CLAUDE_MODEL_DEV,
+      model: resolveModel(),
       max_tokens: 50,
       messages: [{ role: 'user', content: 'Reply with exactly: "Claude API connection OK"' }],
     });
@@ -39,6 +42,7 @@ app.get('/api/test-claude', async (req, res) => {
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {
     console.log(`Backend listening on http://localhost:${PORT}`);
+    console.log(`Claude model: ${resolveModel()} (profile: ${modelProfile()})`);
   });
 }
 

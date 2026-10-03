@@ -44,7 +44,47 @@ const SCHEMA = `
     result     TEXT NOT NULL,
     created_at INTEGER NOT NULL
   );
+
+  -- Append-only study/cost log (see studyLog.js). Never updated, never deleted by the app.
+  CREATE TABLE IF NOT EXISTS events (
+    id               INTEGER PRIMARY KEY AUTOINCREMENT,
+    ts               INTEGER NOT NULL,   -- when the request finished (ms since epoch)
+    kind             TEXT NOT NULL,      -- generate | refine | undo
+    session_id       TEXT,
+    participant      TEXT,               -- anonymous code from ?p=P03, or NULL
+    status           TEXT NOT NULL,      -- ok | error | limit | noop
+    http_status      INTEGER,
+    error_code       TEXT,
+    duration_ms      INTEGER,            -- how long the server needed for this request
+    model            TEXT,               -- Claude model that produced the result
+    from_cache       INTEGER,            -- 1 = served from the cache, no Claude call
+    prompt           TEXT,
+    attempts         INTEGER,            -- automatic fix attempts used (0 = clean first try)
+    passed           INTEGER,            -- 1 = final result passed every check
+    remaining_issues INTEGER,
+    initial_issues   INTEGER,            -- issues found in the raw generation, before any fix
+    input_tokens     INTEGER,
+    output_tokens    INTEGER
+  );
+  CREATE INDEX IF NOT EXISTS idx_events_session ON events (session_id);
 `;
+
+// Columns added after the first release. CREATE TABLE IF NOT EXISTS does not touch an
+// existing table, so a database created by an older version needs these added in place
+// (existing rows are kept).
+const COLUMN_MIGRATIONS = [{ table: 'sessions', column: 'participant', ddl: 'TEXT' }];
+
+function columnExists(conn, table, column) {
+  return conn.prepare(`PRAGMA table_info(${table})`).all().some((c) => c.name === column);
+}
+
+export function migrate(conn) {
+  for (const { table, column, ddl } of COLUMN_MIGRATIONS) {
+    if (!columnExists(conn, table, column)) {
+      conn.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${ddl}`);
+    }
+  }
+}
 
 let db = null;
 
@@ -56,6 +96,7 @@ export function getDb() {
     db.exec('PRAGMA journal_mode = WAL;');
     db.exec('PRAGMA foreign_keys = ON;');
     db.exec(SCHEMA);
+    migrate(db);
   }
   return db;
 }

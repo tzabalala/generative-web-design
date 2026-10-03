@@ -44,6 +44,13 @@ export const messages = {
     'form.working':
       'Working on it… this can take a while (usually 1–2 minutes) because the page is checked and fixed automatically.',
 
+    // Live steps shown while a request runs (the backend reports which step it is on)
+    'progress.generating': 'Writing your page…',
+    'progress.checking': 'Checking accessibility and how the page looks on phone, tablet and desktop…',
+    'progress.fixing': 'Fixing a problem the checks found (fix {attempt} of {max})…',
+    'progress.designing': 'Writing the design notes and the replacement guide…',
+    'progress.cached': 'Found a saved result, loading it…',
+
     'history.title': 'History',
     'history.counter': '{used} / {limit} edits',
     'history.initial': 'Initial request',
@@ -127,6 +134,12 @@ export const messages = {
     'form.submitRefine': 'Εφαρμογή αλλαγής',
     'form.working':
       'Δουλεύω πάνω σε αυτό… μπορεί να πάρει λίγο χρόνο (συνήθως 1-2 λεπτά), γιατί η σελίδα ελέγχεται και διορθώνεται αυτόματα.',
+
+    'progress.generating': 'Γράφω τη σελίδα σου…',
+    'progress.checking': 'Ελέγχω την προσβασιμότητα και την εμφάνιση σε κινητό, tablet και υπολογιστή…',
+    'progress.fixing': 'Διορθώνω ένα πρόβλημα που βρήκαν οι έλεγχοι (διόρθωση {attempt} από {max})…',
+    'progress.designing': 'Γράφω τις σημειώσεις σχεδιασμού και τον οδηγό αντικατάστασης…',
+    'progress.cached': 'Βρήκα αποθηκευμένο αποτέλεσμα, το φορτώνω…',
 
     'history.title': 'Ιστορικό',
     'history.counter': '{used} / {limit} επεξεργασίες',

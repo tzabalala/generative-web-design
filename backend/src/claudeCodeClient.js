@@ -1,5 +1,6 @@
 import { SYSTEM_PROMPT, DESIGN_SYSTEM_PROMPT } from './promptEngineering.js';
 import { normalizeRationale, normalizePlaceholders } from './designExtras.js';
+import { resolveModel } from './config.js';
 
 class ClaudeOutputError extends Error {
   constructor(message, raw) {
@@ -13,7 +14,7 @@ class ClaudeOutputError extends Error {
 // JSON.parse, with a distinct message when the answer was cut off by the token limit.
 async function callClaudeForJson(anthropic, { system, messages, maxTokens }) {
   const message = await anthropic.messages.create({
-    model: process.env.CLAUDE_MODEL_DEV,
+    model: resolveModel(),
     max_tokens: maxTokens,
     system,
     messages,

@@ -1,13 +1,16 @@
 import { createHash } from 'crypto';
 import { getDb } from './db.js';
 import { PROMPT_VERSION } from './promptEngineering.js';
+import { resolveModel } from './config.js';
 
 // Step 11: cache of (prompt+context) -> (validated result) pairs. Before every call to
 // Claude we check whether a cached result already exists.
 //
-// It is now PERSISTENT (SQLite) and survives server restarts. That is why the key
-// includes PROMPT_VERSION: when the prompts change, old answers (built with different
-// instructions) stop matching and are never served again.
+// It is PERSISTENT (SQLite) and survives server restarts, so the key must change whenever
+// an old answer would no longer be valid:
+//   - PROMPT_VERSION: bumped when the prompts OR the validation rules change;
+//   - the model id: a page written by Haiku must never be served as if Sonnet wrote it
+//     (this matters for the Haiku vs Sonnet comparison and for the final demo).
 //
 // Note: undo does NOT read from here; it reads the session's history.
 
@@ -15,7 +18,8 @@ function normalize(text) {
   return text.trim().replace(/\s+/g, ' ');
 }
 
-const hash = (s) => createHash('sha256').update(`${PROMPT_VERSION}:${s}`).digest('hex');
+const hash = (s) =>
+  createHash('sha256').update(`${PROMPT_VERSION}:${resolveModel()}:${s}`).digest('hex');
 
 export function generateCacheKey(prompt) {
   return hash(`generate:${normalize(prompt)}`);

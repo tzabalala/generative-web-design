@@ -1,9 +1,10 @@
 // Constraint-aware prompt injection (Steps 5 & 6, Technical Implementation Plan).
 // The user never writes these instructions themselves; they are added automatically
 // before the prompt is sent to the Claude API.
-// Bump this WHENEVER the prompts below change: it is part of the cache key, so answers
-// stored under old instructions are never served again.
-export const PROMPT_VERSION = 'v2-design-guide';
+// Bump this WHENEVER the prompts below change OR the validation rules change (what counts
+// as a failed check): it is part of the cache key, so answers produced under the old
+// instructions/rules are never served again.
+export const PROMPT_VERSION = 'v3-layout-check';
 
 export const SYSTEM_PROMPT = `You are a web page generator. Given a natural-language description, produce a single self-contained web page.
 

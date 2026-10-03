@@ -41,26 +41,25 @@ const srcdoc = computed(() => {
 <style scoped>
 .live-preview {
   width: 100%;
-  height: 100%;
-  min-height: 300px;
   border: 1px solid #ddd;
   border-radius: 8px;
   overflow: hidden;
   background: #fff;
 }
+/* Tall enough to judge a whole page without scrolling inside a tiny box: about 3/4 of the
+   window height, never smaller than 420px or larger than 900px. */
 .live-preview__frame {
+  display: block;
   width: 100%;
-  height: 100%;
-  min-height: 300px;
+  height: clamp(420px, 72vh, 900px);
   border: none;
 }
 .live-preview__empty {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100%;
-  min-height: 300px;
-  color: #888;
+  height: clamp(420px, 72vh, 900px);
+  color: #595959; /* 7:1 on white; the earlier #888 was only 3.5:1 (found by the end-to-end axe-core check) */
   padding: 2rem;
   text-align: center;
 }

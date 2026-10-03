@@ -55,7 +55,7 @@ function statusOf(validation, key) {
   margin: 0;
 }
 .a11y-report__empty {
-  color: #888;
+  color: #595959; /* 4.5:1 or better on the panel background */
   font-size: 0.9rem;
 }
 .a11y-report__list {
