@@ -1,15 +1,17 @@
 # Generative AI-Driven Web Design
 
-A web tool for non-technical users: describe a page in plain language, get a working HTML/CSS
-page with a live preview, refine it with further instructions, and download it. The code has
-**already passed automatic accessibility and responsive-layout checks** before the user sees it.
+A web tool for non-technical users: describe a website in plain language, get a working
+HTML/CSS website of **1 to 5 pages** with a live preview, refine it with further instructions
+(Claude finds the right page itself), and download it. The code has **already passed automatic
+accessibility, responsive-layout and site checks** before the user sees it.
 
 > **What is and is not the contribution.** Turning text into HTML/CSS is an off-the-shelf
 > ability of the Claude API. The contribution of this project is the **automated validation and
 > feedback loop** that runs *after* generation: axe-core (accessibility) and a responsive
-> checker (static CSS check plus a real layout check at three screen sizes). When a check
-> fails, the problem is sent back to Claude to fix, up to three times, then the page is
-> re-checked.
+> checker (static CSS check plus a real layout check at three screen sizes) and a site check
+> (working links, the same menu on every page, pages that are not copies of each other).
+> When a check fails, the problem is sent back to Claude to fix, up to three times, then the
+> site is re-checked.
 
 MSc dissertation project, CITY College, University of York Europe Campus.
 
@@ -60,8 +62,9 @@ cd frontend
 npm run dev
 ```
 
-Open <http://localhost:5173>. The backend listens on port 3000. The first page takes
-about 1 to 2 minutes, because it is generated, checked, and fixed if needed.
+Open <http://localhost:5173>. The backend listens on port 3000. A website takes about
+2 to 3 minutes (a one-page site about 1 minute), because it is planned, written page by page,
+checked, and fixed if needed. A change to an existing website is usually much faster.
 
 ### Testing on a phone (same Wi-Fi)
 
@@ -83,9 +86,10 @@ about 1 to 2 minutes, because it is generated, checked, and fixed if needed.
 
 The end-to-end test starts the whole app on spare ports with a throw-away database and a
 **fake Claude** (answers captured from a real run), drives it in headless Chromium, and
-checks: live progress steps, the automatic fix, the layout check, undo, reload-restore, the
-download, English/Greek, the study log and export, and runs axe-core on the tool's own
-interface. It never touches your real database or API key.
+checks: live progress steps, the multi-page generation, the automatic fixes, the layout check,
+switching pages from the tabs and from a menu link inside the preview, a change to one page,
+adding a page, undo, reload-restore, the ZIP and single-file downloads, English/Greek, the study
+log and export, and runs axe-core on the tool's own interface. It never touches your real database or API key.
 
 ## Running a user study
 
@@ -113,14 +117,17 @@ Measures how much the validation loop improves raw model output, on a fixed list
 ```bash
 cd backend
 npm run benchmark                              # 10 pages, dev model (Haiku)
-npm run benchmark -- --count=30 --yes          # all 30 prompts (5 are Greek); spends real money
+npm run benchmark -- --count=35 --yes          # all 35 prompts (7 Greek, the last 5 ask for a whole
+                                               # multi-page website); spends real money
 npm run benchmark -- --count=30 --yes --model=demo   # the same prompts with Sonnet
 npm run benchmark:compare -- benchmark-runs/<haiku>.json benchmark-runs/<sonnet>.json
 ```
 
 Results are saved after every page to `backend/benchmark-runs/`. The first 10 prompts are the
-original sample, so a 10-page run stays comparable with `backend/benchmark-results.json`
-(that earlier run used only the static responsive check).
+original sample, but a run is **no longer directly comparable** with the first benchmark
+(`backend/benchmark-results.json`): the pipeline now plans a site first, checks every page, and
+includes the real layout check and the site check. Do not `import` `scripts/benchmark.js` from
+another script outside the test environment: importing it starts a real run.
 
 ## Settings (.env)
 
@@ -132,16 +139,18 @@ original sample, so a 10-page run stays comparable with `backend/benchmark-resul
 | `CLAUDE_MODEL_DEMO` | Sonnet 5 | Model for the final demo |
 | `PORT` | `3000` | Backend port |
 | `MAX_VALIDATION_RETRIES` | `3` | Automatic fix attempts per page |
-| `MAX_ITERATIONS_PER_SESSION` | `15` | Edits allowed per page |
+| `MAX_ITERATIONS_PER_SESSION` | `15` | Edits allowed per website |
+| `PAGE_CONCURRENCY` | `3` | How many pages are written by Claude at the same time (1 to 5). Lower it if you see rate-limit errors |
 | `VISUAL_RESPONSIVE_CHECK` | `on` | Real layout check at 375 / 768 / 1280 px |
 | `DB_PATH` | `backend/data/app.sqlite` | Use another database file |
 
 ## How it works
 
 ```
-Browser (Vue) --> Express API --> Claude API (writes the page)
+Browser (Vue) --> Express API --> Claude API: 1 plan call, then 1 call per page (1 to 5 pages)
                       |                |
-                      |        axe-core + layout check (headless Chromium, local, free)
+                      |        axe-core + layout check on EVERY page, plus the site check
+                      |        (headless Chromium, local, free)
                       |                |  problems? send them back to Claude to fix, up to 3 times
                       v                v
                   SQLite: sessions, history, cache, events (study log)
@@ -152,6 +161,16 @@ Browser (Vue) --> Express API --> Claude API (writes the page)
 - Results are cached (SQLite). The cache key includes the model and `PROMPT_VERSION`
   (`backend/src/promptEngineering.js`). **Bump `PROMPT_VERSION` whenever you change the prompts
   or the validation rules**, otherwise old answers keep being served.
+- A website is a shared stylesheet plus 1 to 5 pages. The plan call decides how many pages and
+  designs what they share (stylesheet, menu, footer); then every page is written by its own call,
+  a few at a time, so no answer ever overflows the output limit. A change or an automatic fix
+  returns only what changed: small find/replace edits (`cssEdits`, `htmlEdits`) for the
+  stylesheet and for text repeated on all pages (the footer, a phone number), and complete
+  pages only for new or restructured ones.
+- In the preview, a click on a menu link inside the sandboxed frame (no JavaScript there) asks
+  the browser to open `#page=slug` in the top window; the app listens for that and switches page.
+- The download is one `.html` for a one-page site and a `.zip` (one html per page and a shared
+  `style.css`) for several pages.
 - Undo reads the session history, calls nothing, and does not refund the edit counter.
 - The rationale and replacement guide come from a second, separate Claude call after the
   checks; if it fails, the page is still delivered.
@@ -169,8 +188,9 @@ frontend/tests/         Vitest tests
 
 ## Cost
 
-Roughly **$0.10 to $0.15 per page** with Haiku (Greek is more expensive than English), about
-1 to 2 minutes each. Repeating an identical request is served from the cache and costs nothing.
+Measured with Haiku on real requests: a one-page site about **$0.06** and 1 minute; a site of
+4 to 5 pages about **$0.19 to $0.20** and 2 to 3 minutes (Greek is slightly more expensive than
+English); a change to an existing site a few cents. Sonnet costs about twice as much. Repeating an identical request is served from the cache and costs nothing.
 Tests and the end-to-end run cost nothing. The benchmark and real use cost real money.
 
 ## Troubleshooting

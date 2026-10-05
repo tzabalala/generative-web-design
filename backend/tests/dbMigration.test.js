@@ -55,10 +55,19 @@ describe('opening a database created by an older version', () => {
     const tables = conn.prepare("SELECT name FROM sqlite_master WHERE type = 'table'").all().map((t) => t.name);
     expect(tables).toContain('events');
 
+    const historyColumns = conn.prepare('PRAGMA table_info(history)').all().map((c) => c.name);
+    expect(historyColumns).toContain('pages');
+
     const old = getSession('old-session');
     expect(old.iterationCount).toBe(3);
     expect(old.participant).toBeNull();
     expect(old.history[0].prompt).toBe('old prompt');
+  });
+
+  it('reads a page saved by the single-page version as a one-page site', () => {
+    const [entry] = getSession('old-session').history;
+    expect(entry.css).toBe('p{}');
+    expect(entry.pages).toEqual([{ slug: 'index', title: '', html: '<p>old</p>', css: '' }]);
   });
 
   it('works normally afterwards: new sessions can carry a participant, events can be logged', () => {

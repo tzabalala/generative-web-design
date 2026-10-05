@@ -42,9 +42,10 @@ export function normalizeRationale(raw) {
 // searchText must appear VERBATIM in the code, otherwise the user would Ctrl+F for
 // something that does not exist. If it is not found we blank it (keeping the rest of
 // the instruction).
-export function normalizePlaceholders(raw, html, css) {
+// `parts` is all the code a snippet may come from (for a site: every page and the stylesheets).
+export function normalizePlaceholders(raw, ...parts) {
   if (!Array.isArray(raw)) return [];
-  const haystack = `${html}\n${css}`;
+  const haystack = parts.join('\n');
 
   return raw
     .filter((p) => p && typeof p === 'object')

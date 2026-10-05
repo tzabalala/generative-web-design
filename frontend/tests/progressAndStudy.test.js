@@ -101,7 +101,7 @@ describe('App: live progress while waiting', () => {
     expect(progress.mock.calls.length).toBeGreaterThanOrEqual(2);
     expect(wrapper.find('.prompt-form__stage').text()).toContain('Checking accessibility');
 
-    finish({ sessionId: 's1', html: '<p>v1</p>', css: '', validation: okValidation });
+    finish({ sessionId: 's1', pages: [{ slug: 'index', title: '', html: '<p>v1</p>', css: '' }], css: '', validation: okValidation });
     await flushPromises();
     expect(wrapper.find('.prompt-form__stage').exists()).toBe(false);
 
@@ -121,7 +121,7 @@ describe('App: live progress while waiting', () => {
     await wrapper.find('form').trigger('submit');
     await vi.advanceTimersByTimeAsync(2000);
 
-    finish({ sessionId: 's1', html: '<p>v1</p>', css: '', validation: okValidation });
+    finish({ sessionId: 's1', pages: [{ slug: 'index', title: '', html: '<p>v1</p>', css: '' }], css: '', validation: okValidation });
     await flushPromises();
     expect(wrapper.find('iframe').attributes('srcdoc')).toContain('<p>v1</p>');
     expect(wrapper.find('.app__error').exists()).toBe(false);
@@ -132,7 +132,7 @@ describe('App: participant code from the URL', () => {
   it('sends ?p=P07 with the first request only when valid', async () => {
     window.history.replaceState({}, '', '/?p=P07');
     const gen = vi.spyOn(api, 'generatePage').mockResolvedValue({
-      sessionId: 's1', html: '<p>v1</p>', css: '', validation: okValidation,
+      sessionId: 's1', pages: [{ slug: 'index', title: '', html: '<p>v1</p>', css: '' }], css: '', validation: okValidation,
     });
     const wrapper = mount(App);
     await wrapper.find('textarea').setValue('a bakery page');
@@ -143,7 +143,7 @@ describe('App: participant code from the URL', () => {
 
   it('sends no participant when the URL has none', async () => {
     const gen = vi.spyOn(api, 'generatePage').mockResolvedValue({
-      sessionId: 's1', html: '<p>v1</p>', css: '', validation: okValidation,
+      sessionId: 's1', pages: [{ slug: 'index', title: '', html: '<p>v1</p>', css: '' }], css: '', validation: okValidation,
     });
     const wrapper = mount(App);
     await wrapper.find('textarea').setValue('a bakery page');

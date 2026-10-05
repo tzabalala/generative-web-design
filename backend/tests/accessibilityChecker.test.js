@@ -14,6 +14,33 @@ describe('checkAccessibility', () => {
     expect(result.violations).toHaveLength(0);
   }, 30000);
 
+  it('reports the real colours and the ratio of a contrast problem, so the fix can be exact', async () => {
+    const html = '<main><h1>Title</h1><p class="soft">Soft text</p></main>';
+    const css = 'body{color:#000;background:#f9f7f4}.soft{color:#d4422f}';
+    const result = await checkAccessibility(html, css);
+    const contrast = result.violations.find((v) => v.id === 'color-contrast');
+    expect(contrast).toBeDefined();
+    expect(contrast.details[0]).toMatch(/text #d4422f on #f9f7f4 is \d\.\d+:1, needs 4\.5/);
+  }, 30000);
+
+  it('says which stylesheet and rule set the colours, when given the stylesheets as separate parts', async () => {
+    const html = '<main><h1>Title</h1><p><span class="price">9.50</span></p></main>';
+    const parts = [
+      { name: 'shared css', css: 'body{color:#000;background:#f9f7f4}p span{color:#d4422f}' },
+      { name: 'css of page index', css: '.price{font-weight:700}' },
+    ];
+    const result = await checkAccessibility(html, parts);
+    const text = result.violations.find((v) => v.id === 'color-contrast').details.join(' ');
+    // the browser reports colours as rgb(); a var(--x) would be shown as written
+    expect(text).toContain('color: rgb(212, 66, 47) in the shared css, rule "p span"');
+    expect(text).toContain('background-color: rgb(249, 247, 244) in the shared css, rule "body"');
+  }, 30000);
+
+  it('has no details for violations that are not about contrast', async () => {
+    const result = await checkAccessibility('<main><h1>T</h1><img src="a.jpg"></main>', 'body{color:#000;background:#fff}');
+    expect(result.violations.find((v) => v.id === 'image-alt').details).toEqual([]);
+  }, 30000);
+
   it('flags an image with no alt text', async () => {
     const html = '<main><h1>Title</h1><img src="a.jpg"></main>';
     const css = 'body{color:#000;background:#fff}';

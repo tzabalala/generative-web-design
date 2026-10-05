@@ -1,14 +1,13 @@
-import { SYSTEM_PROMPT, DESIGN_SYSTEM_PROMPT } from './promptEngineering.js';
+import {
+  PLAN_SYSTEM_PROMPT,
+  PAGE_SYSTEM_PROMPT,
+  EDIT_SYSTEM_PROMPT,
+  DESIGN_SYSTEM_PROMPT,
+} from './promptEngineering.js';
 import { normalizeRationale, normalizePlaceholders } from './designExtras.js';
+import { normalizePlan, normalizePageReply, normalizeDelta, siteHaystack } from './site.js';
+import { ClaudeOutputError } from './claudeErrors.js';
 import { resolveModel } from './config.js';
-
-class ClaudeOutputError extends Error {
-  constructor(message, raw) {
-    super(message);
-    this.name = 'ClaudeOutputError';
-    this.raw = raw;
-  }
-}
 
 // Shared part: the call, re-adding the prefill's "{", stripping code fences and
 // JSON.parse, with a distinct message when the answer was cut off by the token limit.
@@ -41,34 +40,56 @@ async function callClaudeForJson(anthropic, { system, messages, maxTokens }) {
   };
 }
 
-// Shared Claude call + parsing, used by generate, refine and the fix step of the
-// validation feedback loop.
-export async function callClaudeForCode(anthropic, messages) {
+// Token limits per call. A page's <main> content is much smaller than the old whole-page
+// answer, so a generation no longer overflows even in Greek. An edit may have to return every
+// page of a site (for example when the menu changes), so it gets more room. 16000 stays
+// below the size at which the SDK insists on streaming.
+const PLAN_MAX_TOKENS = 8192;
+const PAGE_MAX_TOKENS = 8192;
+const EDIT_MAX_TOKENS = 16000;
+const DESIGN_MAX_TOKENS = 8000;
+
+// Generation, step 1: the plan (which pages) and everything the pages share.
+export async function callClaudeForPlan(anthropic, messages) {
   const { parsed, usage } = await callClaudeForJson(anthropic, {
-    system: SYSTEM_PROMPT,
+    system: PLAN_SYSTEM_PROMPT,
     messages,
-    maxTokens: 8192,
+    maxTokens: PLAN_MAX_TOKENS,
   });
-
-  const { html, css } = parsed;
-  if (typeof html !== 'string' || typeof css !== 'string') {
-    throw new ClaudeOutputError('Claude JSON is missing html/css fields', parsed);
-  }
-
-  return { html, css, usage };
+  return { plan: normalizePlan(parsed), usage };
 }
 
-// Second call: design rationale + dummy-data guide for the final code.
-export async function callClaudeForDesign(anthropic, messages, { html, css }) {
+// Generation, step 2: the content of ONE page.
+export async function callClaudeForPage(anthropic, messages) {
+  const { parsed, usage } = await callClaudeForJson(anthropic, {
+    system: PAGE_SYSTEM_PROMPT,
+    messages,
+    maxTokens: PAGE_MAX_TOKENS,
+  });
+  return { page: normalizePageReply(parsed), usage };
+}
+
+// Refine and the fix step of the validation feedback loop: Claude returns only what changed.
+export async function callClaudeForEdit(anthropic, messages) {
+  const { parsed, usage } = await callClaudeForJson(anthropic, {
+    system: EDIT_SYSTEM_PROMPT,
+    messages,
+    maxTokens: EDIT_MAX_TOKENS,
+  });
+  return { delta: normalizeDelta(parsed), usage };
+}
+
+// Last call: design rationale + dummy-data guide for the final site.
+export async function callClaudeForDesign(anthropic, messages, site) {
   const { parsed, usage } = await callClaudeForJson(anthropic, {
     system: DESIGN_SYSTEM_PROMPT,
     messages,
-    maxTokens: 6000,
+    maxTokens: DESIGN_MAX_TOKENS,
   });
 
   return {
     rationale: normalizeRationale(parsed.rationale),
-    placeholders: normalizePlaceholders(parsed.placeholders, html, css),
+    placeholders: normalizePlaceholders(parsed.placeholders, siteHaystack(site)),
     usage,
   };
 }

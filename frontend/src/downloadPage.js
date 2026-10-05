@@ -1,4 +1,5 @@
 import { translate } from './i18n.js';
+import { buildZip } from './zip.js';
 
 // The file the user downloads. It starts with an HTML comment holding the guide for
 // replacing the dummy content, so the guide STAYS with the file even if the user opens
@@ -61,4 +62,51 @@ ${buildGuideComment(placeholders, locale)}<html lang="${lang}">
 </head>
 <body>${html}</body>
 </html>`;
+}
+
+// One page of a website that is downloaded as several files: it links to the shared
+// style.css, and carries its own page rules (if any) inline. Only the home page carries the
+// replacement guide.
+export function buildSitePageHtml({ page, guideComment = '' }) {
+  const { lang, title } = detectLangAndTitle(page.html);
+  const own = page.css ? `\n<style>${page.css}</style>` : '';
+  return `<!DOCTYPE html>
+${guideComment}<html lang="${lang}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${escapeHtml(page.title || title)}</title>
+<link rel="stylesheet" href="style.css">${own}
+</head>
+<body>${page.html}</body>
+</html>`;
+}
+
+// What the "Download" button hands to the browser.
+//   one page   -> a single self-contained .html file (CSS inside), as before;
+//   several    -> a .zip with one .html per page and one shared style.css, so the links
+//                 between the pages ("about.html") work when the files are opened.
+// Returns { filename, type, data } where data is a string or a Uint8Array.
+export function buildDownload({ pages, css, placeholders, locale = 'en' }) {
+  if (pages.length === 1) {
+    const [page] = pages;
+    return {
+      filename: 'page.html',
+      type: 'text/html',
+      data: buildDownloadHtml({
+        html: page.html,
+        css: page.css ? `${css}\n${page.css}` : css,
+        placeholders,
+        locale,
+      }),
+    };
+  }
+
+  const guide = buildGuideComment(placeholders, locale);
+  const files = pages.map((page) => ({
+    name: `${page.slug}.html`,
+    content: buildSitePageHtml({ page, guideComment: page.slug === 'index' ? guide : '' }),
+  }));
+  files.push({ name: 'style.css', content: css });
+  return { filename: 'website.zip', type: 'application/zip', data: buildZip(files) };
 }

@@ -65,6 +65,29 @@ describe('persistent sessions', () => {
     expect(getSession('nope')).toBeUndefined();
   });
 
+  it('keep every page of a multi-page site, in order, across a restart', () => {
+    const id = createSession();
+    const pages = [
+      { slug: 'index', title: 'Home', html: '<h1>Home</h1>', css: '.a{}' },
+      { slug: 'about', title: 'About', html: '<h1>About</h1>', css: '' },
+      { slug: 'contact', title: 'Contact', html: '<h1>Contact</h1>', css: '.c{}' },
+    ];
+    addHistoryEntry(id, { prompt: 'site', pages, css: ':root{}', validation: null });
+
+    restartServer();
+
+    const [stored] = getSession(id).history;
+    expect(stored.pages).toEqual(pages);
+    expect(stored.css).toBe(':root{}');
+  });
+
+  it('read an entry saved with only html and css as a one-page site', () => {
+    const id = createSession();
+    addHistoryEntry(id, { prompt: 'p', html: '<h1>Solo</h1>', css: 'h1{}', validation: null });
+    const [stored] = getSession(id).history;
+    expect(stored.pages).toEqual([{ slug: 'index', title: '', html: '<h1>Solo</h1>', css: '' }]);
+  });
+
   it('default to empty rationale/placeholders for entries stored without them', () => {
     const id = createSession();
     addHistoryEntry(id, { prompt: 'p', html: '<p/>', css: '', validation: null });
@@ -116,7 +139,7 @@ describe('undo', () => {
 
     expect(res.status).toBe(200);
     expect(res.body.iterationsUsed).toBe(2);
-    expect(res.body.html).toContain('v1');
+    expect(res.body.pages[0].html).toContain('v1');
     expect(res.body.rationale.summary).toBe('Concept');
   });
 });
@@ -124,11 +147,11 @@ describe('undo', () => {
 describe('persistent cache', () => {
   it('survives a server restart', () => {
     const key = generateCacheKey('a bakery page — persistence');
-    setCached(key, { html: '<p>cached</p>', css: '', rationale: null, placeholders: [] });
+    setCached(key, { pages: [{ slug: 'index', title: '', html: '<p>cached</p>', css: '' }], css: '', rationale: null, placeholders: [] });
 
     restartServer();
 
-    expect(getCached(key).html).toBe('<p>cached</p>');
+    expect(getCached(key).pages[0].html).toBe('<p>cached</p>');
   });
 
   it('returns undefined on a miss', () => {

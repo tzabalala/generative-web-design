@@ -1,5 +1,6 @@
 import { randomUUID } from 'crypto';
 import { getDb, transaction } from './db.js';
+import { pagesFromLegacy } from './site.js';
 
 // Persistent session store (SQLite). Step 3 data model: each session has a history of
 // (prompt, generated_code, validation_result) triples, now together with the design
@@ -12,11 +13,15 @@ import { getDb, transaction } from './db.js';
 const toJson = (v) => (v === undefined || v === null ? null : JSON.stringify(v));
 const fromJson = (s, fallback) => (s === null || s === undefined ? fallback : JSON.parse(s));
 
+// An entry is a whole SITE: the shared stylesheet (css) and the list of pages. Rows saved by
+// the first, single-page version of the tool have no `pages`; they become a one-page site.
 function rowToEntry(r) {
+  const stored = fromJson(r.pages, null);
+  const pages = stored ?? pagesFromLegacy(r.html, r.css).pages;
   return {
     prompt: r.prompt,
-    html: r.html,
     css: r.css,
+    pages,
     validation: fromJson(r.validation, null),
     rationale: fromJson(r.rationale, null),
     placeholders: fromJson(r.placeholders, []),
@@ -59,16 +64,20 @@ export function addHistoryEntry(id, entry) {
       .prepare('SELECT COALESCE(MAX(position), -1) + 1 AS next FROM history WHERE session_id = ?')
       .get(id);
 
+    // Accepts a site ({ css, pages }); an entry with only html + css is a one-page site.
+    const pages = entry.pages ?? pagesFromLegacy(entry.html, entry.css).pages;
+
     db.prepare(
       `INSERT INTO history
-         (session_id, position, prompt, html, css, validation, rationale, placeholders, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+         (session_id, position, prompt, html, css, pages, validation, rationale, placeholders, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     ).run(
       id,
       next,
       entry.prompt,
-      entry.html,
-      entry.css,
+      pages[0]?.html ?? '',
+      entry.css ?? '',
+      toJson(pages),
       toJson(entry.validation),
       toJson(entry.rationale),
       toJson(entry.placeholders ?? []),

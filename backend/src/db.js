@@ -30,8 +30,9 @@ const SCHEMA = `
     session_id   TEXT NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
     position     INTEGER NOT NULL,
     prompt       TEXT NOT NULL,
-    html         TEXT NOT NULL,
-    css          TEXT NOT NULL,
+    html         TEXT NOT NULL,      -- the HOME page's body (kept for older versions of the tool)
+    css          TEXT NOT NULL,      -- the shared stylesheet
+    pages        TEXT,               -- JSON: every page of the site [{slug, title, html, css}]
     validation   TEXT,
     rationale    TEXT,
     placeholders TEXT,
@@ -72,7 +73,12 @@ const SCHEMA = `
 // Columns added after the first release. CREATE TABLE IF NOT EXISTS does not touch an
 // existing table, so a database created by an older version needs these added in place
 // (existing rows are kept).
-const COLUMN_MIGRATIONS = [{ table: 'sessions', column: 'participant', ddl: 'TEXT' }];
+const COLUMN_MIGRATIONS = [
+  { table: 'sessions', column: 'participant', ddl: 'TEXT' },
+  // Multi-page sites. Rows written before this have NULL here and are read as a one-page
+  // site made of their html + css (see sessionStore.js).
+  { table: 'history', column: 'pages', ddl: 'TEXT' },
+];
 
 function columnExists(conn, table, column) {
   return conn.prepare(`PRAGMA table_info(${table})`).all().some((c) => c.name === column);

@@ -81,10 +81,12 @@ describe('summarize: the extra figures of the larger benchmark', () => {
 
 describe('benchmark prompt set', () => {
   it('keeps the original 10 prompts first and includes Greek ones', () => {
-    expect(PROMPTS.length).toBe(30);
+    expect(PROMPTS.length).toBe(35);
     expect(PROMPTS[0]).toMatch(/freelance photographer/);
     expect(PROMPTS[9]).toMatch(/small business services page/);
-    expect(PROMPTS.filter(isGreek).length).toBe(5);
+    expect(PROMPTS.filter(isGreek).length).toBe(7);
+    // the last five ask for a whole website of several pages
+    for (const p of PROMPTS.slice(30)) expect(p).toMatch(/website|ιστότοπος/);
     expect(new Set(PROMPTS).size).toBe(PROMPTS.length);
   });
 });

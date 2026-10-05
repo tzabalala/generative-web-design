@@ -3,14 +3,10 @@ import { callClaudeForDesign } from './claudeCodeClient.js';
 
 // Adds the design rationale and the dummy-data guide to the (already validated) result.
 // NEVER throws: the rationale is a bonus — if it fails (truncated answer, network),
-// the page is delivered normally without it.
+// the site is delivered normally without it.
 export async function addDesignGuide(anthropic, result, request) {
   try {
-    const design = await callClaudeForDesign(
-      anthropic,
-      buildDesignMessages(result.html, result.css, request),
-      result
-    );
+    const design = await callClaudeForDesign(anthropic, buildDesignMessages(result, request), result);
     return {
       ...result,
       rationale: design.rationale,

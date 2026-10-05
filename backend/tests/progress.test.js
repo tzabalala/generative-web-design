@@ -1,6 +1,6 @@
 import express from 'express';
 import request from 'supertest';
-import { jest } from '@jest/globals';
+import { fakeClaude, reply, planFor, mainFor, siteFor, requestedSlug } from './helpers/fakeClaude.js';
 import { createReporter, getProgress, clearProgress, isValidRequestId } from '../src/progress.js';
 import { progressRouter } from '../src/routes/progress.js';
 import { generateRouter } from '../src/routes/generate.js';
@@ -46,56 +46,85 @@ describe('GET /api/progress/:id', () => {
 
 // ---- the stages a real request goes through -------------------------------------------
 
-const GOOD_HTML = '<main><h1>Hi</h1><img src="a.jpg" alt="A descriptive photo"></main>';
-const BAD_HTML = '<main><h1>Hi</h1><img src="a.jpg"></main>'; // axe: image without alt text
-const CSS =
-  'body{color:#000;background:#fff;font-size:1rem}.x{display:flex}@media (max-width:600px){body{font-size:0.9rem}}@media (min-width:601px){body{font-size:1.1rem}}';
-
-const reply = (obj) => ({
-  content: [{ text: JSON.stringify(obj).slice(1) }], // the code re-adds the prefill "{"
-  usage: { input_tokens: 1, output_tokens: 1 },
-});
-
 describe('stages during a generate request', () => {
-  it('goes generating -> fixing -> designing, and the polled value matches each moment', async () => {
+  it('goes planning -> writing (pages ready) -> fixing -> designing, and the polled value matches each moment', async () => {
     const REQ = 'req-stage-test-1';
-    const stagesSeen = [];
-    const anthropic = {
-      messages: {
-        create: jest.fn(async () => {
-          stagesSeen.push(getProgress(REQ).stage); // what the browser would see right now
-          const call = stagesSeen.length;
-          if (call === 1) return reply({ html: BAD_HTML, css: CSS });
-          if (call === 2) return reply({ html: GOOD_HTML, css: CSS });
+    const seen = []; // [kind of call, what the browser would see right now]
+    const good = siteFor(['index', 'about']);
+    const anthropic = fakeClaude({
+      slugs: ['index', 'about'],
+      handlers: {
+        plan: () => {
+          seen.push(['plan', getProgress(REQ)]);
+          return reply(planFor(['index', 'about']));
+        },
+        page: (args) => {
+          seen.push(['page', getProgress(REQ)]);
+          const slug = requestedSlug(args);
+          // the about page forgets its image's alt text, so one automatic fix is needed
+          return reply({ html: slug === 'about' ? mainFor(slug).replace(/ alt="[^"]*"/, '') : mainFor(slug), css: '' });
+        },
+        edit: () => {
+          seen.push(['edit', getProgress(REQ)]);
+          return reply({ css: null, pages: [{ slug: 'about', html: good.pages[1].html }], removePages: [] });
+        },
+        design: () => {
+          seen.push(['design', getProgress(REQ)]);
           return reply({ rationale: { summary: 'x' }, placeholders: [] });
-        }),
+        },
       },
-    };
+    });
     const app = express();
     app.use(express.json());
     app.use('/api/generate', generateRouter(anthropic));
 
     const res = await request(app)
       .post('/api/generate')
-      .send({ prompt: 'progress stages — unique prompt one', requestId: REQ });
+      .send({ prompt: 'progress stages: unique prompt one', requestId: REQ });
 
     expect(res.status).toBe(200);
     expect(res.body.validation.attempts).toBe(1);
-    expect(stagesSeen).toEqual(['generating', 'fixing', 'designing']);
+    const at = (kind) => seen.filter(([k]) => k === kind).map(([, progress]) => progress);
+    expect(at('plan')).toEqual([{ stage: 'planning' }]);
+    for (const progress of at('page')) expect(progress).toEqual({ stage: 'writing', done: 0, total: 2 });
+    expect(at('edit')).toEqual([{ stage: 'fixing', attempt: 1, max: 3 }]);
+    expect(at('design')).toEqual([{ stage: 'designing' }]);
     expect(getProgress(REQ).stage).toBe('designing');
   }, 60000);
 
-  it('reports "cached" when the answer is already stored', async () => {
-    const anthropic = {
-      messages: {
-        create: jest.fn(async () => reply({ html: GOOD_HTML, css: CSS })),
+  it('counts the pages that are ready while the site is being written', async () => {
+    const REQ = 'req-stage-test-2';
+    const doneSeen = [];
+    const anthropic = fakeClaude({
+      slugs: ['index', 'about', 'contact'],
+      handlers: {
+        page: (args) => {
+          doneSeen.push(getProgress(REQ).done);
+          return reply({ html: mainFor(requestedSlug(args)), css: '' });
+        },
       },
-    };
+    });
+    const app = express();
+    app.use(express.json());
+    app.use('/api/generate', generateRouter(anthropic));
+    process.env.PAGE_CONCURRENCY = '1'; // one page at a time, so the count is predictable
+
+    const res = await request(app)
+      .post('/api/generate')
+      .send({ prompt: 'progress stages: unique prompt three', requestId: REQ });
+    delete process.env.PAGE_CONCURRENCY;
+
+    expect(res.status).toBe(200);
+    expect(doneSeen).toEqual([0, 1, 2]);
+  }, 60000);
+
+  it('reports "cached" when the answer is already stored', async () => {
+    const anthropic = fakeClaude();
     const app = express();
     app.use(express.json());
     app.use('/api/generate', generateRouter(anthropic));
 
-    const prompt = 'progress stages — unique prompt two (cache)';
+    const prompt = 'progress stages: unique prompt two (cache)';
     await request(app).post('/api/generate').send({ prompt });
     const res = await request(app).post('/api/generate').send({ prompt, requestId: 'req-cached-test-1' });
 

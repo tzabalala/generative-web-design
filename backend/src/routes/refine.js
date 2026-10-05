@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import { buildRefineMessages } from '../promptEngineering.js';
-import { callClaudeForCode, ClaudeOutputError } from '../claudeCodeClient.js';
+import { callClaudeForEdit } from '../claudeCodeClient.js';
+import { ClaudeOutputError } from '../claudeErrors.js';
+import { applyDelta, isValidSlug } from '../site.js';
 import { runWithValidation } from '../validationLoop.js';
 import { addDesignGuide } from '../designStep.js';
 import { getSession, addHistoryEntry } from '../sessionStore.js';
@@ -16,7 +18,7 @@ export function refineRouter(anthropic) {
   const router = Router();
 
   router.post('/', async (req, res) => {
-    const { sessionId, instruction, requestId } = req.body ?? {};
+    const { sessionId, instruction, requestId, currentPage } = req.body ?? {};
     if (!sessionId || typeof sessionId !== 'string') {
       return res.status(400).json({ error: 'Missing required field: sessionId' });
     }
@@ -51,11 +53,14 @@ export function refineRouter(anthropic) {
 
     const report = createReporter(requestId);
     const current = session.history[session.history.length - 1];
+    // The page the user is looking at: only a hint for Claude, and only if it really exists.
+    const viewedPage =
+      isValidSlug(currentPage) && current.pages.some((p) => p.slug === currentPage) ? currentPage : '';
     let model;
 
     try {
       model = resolveModel();
-      const cacheKey = refineCacheKey(current.html, current.css, instruction);
+      const cacheKey = refineCacheKey(current, instruction, viewedPage);
       let result = getCached(cacheKey);
       let fromCache = true;
 
@@ -64,10 +69,13 @@ export function refineRouter(anthropic) {
       } else {
         fromCache = false;
         report('generating');
-        const initial = await callClaudeForCode(
+        // Claude works out which page(s) the instruction concerns and returns only those
+        // (plus the shared stylesheet if it changed); the rest of the site is kept as it is.
+        const { delta, usage: editUsage } = await callClaudeForEdit(
           anthropic,
-          buildRefineMessages(current.html, current.css, instruction)
+          buildRefineMessages(current, instruction, viewedPage)
         );
+        const initial = { ...applyDelta(current, delta), usage: editUsage };
         const validated = await runWithValidation(anthropic, initial, { onStage: report });
         report('designing');
         result = await addDesignGuide(
@@ -82,7 +90,7 @@ export function refineRouter(anthropic) {
       const usage = fromCache ? NO_USAGE : result.usage;
       const updated = addHistoryEntry(sessionId, {
         prompt: instruction,
-        html: result.html,
+        pages: result.pages,
         css: result.css,
         validation: result.validation,
         rationale: result.rationale,
@@ -106,7 +114,7 @@ export function refineRouter(anthropic) {
 
       res.json({
         sessionId,
-        html: result.html,
+        pages: result.pages,
         css: result.css,
         validation: result.validation,
         rationale: result.rationale,
@@ -120,7 +128,7 @@ export function refineRouter(anthropic) {
       logEvent({
         kind: 'refine',
         status: 'error',
-        httpStatus: badOutput ? 502 : 500,
+        httpStatus: err.code === 'PAGE_LIMIT' ? 422 : badOutput ? 502 : 500,
         errorCode: err.name,
         sessionId,
         participant,
@@ -128,6 +136,9 @@ export function refineRouter(anthropic) {
         model,
         prompt: instruction,
       });
+      if (err.code === 'PAGE_LIMIT') {
+        return res.status(422).json({ code: 'PAGE_LIMIT', error: err.message });
+      }
       if (badOutput) {
         return res.status(502).json({ error: err.message, raw: err.raw });
       }

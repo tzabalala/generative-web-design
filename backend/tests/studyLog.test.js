@@ -9,21 +9,10 @@ import { sessionRouter } from '../src/routes/session.js';
 import { getSession } from '../src/sessionStore.js';
 import { resolveModel } from '../src/config.js';
 import { closeBrowser } from '../src/validation/browserManager.js';
+import { fakeClaude } from './helpers/fakeClaude.js';
 
 afterAll(async () => {
   await closeBrowser();
-});
-
-const HTML = '<main><h1>Hi</h1><img src="a.jpg" alt="A descriptive photo"></main>';
-const CSS =
-  'body{color:#000;background:#fff;font-size:1rem}.x{display:flex}@media (max-width:600px){body{font-size:0.9rem}}@media (min-width:601px){body{font-size:1.1rem}}';
-const codeReply = (html = HTML) => ({
-  content: [{ text: JSON.stringify({ html, css: CSS }).slice(1) }],
-  usage: { input_tokens: 100, output_tokens: 50 },
-});
-const designReply = () => ({
-  content: [{ text: JSON.stringify({ rationale: { summary: 's' }, placeholders: [] }).slice(1) }],
-  usage: { input_tokens: 10, output_tokens: 5 },
 });
 
 function buildApp(create) {
@@ -36,11 +25,8 @@ function buildApp(create) {
   return app;
 }
 
-// Answers the code call, then the design call, then code again, and so on.
-const happyCreate = () =>
-  jest.fn(async (args) =>
-    String(args.system).includes('design consultant') ? designReply() : codeReply()
-  );
+// Answers every kind of call (plan, page, edit, design) with a small site that passes the checks.
+const happyCreate = () => fakeClaude().messages.create;
 
 const eventsWhere = (column, value) =>
   getDb().prepare(`SELECT * FROM events WHERE ${column} = ? ORDER BY id`).all(value);

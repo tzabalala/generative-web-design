@@ -1,4 +1,5 @@
 import { createRequire } from 'module';
+import { inflateRawSync } from 'zlib';
 
 const require = createRequire(import.meta.url);
 const axePath = require.resolve('axe-core');
@@ -51,4 +52,50 @@ export const currentSessionId = (page) => page.evaluate(() => localStorage.getIt
 export async function fetchSession(harness, sessionId) {
   const res = await fetch(`${harness.backendUrl}/api/session/${sessionId}`);
   return res.json();
+}
+
+// The names of the tabs above the preview, in order.
+export const tabNames = (page) => page.locator('.live-preview__tab').allTextContents();
+
+// A zip reader written independently of the app's zip writer: it walks the central
+// directory like an unzip tool and checks every checksum. Returns { 'name': 'text' }.
+export function readZip(buffer) {
+  const eocd = buffer.length - 22;
+  if (buffer.readUInt32LE(eocd) !== 0x06054b50) throw new Error('not a zip file (no end-of-directory record)');
+  const count = buffer.readUInt16LE(eocd + 10);
+  let pos = buffer.readUInt32LE(eocd + 16);
+
+  const crcTable = Array.from({ length: 256 }, (_, n) => {
+    let c = n;
+    for (let k = 0; k < 8; k += 1) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+    return c >>> 0;
+  });
+  const crc32 = (bytes) => {
+    let crc = 0xffffffff;
+    for (const b of bytes) crc = crcTable[(crc ^ b) & 0xff] ^ (crc >>> 8);
+    return (crc ^ 0xffffffff) >>> 0;
+  };
+
+  const files = {};
+  for (let i = 0; i < count; i += 1) {
+    if (buffer.readUInt32LE(pos) !== 0x02014b50) throw new Error('bad central directory entry');
+    const method = buffer.readUInt16LE(pos + 10);
+    const crc = buffer.readUInt32LE(pos + 16);
+    const compressedSize = buffer.readUInt32LE(pos + 20);
+    const nameLen = buffer.readUInt16LE(pos + 28);
+    const extraLen = buffer.readUInt16LE(pos + 30);
+    const commentLen = buffer.readUInt16LE(pos + 32);
+    const localOffset = buffer.readUInt32LE(pos + 42);
+    const name = buffer.toString('utf8', pos + 46, pos + 46 + nameLen);
+
+    const localNameLen = buffer.readUInt16LE(localOffset + 26);
+    const localExtraLen = buffer.readUInt16LE(localOffset + 28);
+    const start = localOffset + 30 + localNameLen + localExtraLen;
+    let data = buffer.subarray(start, start + compressedSize);
+    if (method === 8) data = inflateRawSync(data);
+    if (crc32(data) !== crc) throw new Error(`checksum mismatch for ${name}`);
+    files[name] = data.toString('utf8');
+    pos += 46 + nameLen + extraLen + commentLen;
+  }
+  return files;
 }

@@ -1,7 +1,8 @@
 <script setup>
+import { computed } from 'vue';
 import { t, tn } from '../i18n.js';
 
-defineProps({
+const props = defineProps({
   validation: { type: Object, default: null },
 });
 
@@ -11,7 +12,11 @@ defineProps({
 const CHECKS = [
   { key: 'accessibility', label: 'report.accessibility' },
   { key: 'responsive', label: 'report.responsive' },
+  // only for a website of several pages (older results and one-page sites have no such check)
+  { key: 'site', label: 'report.site' },
 ];
+
+const visibleChecks = computed(() => CHECKS.filter((c) => c.key !== 'site' || props.validation?.site));
 
 function statusOf(validation, key) {
   if (!validation || !validation[key]) return null;
@@ -24,7 +29,7 @@ function statusOf(validation, key) {
     <h2>{{ t('report.title') }}</h2>
     <p v-if="!validation" class="a11y-report__empty">{{ t('report.empty') }}</p>
     <ul v-else class="a11y-report__list">
-      <li v-for="check in CHECKS" :key="check.key" class="a11y-report__item">
+      <li v-for="check in visibleChecks" :key="check.key" class="a11y-report__item">
         <span
           class="a11y-report__icon"
           :class="statusOf(validation, check.key) ? 'is-ok' : 'is-warn'"

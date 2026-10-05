@@ -3,9 +3,9 @@ import { mkdirSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 import { fileURLToPath } from 'url';
 import Anthropic from '@anthropic-ai/sdk';
-import { buildGenerateMessages, PROMPT_VERSION } from '../src/promptEngineering.js';
-import { callClaudeForCode } from '../src/claudeCodeClient.js';
-import { validateCode } from '../src/validation/index.js';
+import { PROMPT_VERSION } from '../src/promptEngineering.js';
+import { generateSite } from '../src/siteGenerator.js';
+import { validateSite } from '../src/validation/index.js';
 import { runWithValidation } from '../src/validationLoop.js';
 import { closeBrowser } from '../src/validation/browserManager.js';
 import { modelProfile, resolveModel } from '../src/config.js';
@@ -59,10 +59,18 @@ export const PROMPTS = [
   'η αρχική σελίδα ενός γυμναστηρίου με προγράμματα συνδρομής και κουμπί εγγραφής',
   'μια απλή σελίδα για έναν εκπαιδευτή σκύλων με τιμές και φόρμα επικοινωνίας',
   'η σελίδα ενός φωτογράφου γάμων με γκαλερί και φόρμα επικοινωνίας',
+  // ---- whole websites of several pages (the tool plans 1 to 5 pages itself) ----
+  'a website for a family-run Italian restaurant, with a menu, an about page, a photo gallery and a contact page with a reservation form',
+  'a website for a small architecture studio, with projects, the team, services and a contact page',
+  'a website for a local yoga studio, with a class schedule, the teachers, prices and a contact page',
+  'ένας ιστότοπος για ένα οδοντιατρείο, με υπηρεσίες και τιμές, την ομάδα των γιατρών και φόρμα για ραντεβού',
+  'ένας ιστότοπος για ένα μικρό ξενοδοχείο στη Σαντορίνη, με δωμάτια, φωτογραφίες, δραστηριότητες και επικοινωνία',
 ];
 
-// Rough cost of one page WITHOUT the rationale call, only to warn before spending money.
-const ROUGH_COST_PER_PAGE = { dev: 0.05, demo: 0.1 };
+// Rough cost of one SITE (a plan call, one call per page, fixes) WITHOUT the rationale
+// call, only to warn before spending money. A site costs about 2 to 3 times what the old
+// single page did.
+const ROUGH_COST_PER_PAGE = { dev: 0.13, demo: 0.26 };
 const FREE_LIMIT = 10; // more pages than this needs an explicit --yes
 
 export const isGreek = (text) => /[Ͱ-Ͽ]/.test(text);
@@ -84,6 +92,8 @@ const counts = (v) => ({
   responsiveIssues: v.responsive.issues.length,
   // the real layout check on its own (a subset of responsiveIssues; 0 when it is switched off)
   layoutIssues: v.responsive.visual?.issues?.length ?? 0,
+  // how the pages fit together (links, shared menu, distinct content); 0 for a one-page site
+  siteIssues: v.site?.issues?.length ?? 0,
   passed: v.passed,
 });
 
@@ -174,13 +184,14 @@ async function run() {
     console.log(`[${i + 1}/${prompts.length}] ${prompt}`);
     const t0 = Date.now();
     try {
-      const initial = await callClaudeForCode(anthropic, buildGenerateMessages(prompt));
-      const rawValidation = await validateCode(initial.html, initial.css);
+      const initial = await generateSite(anthropic, prompt);
+      const rawValidation = await validateSite(initial);
       const fixed = await runWithValidation(anthropic, initial);
 
       const row = {
         prompt,
         language: isGreek(prompt) ? 'el' : 'en',
+        pages: fixed.pages.length,
         before: counts(rawValidation),
         after: counts(fixed.validation),
         retries: fixed.validation.attempts,

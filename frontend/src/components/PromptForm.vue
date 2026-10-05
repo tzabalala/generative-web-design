@@ -18,7 +18,12 @@ const text = ref('');
 const stageText = computed(() => {
   const name = props.stage && props.stage.stage;
   if (!name || !hasMessage('progress.' + name)) return '';
-  return t('progress.' + name, { attempt: props.stage.attempt, max: props.stage.max });
+  return t('progress.' + name, {
+    attempt: props.stage.attempt,
+    max: props.stage.max,
+    done: props.stage.done,
+    total: props.stage.total,
+  });
 });
 
 function onSubmit() {

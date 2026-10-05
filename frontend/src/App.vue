@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { generatePage, refinePage, undoPage, getSession, getProgress } from './api.js';
 import { newRequestId } from './requestId.js';
 import { getParticipantCode } from './studyContext.js';
@@ -12,11 +12,14 @@ import RefinementPanel from './components/RefinementPanel.vue';
 import AccessibilityReport from './components/AccessibilityReport.vue';
 import DesignRationale from './components/DesignRationale.vue';
 import PlaceholderGuide from './components/PlaceholderGuide.vue';
-import { buildDownloadHtml } from './downloadPage.js';
+import { buildDownload } from './downloadPage.js';
+import { slugFromHash } from './sitePreview.js';
 
 const sessionId = ref(null);
-const html = ref('');
+// The website being shown: a shared stylesheet and 1 to 5 pages [{ slug, title, html, css }].
 const css = ref('');
+const pages = ref([]);
+const activeSlug = ref(''); // the page shown in the preview (and the hint sent with a change)
 const validation = ref(null);
 const rationale = ref(null);
 const placeholders = ref([]);
@@ -63,6 +66,16 @@ function errorText(err) {
   return key && hasMessage(key) ? t(key, { limit: iterationsLimit.value }) : err.message;
 }
 
+const hasSite = computed(() => pages.value.length > 0);
+
+// Shows a site returned by the backend. The page being viewed stays selected if it still
+// exists; otherwise the home page (the first) is shown.
+function showSite(res) {
+  css.value = res.css ?? '';
+  pages.value = res.pages ?? [];
+  if (!pages.value.some((p) => p.slug === activeSlug.value)) activeSlug.value = pages.value[0]?.slug ?? '';
+}
+
 const mode = computed(() => (sessionId.value ? 'refine' : 'generate'));
 const limitReached = computed(() => iterationsUsed.value >= iterationsLimit.value);
 
@@ -75,6 +88,7 @@ async function handleSubmit(text) {
   try {
     let res;
     if (!sessionId.value) {
+      activeSlug.value = ''; // a new website opens on its home page
       res = await generatePage(text, {
         requestId,
         participant: getParticipantCode() ?? undefined,
@@ -84,13 +98,12 @@ async function handleSubmit(text) {
       iterationsUsed.value = 1;
       history.value = [{ prompt: text, validation: res.validation }];
     } else {
-      res = await refinePage(sessionId.value, text, { requestId });
+      res = await refinePage(sessionId.value, text, { requestId, currentPage: activeSlug.value });
       iterationsUsed.value = res.iterationsUsed;
       iterationsLimit.value = res.iterationsLimit;
       history.value = [...history.value, { prompt: text, validation: res.validation }];
     }
-    html.value = res.html;
-    css.value = res.css;
+    showSite(res);
     validation.value = res.validation;
     rationale.value = res.rationale ?? null;
     placeholders.value = res.placeholders ?? [];
@@ -108,8 +121,7 @@ async function handleUndo() {
   error.value = null;
   try {
     const res = await undoPage(sessionId.value);
-    html.value = res.html;
-    css.value = res.css;
+    showSite(res);
     validation.value = res.validation;
     rationale.value = res.rationale ?? null;
     placeholders.value = res.placeholders ?? [];
@@ -127,8 +139,9 @@ async function handleUndo() {
 // /generate (a new page) and not to /refine (a change to the same page).
 function handleNewPage() {
   sessionId.value = null;
-  html.value = '';
+  pages.value = [];
   css.value = '';
+  activeSlug.value = '';
   validation.value = null;
   rationale.value = null;
   placeholders.value = [];
@@ -151,8 +164,7 @@ async function restoreSession() {
     if (!last) throw Object.assign(new Error('empty session'), { status: 404 });
 
     sessionId.value = savedId;
-    html.value = last.html;
-    css.value = last.css;
+    showSite(last);
     validation.value = last.validation;
     rationale.value = last.rationale ?? null;
     placeholders.value = last.placeholders ?? [];
@@ -170,20 +182,35 @@ async function restoreSession() {
   }
 }
 
-onMounted(restoreSession);
+// A click on a menu link inside the preview asks the browser to go to "#page=about" (see
+// sitePreview.js). That is not a real navigation: switch to the page, then clear the hash so
+// the same link works again next time.
+function onHashChange() {
+  const slug = slugFromHash(window.location.hash, pages.value.map((p) => p.slug));
+  if (slug) activeSlug.value = slug;
+  if (window.location.hash.startsWith('#page=')) {
+    window.history.replaceState(null, '', window.location.pathname + window.location.search);
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('hashchange', onHashChange);
+  restoreSession();
+});
+onBeforeUnmount(() => window.removeEventListener('hashchange', onHashChange));
 
 function handleDownload() {
-  const fullPage = buildDownloadHtml({
-    html: html.value,
+  const { filename, type, data } = buildDownload({
+    pages: pages.value,
     css: css.value,
     placeholders: placeholders.value,
     locale: locale.value,
   });
-  const blob = new Blob([fullPage], { type: 'text/html' });
+  const blob = new Blob([data], { type });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'page.html';
+  a.download = filename;
   a.click();
   URL.revokeObjectURL(url);
 }
@@ -242,15 +269,15 @@ function handleDownload() {
           <button
             class="app__download"
             type="button"
-            :disabled="!html"
+            :disabled="!hasSite"
             @click="handleDownload"
           >
-            {{ t('app.download') }}
+            {{ pages.length > 1 ? t('app.downloadSite') : t('app.download') }}
           </button>
         </div>
-        <LivePreview :html="html" :css="css" />
+        <LivePreview :pages="pages" :css="css" :active-slug="activeSlug" @select="activeSlug = $event" />
         <DesignRationale :rationale="rationale" />
-        <PlaceholderGuide v-if="html" :placeholders="placeholders" />
+        <PlaceholderGuide v-if="hasSite" :placeholders="placeholders" />
       </section>
 
       <section class="app__column app__column--report">

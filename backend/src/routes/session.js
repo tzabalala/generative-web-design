@@ -43,7 +43,7 @@ export function sessionRouter() {
     res.json({
       iterationsUsed: session.iterationCount,
       iterationsLimit: iterationLimit(),
-      html: previous.html,
+      pages: previous.pages,
       css: previous.css,
       validation: previous.validation,
       rationale: previous.rationale ?? null,

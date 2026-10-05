@@ -23,7 +23,7 @@ describe('App', () => {
   it('generates a page, then switches into refine mode after the first response', async () => {
     vi.spyOn(api, 'generatePage').mockResolvedValue({
       sessionId: 's1',
-      html: '<p>v1</p>',
+      pages: [{ slug: 'index', title: '', html: '<p>v1</p>', css: '' }],
       css: '',
       validation: okValidation,
     });
@@ -45,13 +45,13 @@ describe('App', () => {
   it('calls refinePage (not generatePage again) for a follow-up instruction', async () => {
     vi.spyOn(api, 'generatePage').mockResolvedValue({
       sessionId: 's1',
-      html: '<p>v1</p>',
+      pages: [{ slug: 'index', title: '', html: '<p>v1</p>', css: '' }],
       css: '',
       validation: okValidation,
     });
     vi.spyOn(api, 'refinePage').mockResolvedValue({
       sessionId: 's1',
-      html: '<p>v2</p>',
+      pages: [{ slug: 'index', title: '', html: '<p>v2</p>', css: '' }],
       css: '',
       validation: okValidation,
       iterationsUsed: 2,
@@ -79,20 +79,20 @@ describe('App', () => {
   it('undo restores the previous version without calling refinePage/generatePage again', async () => {
     vi.spyOn(api, 'generatePage').mockResolvedValue({
       sessionId: 's1',
-      html: '<p>v1</p>',
+      pages: [{ slug: 'index', title: '', html: '<p>v1</p>', css: '' }],
       css: '',
       validation: okValidation,
     });
     vi.spyOn(api, 'refinePage').mockResolvedValue({
       sessionId: 's1',
-      html: '<p>v2</p>',
+      pages: [{ slug: 'index', title: '', html: '<p>v2</p>', css: '' }],
       css: '',
       validation: okValidation,
       iterationsUsed: 2,
       iterationsLimit: 15,
     });
     vi.spyOn(api, 'undoPage').mockResolvedValue({
-      html: '<p>v1</p>',
+      pages: [{ slug: 'index', title: '', html: '<p>v1</p>', css: '' }],
       css: '',
       validation: okValidation,
       iterationsUsed: 2,
@@ -121,7 +121,7 @@ describe('App', () => {
   it('shows the design rationale and placeholder guide from the response, and clears them on new page', async () => {
     vi.spyOn(api, 'generatePage').mockResolvedValue({
       sessionId: 's1',
-      html: '<h1>Cinema</h1>',
+      pages: [{ slug: 'index', title: '', html: '<h1>Cinema</h1>', css: '' }],
       css: '',
       validation: okValidation,
       rationale: { summary: 'Night-time atmosphere', colors: [], typography: '', layout: '', conversion: '', audience: '' },
@@ -144,7 +144,7 @@ describe('App', () => {
   it('"New page" resets everything so the next prompt calls generatePage again', async () => {
     vi.spyOn(api, 'generatePage').mockResolvedValue({
       sessionId: 's1',
-      html: '<p>v1</p>',
+      pages: [{ slug: 'index', title: '', html: '<p>v1</p>', css: '' }],
       css: '',
       validation: okValidation,
     });
@@ -184,10 +184,10 @@ describe('App', () => {
   describe('session persistence across reloads', () => {
     const savedSession = {
       history: [
-        { prompt: 'a bakery page', html: '<h1>Bakery</h1>', css: 'h1{}', validation: okValidation, rationale: null, placeholders: [] },
+        { prompt: 'a bakery page', pages: [{ slug: 'index', title: '', html: '<h1>Bakery</h1>', css: '' }], css: 'h1{}', validation: okValidation, rationale: null, placeholders: [] },
         {
           prompt: 'make it blue',
-          html: '<h1>Blue Bakery</h1>',
+          pages: [{ slug: 'index', title: '', html: '<h1>Blue Bakery</h1>', css: '' }],
           css: 'h1{color:blue}',
           validation: okValidation,
           rationale: { summary: 'Blue concept', colors: [], typography: '', layout: '', conversion: '', audience: '' },
@@ -199,7 +199,7 @@ describe('App', () => {
     };
 
     it('remembers the sessionId after generating', async () => {
-      vi.spyOn(api, 'generatePage').mockResolvedValue({ sessionId: 's-42', html: '<p>v1</p>', css: '', validation: okValidation });
+      vi.spyOn(api, 'generatePage').mockResolvedValue({ sessionId: 's-42', pages: [{ slug: 'index', title: '', html: '<p>v1</p>', css: '' }], css: '', validation: okValidation });
       const wrapper = mount(App);
       await wrapper.find('textarea').setValue('a bakery page');
       await wrapper.find('form').trigger('submit');

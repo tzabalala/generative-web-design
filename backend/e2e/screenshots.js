@@ -25,7 +25,7 @@ try {
 
   // Mid-wait: slow the fake down so the "fixing" step stays on screen long enough to capture.
   harness.fake.setDelay(2500);
-  await submitPrompt(page, 'a landing page for a local yoga studio');
+  await submitPrompt(page, 'a website for a local yoga studio');
   await page.waitForSelector('.prompt-form__stage');
   await page.waitForFunction(() => /Fixing a problem/.test(document.querySelector('.prompt-form__stage')?.textContent || ''), null, { timeout: 30000 });
   await page.locator('.app__column--controls').screenshot({ path: shot('02-working.png') });
@@ -35,6 +35,14 @@ try {
   await page.waitForSelector('iframe.live-preview__frame');
   await page.waitForTimeout(500);
   await page.screenshot({ path: shot('03-result.png') });
+  // The other pages of the website: a tab, and a click on a menu link inside the preview.
+  await page.locator('.live-preview__tab', { hasText: 'About' }).click();
+  await page.waitForTimeout(300);
+  await page.locator('.live-preview').screenshot({ path: shot('13-about-tab.png') });
+  await page.frameLocator('iframe.live-preview__frame').getByRole('link', { name: 'Contact' }).first().click();
+  await page.waitForTimeout(300);
+  await page.locator('.live-preview').screenshot({ path: shot('14-contact-tab.png') });
+  await page.locator('.live-preview__tab', { hasText: 'Home' }).click();
   await page.screenshot({ path: shot('04-result-full.png'), fullPage: true });
   await page.locator('.app__column--controls').screenshot({ path: shot('05-history.png') });
   await page.locator('.app__column--report').screenshot({ path: shot('06-report.png') });

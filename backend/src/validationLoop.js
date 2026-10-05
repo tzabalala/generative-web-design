@@ -1,11 +1,16 @@
-import { validateCode } from './validation/index.js';
+import { validateSite } from './validation/index.js';
 import { buildFixMessages } from './promptEngineering.js';
-import { callClaudeForCode } from './claudeCodeClient.js';
+import { callClaudeForEdit } from './claudeCodeClient.js';
+import { applyDelta } from './site.js';
 
 // Step 10: generate → check → fix → recheck. This is the actual research
 // contribution: the automatic link between generation and validation.
 // Maximum retries: MAX_VALIDATION_RETRIES (default 3). If it still fails, the code is
 // returned with a clear warning listing the remaining issues — never an endless loop.
+//
+// The thing being validated is a SITE (1 to 5 pages plus a shared stylesheet). A fix call
+// returns only the pages and/or the stylesheet that have to change; they are merged into
+// the site and the whole site is checked again.
 //
 // onStage(name, { attempt, max }) is an optional progress callback (see progress.js);
 // a failing callback must never break the loop.
@@ -19,11 +24,11 @@ export async function runWithValidation(anthropic, initialResult, { onStage } = 
     }
   };
 
-  let current = initialResult;
+  let site = { css: initialResult.css, pages: initialResult.pages };
   let attempts = 0;
   stage('checking', { attempt: 0, max: maxRetries });
-  let validation = await validateCode(current.html, current.css);
-  const totalUsage = { ...current.usage };
+  let validation = await validateSite(site);
+  const totalUsage = { ...initialResult.usage };
   const retryHistory = [];
 
   while (!validation.passed && attempts < maxRetries) {
@@ -31,19 +36,18 @@ export async function runWithValidation(anthropic, initialResult, { onStage } = 
     retryHistory.push({ attempt: attempts, issues: validation.issueSummary });
     stage('fixing', { attempt: attempts, max: maxRetries });
 
-    const fixMessages = buildFixMessages(current.html, current.css, validation.issueSummary);
-    const fixed = await callClaudeForCode(anthropic, fixMessages);
-    current = fixed;
-    totalUsage.inputTokens += fixed.usage.inputTokens;
-    totalUsage.outputTokens += fixed.usage.outputTokens;
+    const { delta, usage } = await callClaudeForEdit(anthropic, buildFixMessages(site, validation.issueSummary));
+    site = applyDelta(site, delta);
+    totalUsage.inputTokens += usage.inputTokens;
+    totalUsage.outputTokens += usage.outputTokens;
 
     stage('checking', { attempt: attempts, max: maxRetries });
-    validation = await validateCode(current.html, current.css);
+    validation = await validateSite(site);
   }
 
   return {
-    html: current.html,
-    css: current.css,
+    css: site.css,
+    pages: site.pages,
     usage: totalUsage,
     validation: {
       passed: validation.passed,
@@ -51,6 +55,7 @@ export async function runWithValidation(anthropic, initialResult, { onStage } = 
       remainingIssues: validation.passed ? [] : validation.issueSummary,
       accessibility: validation.accessibility,
       responsive: validation.responsive,
+      site: validation.site,
       retryHistory,
     },
   };

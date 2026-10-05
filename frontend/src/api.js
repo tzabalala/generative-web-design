@@ -24,11 +24,13 @@ export function generatePage(prompt, { requestId, participant } = {}) {
   }).then(handle);
 }
 
-export function refinePage(sessionId, instruction, { requestId } = {}) {
+// options.currentPage: the page the user is looking at (a hint: Claude works out which page(s)
+// the instruction concerns)
+export function refinePage(sessionId, instruction, { requestId, currentPage } = {}) {
   return fetch(`${BASE_URL}/api/refine`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ sessionId, instruction, requestId }),
+    body: JSON.stringify({ sessionId, instruction, requestId, currentPage }),
   }).then(handle);
 }
 
@@ -40,8 +42,8 @@ export function getSession(sessionId) {
   return fetch(`${BASE_URL}/api/session/${sessionId}`).then(handle);
 }
 
-// Which step a running request is on: { stage: 'generating' | 'checking' | 'fixing' |
-// 'designing' | 'cached' | null, attempt?, max? }.
+// Which step a running request is on: { stage: 'planning' | 'writing' | 'generating' |
+// 'checking' | 'fixing' | 'designing' | 'cached' | null, attempt?, max?, done?, total? }.
 export function getProgress(requestId) {
   return fetch(`${BASE_URL}/api/progress/${requestId}`).then(handle);
 }

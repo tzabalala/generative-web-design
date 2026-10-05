@@ -157,7 +157,7 @@ describe('App with the language toggle', () => {
   it('translates a backend error code, and falls back to the raw message for unknown ones', async () => {
     vi.spyOn(api, 'generatePage').mockResolvedValue({
       sessionId: 's1',
-      html: '<p>v1</p>',
+      pages: [{ slug: 'index', title: '', html: '<p>v1</p>', css: '' }],
       css: '',
       validation: { passed: true, attempts: 0, remainingIssues: [] },
     });

@@ -12,7 +12,9 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '2mb' }));
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+// A site is written page by page, several calls at a time, so a short rate-limit hiccup
+// (HTTP 429) is more likely than before: the SDK waits and retries it a few times itself.
+const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, maxRetries: 5 });
 const PORT = process.env.PORT || 3000;
 
 app.use('/api/generate', generateRouter(anthropic));

@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { buildGenerateMessages } from '../promptEngineering.js';
-import { callClaudeForCode, ClaudeOutputError } from '../claudeCodeClient.js';
+import { generateSite } from '../siteGenerator.js';
+import { ClaudeOutputError } from '../claudeErrors.js';
 import { runWithValidation } from '../validationLoop.js';
 import { addDesignGuide } from '../designStep.js';
 import { createSession, addHistoryEntry } from '../sessionStore.js';
@@ -35,8 +35,7 @@ export function generateRouter(anthropic) {
         report('cached');
       } else {
         fromCache = false;
-        report('generating');
-        const initial = await callClaudeForCode(anthropic, buildGenerateMessages(prompt));
+        const initial = await generateSite(anthropic, prompt, { onStage: report });
         const validated = await runWithValidation(anthropic, initial, { onStage: report });
         report('designing');
         result = await addDesignGuide(anthropic, validated, prompt);
@@ -47,7 +46,7 @@ export function generateRouter(anthropic) {
       const usage = fromCache ? NO_USAGE : result.usage;
       addHistoryEntry(sessionId, {
         prompt,
-        html: result.html,
+        pages: result.pages,
         css: result.css,
         validation: result.validation,
         rationale: result.rationale,
@@ -71,7 +70,7 @@ export function generateRouter(anthropic) {
 
       res.json({
         sessionId,
-        html: result.html,
+        pages: result.pages,
         css: result.css,
         validation: result.validation,
         rationale: result.rationale,
@@ -83,13 +82,16 @@ export function generateRouter(anthropic) {
       logEvent({
         kind: 'generate',
         status: 'error',
-        httpStatus: badOutput ? 502 : 500,
+        httpStatus: err.code === 'PAGE_LIMIT' ? 422 : badOutput ? 502 : 500,
         errorCode: err.name,
         participant,
         durationMs: Date.now() - startedAt,
         model,
         prompt,
       });
+      if (err.code === 'PAGE_LIMIT') {
+        return res.status(422).json({ code: 'PAGE_LIMIT', error: err.message });
+      }
       if (badOutput) {
         return res.status(502).json({ error: err.message, raw: err.raw });
       }
