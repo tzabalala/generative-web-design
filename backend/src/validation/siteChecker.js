@@ -69,8 +69,21 @@ function jaccard(a, b) {
 const listed = (items) =>
   items.length > MAX_LISTED ? `${items.slice(0, MAX_LISTED).join(', ')} and ${items.length - MAX_LISTED} more` : items.join(', ');
 
+// Motion must be switchable off: WCAG 2.2.2 (Pause, Stop, Hide) and 2.3.3 (Animation from
+// Interactions) are the reasons for the prefers-reduced-motion rule. The text logo is the most
+// likely place for an animation, but the rule applies to all the css of the site.
+function motionIssues(site) {
+  const all = [site.css, ...site.pages.map((p) => p.css ?? '')].join('\n');
+  const animates = /@keyframes|animation(?:-name)?\s*:/i.test(all);
+  return animates && !/prefers-reduced-motion/i.test(all)
+    ? [
+        'The css uses an animation but has no @media (prefers-reduced-motion: reduce) rule. Add one that switches every animation off (animation: none), for visitors who are sensitive to motion.',
+      ]
+    : [];
+}
+
 export function checkSite(site) {
-  const issues = [];
+  const issues = [...motionIssues(site)];
   const { pages } = site;
   const slugs = new Set(pages.map((p) => p.slug));
   const idsBySlug = new Map(pages.map((p) => [p.slug, idsIn(p.html)]));

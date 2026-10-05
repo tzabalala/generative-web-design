@@ -109,6 +109,13 @@ describe('the system prompts', () => {
     }
   });
 
+  it('ask for a themed text logo: real text, system fonts only, safe animation, never wider than a phone', () => {
+    expect(PLAN_SYSTEM_PROMPT).toContain('TEXT LOGO');
+    expect(PLAN_SYSTEM_PROMPT).toContain('never an external font');
+    expect(PLAN_SYSTEM_PROMPT).toContain('prefers-reduced-motion');
+    expect(EDIT_SYSTEM_PROMPT).toContain('text logo');
+  });
+
   it('the edit prompt tells Claude to find the page itself and keep the menu identical', () => {
     expect(EDIT_SYSTEM_PROMPT).toContain('does not name pages');
     expect(EDIT_SYSTEM_PROMPT).toContain('IDENTICAL on every page');

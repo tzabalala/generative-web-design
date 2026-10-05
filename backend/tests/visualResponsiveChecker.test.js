@@ -8,6 +8,35 @@ afterAll(async () => {
 
 const byName = (result, name) => result.viewports.find((v) => v.name === name);
 
+describe('the cause of an overflow is named when it is a long unbreakable word', () => {
+  const css = '@media (max-width:600px){body{font-size:1rem}}@media (min-width:601px){body{font-size:1.1rem}}.grid{display:grid;grid-template-columns:1fr;gap:1rem}.card{padding:1rem;border:1px solid #000}';
+  const html = '<main><h1>Contact</h1><div class="grid"><article class="card"><p>Write to helloaveryverylongrestaurantnamefortesting@example.com today</p></article></div></main>';
+
+  it('says which word makes the card too wide, and how to fix it', async () => {
+    const result = await checkVisualResponsive(html, css);
+    expect(result.passed).toBe(false);
+    const text = result.issues.join('\n');
+    expect(text).toContain('article.card');
+    expect(text).toContain('contains the unbreakable text "helloaveryverylongrestaurantnamefortesting@example.com"');
+    expect(text).toContain('minmax(0, 1fr)');
+  }, 60000);
+
+  it('finds the word even when it sits in a neighbouring card of the same grid', async () => {
+    const twoCards =
+      '<main><h1>Contact</h1><div class="grid"><article class="card"><p>Short text</p></article>' +
+      '<article class="card"><p>Write to helloaveryverylongrestaurantnamefortesting@example.com</p></article></div></main>';
+    const result = await checkVisualResponsive(twoCards, css);
+    expect(result.passed).toBe(false);
+    expect(result.issues.join('\n')).toContain('contains the unbreakable text "helloaveryverylongrestaurantnamefortesting@example.com"');
+  }, 60000);
+
+  it('passes once the word may wrap and the column may shrink', async () => {
+    const fixed = css.replace('1fr;gap', 'minmax(0,1fr);gap') + '.card p{overflow-wrap:anywhere}';
+    const result = await checkVisualResponsive(html, fixed);
+    expect(result.passed).toBe(true);
+  }, 60000);
+});
+
 describe('checkVisualResponsive (real browser)', () => {
   it('checks three screen sizes', () => {
     expect(VIEWPORTS.map((v) => v.width)).toEqual([375, 768, 1280]);

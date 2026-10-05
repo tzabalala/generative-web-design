@@ -15,6 +15,27 @@ describe('checkSite on a healthy site', () => {
   });
 });
 
+describe('motion', () => {
+  const withCss = (css) => ({ ...siteFor(['index']), css: `${siteFor(['index']).css}${css}` });
+
+  it('accepts a logo animation that is switched off for reduced motion', () => {
+    const css = '.logo{animation:glow 3s infinite}@keyframes glow{50%{opacity:.8}}@media (prefers-reduced-motion: reduce){.logo{animation:none}}';
+    expect(checkSite(withCss(css)).passed).toBe(true);
+  });
+
+  it('reports an animation without a reduced-motion rule, whether it is in the shared or in a page css', () => {
+    const css = '.logo{animation:glow 3s infinite}@keyframes glow{50%{opacity:.8}}';
+    expect(issuesOf(withCss(css))).toContain('prefers-reduced-motion');
+    const site = siteFor(['index']);
+    site.pages[0].css = '@keyframes x{to{opacity:0}}';
+    expect(issuesOf(site)).toContain('prefers-reduced-motion');
+  });
+
+  it('does not mind a css without animations', () => {
+    expect(issuesOf(withCss('.logo{letter-spacing:.1em;text-shadow:1px 1px 0 #999}'))).toBe('');
+  });
+});
+
 describe('links between pages', () => {
   it('reports a link to a page that does not exist, and says which file names are valid', () => {
     const site = withPage(siteFor(['index', 'about']), 'about', (p) => ({

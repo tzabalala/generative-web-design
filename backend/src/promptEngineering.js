@@ -4,7 +4,7 @@
 // Bump this WHENEVER the prompts below change OR the validation rules change (what counts
 // as a failed check): it is part of the cache key, so answers produced under the old
 // instructions/rules are never served again.
-export const PROMPT_VERSION = 'v4-multipage';
+export const PROMPT_VERSION = 'v5-text-logo';
 
 // What every generated page must satisfy, whatever the user asked for. The same list is used
 // for the first generation, for every change and for every automatic fix.
@@ -36,6 +36,16 @@ How many pages:
 What to return, in one JSON object:
 - "pages": array of {"slug", "title", "purpose", "layout", "anchors"}. "title" is the text of the page's <title>, in the request's language, different for every page. "purpose" is one sentence on what this page is for. "layout" is one sentence describing the structure of its sections. "anchors" is an array of section ids the page must contain ([] if none).
 - "header": ONE <header> element, the same on every page: the site name as a link to index.html and a <nav aria-label="Main"> with a link to EVERY page, written exactly as <a href="slug.html">Page name</a> (for example <a href="index.html">Home</a>). If the site has only ONE page, the header holds just the site name, plus optionally a nav with links to section ids listed in that page's "anchors". The header must not contain a hero, a large image or page-specific content.
+  The header content sits inside the shared ".container", so it has side padding like the rest of the page.
+  THE LOGO: the site name in the header is a TEXT LOGO (a wordmark): a link to index.html with class "logo", real text (never an image), styled in the shared css so that it clearly expresses the business and its theme. A pirate pub, a law firm, a bakery and a yoga studio must NOT end up with the same logo, and the default is NOT plain Georgia: pick the recipe below that is closest to the business, then adapt its colours to the site palette. Use only fonts every device has and never an external font or an image:
+  * adventure, pirate, vintage, rustic: font-family Rockwell, "Courier New", Georgia, serif; bold italic; uppercase; letter-spacing 0.08em; text-shadow 3px 3px 0 in a dark accent colour; a decorative symbol such as an anchor placed in the markup as <span aria-hidden="true">⚓</span> before the name.
+  * classic, legal, finance, heritage: Georgia or "Times New Roman"; uppercase; font-size around 1.3rem; letter-spacing 0.2em; a thin double border above and below the name (border-top and border-bottom 3px double in the accent colour) with padding 0.3rem 0.6rem, like a crest.
+  * elegant, luxury, spa, wedding, boutique: "Palatino Linotype" or "Book Antiqua"; font-variant small-caps; font-weight 400; letter-spacing 0.25em; a short accent line under the name (border-bottom 1px solid, width fit-content).
+  * bold, sport, gym, industrial, street food: Impact, "Arial Black", sans-serif; uppercase; letter-spacing 0.05em; text-shadow 2px 2px 0 in the accent colour; optionally a slight skew(-6deg) on the name.
+  * playful, kids, cafe, ice cream, pets: "Trebuchet MS", Verdana, sans-serif; font-weight 800; rounded feel; text-shadow 2px 2px 0 in a bright accent colour; transform rotate(-2deg); a decorative symbol in an aria-hidden span (for example a cup or a flower).
+  * handwritten, artisan, bakery, florist, craft: "Brush Script MT", "Segoe Script", cursive; font-size around 2rem; font-weight 400; a soft text-shadow; a decorative symbol in an aria-hidden span.
+  * technical, modern, startup, software: "Courier New", monospace; lowercase; font-weight 700; letter-spacing 0.05em; an accent-coloured underscore or bracket in an aria-hidden span; no shadow.
+  Optional extras: a gradient on the letters (background-clip: text) is allowed if the plain color property is a solid colour with at least 4.5:1 contrast. A gentle animation is allowed only if the css also contains an @media (prefers-reduced-motion: reduce) rule that switches it off. The logo text itself must reach 4.5:1 contrast on the header background (3:1 only when it is 24px or larger), and it must never be wider than a phone screen (it may wrap or shrink with clamp()).
 - "footer": ONE <footer> element, the same on every page: for example the site name, contact details and a copyright line. It must not contain a <nav>.
 - "css": the SHARED stylesheet, loaded on every page. Define the design as CSS custom properties in :root (colours, fonts, spacing), then base typography, links with a visible focus style, a ".container" class (centred, with a max-width and left and right padding, so content never touches the screen edge on any screen size), the header and its nav (it must wrap or stack well on a phone), the footer, buttons, cards, a responsive grid helper, forms and any other building blocks several pages will reuse, plus the required @media rules. Page-specific layouts are NOT written here; each page adds its own CSS.
 
@@ -85,6 +95,7 @@ How to edit:
 - You may add a page (only while the site has fewer than 5 pages; add its link to the menu on every page with one htmlEdit without a slug, and return the new page in full) or remove a page (list its slug in "removePages" and remove its link on every other page). The home page cannot be removed.
 - Pages must not become copies of each other.
 - When a check reports a problem with a colour (contrast), look at where that colour comes from: very often it is a CSS variable or a class in the SHARED css used by many elements. Fix it THERE (return the changed shared "css"), choosing a colour that really reaches the required ratio against the background shown in the report (a clearly darker or lighter shade, not a tiny change), instead of adding overrides in a page that the shared rule can win against.
+- The site name in the header is a text logo styled by the "logo" rules of the shared css. To restyle it, change those rules with "cssEdits"; keep it real text, with enough contrast, and never wider than a phone screen.
 - Keep everything the request does not mention exactly as it is.
 
 What to return (prefer SMALL edits to rewriting pages: a change of a word, a number, a colour or one element must never cost a whole page):

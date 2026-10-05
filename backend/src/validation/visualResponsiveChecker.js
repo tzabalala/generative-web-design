@@ -66,6 +66,27 @@ function measureInPage({ minTarget, tolerance, checkTargets, maxListed }) {
     return false;
   };
 
+  // The most common hidden cause of a box that is too wide: a long word that cannot be broken
+  // (an e-mail address, a URL, a long compound word) which stretches its grid column or flex item.
+  // Naming the word lets the fix go straight to the cause.
+  const widestWord = (el) => {
+    let best = null;
+    const range = document.createRange();
+    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      const re = /\S+/g;
+      let m;
+      while ((m = re.exec(node.nodeValue))) {
+        if (m[0].length < 12) continue; // a short word is never the cause
+        range.setStart(node, m.index);
+        range.setEnd(node, m.index + m[0].length);
+        const width = Math.round(range.getBoundingClientRect().width);
+        if (!best || width > best.width) best = { text: m[0].slice(0, 60), width };
+      }
+    }
+    return best;
+  };
+
   const overflows = scrollWidth > vw + tolerance;
   let culprits = [];
   if (overflows && document.body) {
@@ -84,7 +105,12 @@ function measureInPage({ minTarget, tolerance, checkTargets, maxListed }) {
       const label = describe(el);
       if (seen.has(label)) continue;
       seen.add(label);
-      culprits.push({ selector: label, width: Math.round(rectOf(el).width) });
+      // The word may be in a SIBLING: in a grid or flex row, the widest item sets the width of
+      // the column or row for all of them, so the whole container is searched.
+      const parent = el.parentElement;
+      const display = parent ? getComputedStyle(parent).display : '';
+      const scope = /grid|flex/.test(display) ? parent : el;
+      culprits.push({ selector: label, width: Math.round(rectOf(el).width), longWord: widestWord(scope) });
     }
     culprits = culprits.slice(0, maxListed);
   }
@@ -130,10 +156,17 @@ export function measureLayout(page, { checkTargets = false } = {}) {
 function issuesFor(viewport, m) {
   const issues = [];
   if (m.overflows) {
-    const list = m.culprits.map((c) => `${c.selector} (${c.width}px wide)`).join(', ');
+    const list = m.culprits
+      .map((c) => {
+        const word = c.longWord && c.longWord.width > m.viewportWidth * 0.5 ? `, contains the unbreakable text "${c.longWord.text}" which is ${c.longWord.width}px wide` : '';
+        return `${c.selector} (${c.width}px wide${word})`;
+      })
+      .join(', ');
+    const hasWord = m.culprits.some((c) => c.longWord && c.longWord.width > m.viewportWidth * 0.5);
     issues.push(
       `Horizontal scrolling at ${viewport.width}px (${viewport.name}): the content is ${m.scrollWidth}px wide, wider than the ${m.viewportWidth}px screen. ` +
-        `Elements sticking out: ${list || 'unknown'}. Use fluid widths (%, max-width: 100%, flex-wrap, grid auto-fit) so nothing exceeds the screen width.`
+        `Elements sticking out: ${list || 'unknown'}. Use fluid widths (%, max-width: 100%, flex-wrap, grid auto-fit) so nothing exceeds the screen width.` +
+        (hasWord ? ' A long word that cannot wrap stretches its box: give that text overflow-wrap: anywhere, and inside a grid or flex container also min-width: 0 (for grid columns use minmax(0, 1fr) instead of 1fr).' : '')
     );
   }
   if (m.smallTargetCount > 0) {
