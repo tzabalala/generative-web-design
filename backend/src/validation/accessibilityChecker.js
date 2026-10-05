@@ -1,8 +1,15 @@
 import { createRequire } from 'module';
 import { withPage } from './browserManager.js';
+import { passingOptions } from './colorSuggest.js';
 
 const require = createRequire(import.meta.url);
 const axeCorePath = require.resolve('axe-core');
+
+// How much of a contrast problem is described to Claude: the distinct failing colour pairs, and
+// the distinct rules that set the colours (looked up on a sample of the failing elements).
+const MAX_PAIRS = 8;
+const MAX_NODES_EXPLAINED = 30;
+const MAX_RULES = 10;
 
 // `css` is either one string, or a list of { name, css } parts (for a website: the shared
 // stylesheet and the page's own rules). Each part becomes its own <style> element, so the
@@ -124,12 +131,16 @@ export async function checkAccessibility(html, css) {
         for (const check of [...n.any, ...n.all, ...n.none]) {
           const d = check.data;
           if (d && d.fgColor && d.bgColor && d.contrastRatio) {
-            seen.add(`text ${d.fgColor} on ${d.bgColor} is ${d.contrastRatio}:1, needs ${d.expectedContrastRatio}`);
+            const options = passingOptions(d.fgColor, d.bgColor, parseFloat(d.expectedContrastRatio)); // axe sends "4.5:1"
+            seen.add(
+              `text ${d.fgColor} on ${d.bgColor} is ${d.contrastRatio}:1, needs ${d.expectedContrastRatio}` +
+                (options ? ` (${options})` : '')
+            );
           }
         }
-        if (seen.size >= 4) break;
+        if (seen.size >= MAX_PAIRS) break;
       }
-      return [...seen].slice(0, 4);
+      return [...seen].slice(0, MAX_PAIRS);
     };
 
     const violations = [];
@@ -139,11 +150,21 @@ export async function checkAccessibility(html, css) {
       if (v.id === 'color-contrast') {
         const sources = await page
           .evaluate(explainColorSources, {
-            selectors: v.nodes.slice(0, 3).map((n) => n.target[n.target.length - 1]),
+            selectors: v.nodes.slice(0, MAX_NODES_EXPLAINED).map((n) => n.target[n.target.length - 1]),
             props: ['color', 'background-color'], // longhand also covers a `background:` shorthand
           })
           .catch(() => []);
-        details.push(...sources.map((s) => `where the colours are set: ${s}`));
+        // Many elements usually share a few rules: list each DISTINCT rule once, so one fix
+        // request covers all of them (in a real run, 61 failing elements came from a handful of
+        // rules, and fixing only the first few took three attempts).
+        const distinct = new Map();
+        for (const s of sources) {
+          const [selector, rules] = s.split(' -> ');
+          if (!distinct.has(rules)) distinct.set(rules, selector.split(' > ').pop());
+        }
+        details.push(
+          ...[...distinct].slice(0, MAX_RULES).map(([rules, selector]) => `where the colours are set: ${selector} -> ${rules}`)
+        );
       }
       violations.push({
         id: v.id,

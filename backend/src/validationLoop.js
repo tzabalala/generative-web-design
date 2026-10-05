@@ -1,7 +1,7 @@
 import { validateSite } from './validation/index.js';
 import { buildFixMessages } from './promptEngineering.js';
 import { callClaudeForEdit } from './claudeCodeClient.js';
-import { applyDelta } from './site.js';
+import { applyDeltaReport, describeUnmatched } from './site.js';
 
 // Step 10: generate → check → fix → recheck. This is the actual research
 // contribution: the automatic link between generation and validation.
@@ -30,14 +30,20 @@ export async function runWithValidation(anthropic, initialResult, { onStage } = 
   let validation = await validateSite(site);
   const totalUsage = { ...initialResult.usage };
   const retryHistory = [];
+  let notes = []; // what went wrong with Claude's last answer (edits that matched nothing)
 
   while (!validation.passed && attempts < maxRetries) {
     attempts += 1;
     retryHistory.push({ attempt: attempts, issues: validation.issueSummary });
     stage('fixing', { attempt: attempts, max: maxRetries });
 
-    const { delta, usage } = await callClaudeForEdit(anthropic, buildFixMessages(site, validation.issueSummary));
-    site = applyDelta(site, delta);
+    const { delta, usage } = await callClaudeForEdit(
+      anthropic,
+      buildFixMessages(site, [...notes, ...validation.issueSummary])
+    );
+    const applied = applyDeltaReport(site, delta);
+    site = applied.site;
+    notes = describeUnmatched(applied.unmatched);
     totalUsage.inputTokens += usage.inputTokens;
     totalUsage.outputTokens += usage.outputTokens;
 

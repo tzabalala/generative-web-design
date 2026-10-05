@@ -23,6 +23,12 @@ describe('checkAccessibility', () => {
     expect(contrast.details[0]).toMatch(/text #d4422f on #f9f7f4 is \d\.\d+:1, needs 4\.5/);
   }, 30000);
 
+  it('offers colours that pass, for the text and for the background', async () => {
+    const result = await checkAccessibility('<main><h1>T</h1><p class="x">Hello</p></main>', 'body{background:#1a1a1a;color:#fff}.x{color:#ff0000}');
+    const text = result.violations.find((v) => v.id === 'color-contrast').details[0];
+    expect(text).toMatch(/text #ff0000 on #1a1a1a is 4\.3\d:1, needs 4\.5:1 \(passing options: text colour #[0-9a-f]{6} \(\d\.\d+:1\) or background #[0-9a-f]{6}/);
+  }, 30000);
+
   it('says which stylesheet and rule set the colours, when given the stylesheets as separate parts', async () => {
     const html = '<main><h1>Title</h1><p><span class="price">9.50</span></p></main>';
     const parts = [

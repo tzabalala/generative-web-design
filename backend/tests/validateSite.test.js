@@ -90,6 +90,33 @@ describe('runWithValidation on a site', () => {
     expect(result.validation.site.passed).toBe(true);
   }, 60000);
 
+  it('tells Claude when its replacement matched nothing, and the next attempt can succeed', async () => {
+    const good = siteFor(['index']);
+    const broken = { ...good, pages: [{ ...good.pages[0], css: '.low{color:#bbbbbb}' }] };
+    broken.pages[0].html = broken.pages[0].html.replace('</main>', '<p class="low">Pale text</p></main>');
+    const prompts = [];
+    const claude = fakeClaude({
+      handlers: {
+        edit: (args, n) => {
+          prompts.push(userText(args));
+          // first answer quotes text that is not in the css; the second one is exact and names the page
+          return reply(
+            n === 1
+              ? { css: null, cssEdits: [{ find: '.low { color: #cccccc }', replace: '.low{color:#444}' }], pages: [], removePages: [] }
+              : { css: null, cssEdits: [{ find: '#bbbbbb', replace: '#444444', slug: 'index' }], pages: [], removePages: [] }
+          );
+        },
+      },
+    });
+
+    const result = await runWithValidation(claude, { ...broken, usage: { inputTokens: 0, outputTokens: 0 } });
+    expect(result.validation.passed).toBe(true);
+    expect(result.validation.attempts).toBe(2);
+    expect(prompts[0]).not.toContain('[edit] Your css replacement');
+    expect(prompts[1]).toContain('[edit] Your css replacement of ".low { color: #cccccc }" did not change anything');
+    expect(result.pages[0].css).toContain('#444444');
+  }, 90000);
+
   it('stops after MAX_VALIDATION_RETRIES and returns the site with the remaining issues', async () => {
     process.env.MAX_VALIDATION_RETRIES = '2';
     const broken = breakAlt(siteFor(['index', 'about']), 'about');

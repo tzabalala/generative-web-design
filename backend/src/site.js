@@ -105,12 +105,13 @@ export function assemblePage(plan, page, mainHtml) {
 
 // ---- edits (refine and fix): Claude returns only what changed --------------------------------
 
-// delta = { css: string | null, cssEdits: [ { find, replace } ],
+// delta = { css: string | null, cssEdits: [ { find, replace, slug? } ],
 //          htmlEdits: [ { find, replace, slug? } ],
 //          pages: [ { slug, title?, html, css? } ], removePages: [slug] }
 //   css      - a COMPLETE new shared stylesheet (null = unchanged)
-//   cssEdits - small exact replacements inside the shared stylesheet (e.g. one colour in :root),
-//              much cheaper and more precise than rewriting it all
+//   cssEdits - small exact replacements inside the stylesheets (e.g. one colour in :root), much
+//              cheaper and more precise than rewriting it all. With a slug: that page's own css.
+//              Without: the shared css and every page's css. Whitespace is matched loosely.
 //   htmlEdits - the same for the html of the pages. With a slug: that page only. Without: EVERY
 //              page that was not returned in full (those are used exactly as returned), which
 //              is how something repeated on all pages (the menu, the footer, a phone number)
@@ -136,7 +137,7 @@ export function normalizeDelta(parsed) {
   const css = typeof parsed.css === 'string' && parsed.css.trim() ? parsed.css : null;
   const cssEdits = (Array.isArray(parsed.cssEdits) ? parsed.cssEdits : [])
     .filter((e) => isObject(e) && typeof e.find === 'string' && e.find !== '' && typeof e.replace === 'string')
-    .map((e) => ({ find: e.find, replace: e.replace }));
+    .map((e) => ({ find: e.find, replace: e.replace, slug: isValidSlug(e.slug) ? e.slug : undefined }));
   const htmlEdits = (Array.isArray(parsed.htmlEdits) ? parsed.htmlEdits : [])
     .filter((e) => isObject(e) && typeof e.find === 'string' && e.find !== '' && typeof e.replace === 'string')
     .map((e) => ({ find: e.find, replace: e.replace, slug: isValidSlug(e.slug) ? e.slug : undefined }));
@@ -144,7 +145,32 @@ export function normalizeDelta(parsed) {
 }
 
 // Returns a NEW site with the delta applied (the input is never modified).
+// Exact replacement of every occurrence; if the exact text is not there, the same text with any
+// run of whitespace matching any other run (Claude often re-indents the css it quotes). Returns
+// the new text and how many places were replaced.
+function replaceText(text, find, replace) {
+  if (text.includes(find)) {
+    const parts = text.split(find);
+    return { text: parts.join(replace), count: parts.length - 1 };
+  }
+  const pattern = find.trim().split(/\s+/).map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('\\s+');
+  if (!pattern) return { text, count: 0 };
+  let count = 0;
+  const next = text.replace(new RegExp(pattern, 'g'), () => {
+    count += 1;
+    return replace;
+  });
+  return { text: next, count };
+}
+
 export function applyDelta(site, delta) {
+  return applyDeltaReport(site, delta).site;
+}
+
+// Like applyDelta, and also says which replacements matched nothing, so the fix loop can tell
+// Claude instead of silently doing nothing (which is what made three real fix attempts useless).
+export function applyDeltaReport(site, delta) {
+  const unmatched = [];
   const bySlug = new Map(site.pages.map((p) => [p.slug, { ...p }]));
 
   for (const slug of delta.removePages) if (slug !== HOME_SLUG) bySlug.delete(slug);
@@ -165,10 +191,14 @@ export function applyDelta(site, delta) {
   // page applies to it anyway.
   const returnedInFull = new Set(delta.pages.map((p) => p.slug));
   for (const { find, replace, slug } of delta.htmlEdits ?? []) {
+    let total = 0;
     for (const page of bySlug.values()) {
       if (slug ? page.slug !== slug : returnedInFull.has(page.slug)) continue;
-      page.html = page.html.split(find).join(replace);
+      const done = replaceText(page.html, find, replace);
+      page.html = done.text;
+      total += done.count;
     }
+    if (total === 0) unmatched.push({ kind: 'html', find, slug });
   }
 
   const pages = [...bySlug.values()];
@@ -178,11 +208,35 @@ export function applyDelta(site, delta) {
   }
   pages.sort((a, b) => (a.slug === HOME_SLUG ? -1 : b.slug === HOME_SLUG ? 1 : 0));
 
-  // A replacement whose text is not found changes nothing (the next check will say so).
+  // css edits: with a slug, that page's own css; without, the shared css AND every page's css
+  // (the colour or rule that has to change may live in either).
   let css = delta.css ?? site.css;
-  for (const { find, replace } of delta.cssEdits ?? []) css = css.split(find).join(replace);
+  for (const { find, replace, slug } of delta.cssEdits ?? []) {
+    let total = 0;
+    if (!slug) {
+      const done = replaceText(css, find, replace);
+      css = done.text;
+      total += done.count;
+    }
+    for (const page of pages) {
+      if (slug && page.slug !== slug) continue;
+      if (!page.css) continue;
+      const done = replaceText(page.css, find, replace);
+      page.css = done.text;
+      total += done.count;
+    }
+    if (total === 0) unmatched.push({ kind: 'css', find, slug });
+  }
 
-  return { css, pages };
+  return { site: { css, pages }, unmatched };
+}
+
+// A sentence for Claude about replacements that changed nothing.
+export function describeUnmatched(unmatched) {
+  return unmatched.map(
+    (u) =>
+      `[edit] Your ${u.kind} replacement of "${u.find.replace(/\s+/g, ' ').slice(0, 80)}"${u.slug ? ` in page ${u.slug}` : ''} did not change anything, because that text does not appear there. Copy the text exactly as it is written in the code you were given, or return the whole page.`
+  );
 }
 
 // ---- small helpers --------------------------------------------------------------------------

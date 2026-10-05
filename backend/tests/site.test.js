@@ -5,6 +5,8 @@ import {
   normalizePageReply,
   normalizeDelta,
   applyDelta,
+  applyDeltaReport,
+  describeUnmatched,
   assemblePage,
   markCurrent,
   pageCss,
@@ -186,6 +188,54 @@ describe('cssEdits and htmlEdits', () => {
     });
     expect(d.cssEdits).toEqual([{ find: 'a', replace: 'b' }]);
     expect(d.htmlEdits).toEqual([{ find: 'a', replace: 'b', slug: undefined }]);
+  });
+});
+
+describe('css edits that target a page, loose matching and the unmatched report', () => {
+  const base = siteFor(['index', 'about']);
+  const site = {
+    css: ':root{--c:#111}.tag{background:#ff0000;color:#fff}',
+    pages: [
+      { ...base.pages[0], css: '.vinyl-artist {\n  color: #ff0000;\n  font-weight: 700;\n}' },
+      { ...base.pages[1], css: '.other{color:#ff0000}' },
+    ],
+  };
+  const edits = (list) => normalizeDelta({ pages: [], cssEdits: list });
+
+  it('changes a rule that lives in ONE page css when the edit names the page', () => {
+    const next = applyDelta(site, edits([{ find: 'color: #ff0000;', replace: 'color: #ff5a5a;', slug: 'index' }]));
+    expect(next.pages[0].css).toContain('color: #ff5a5a;');
+    expect(next.pages[1].css).toBe('.other{color:#ff0000}'); // another page is untouched
+    expect(next.css).toBe(site.css);
+  });
+
+  it('without a slug it changes the shared css and every page css that contains the text', () => {
+    const next = applyDelta(site, edits([{ find: '#ff0000', replace: '#c40000' }]));
+    expect(next.css).toContain('background:#c40000');
+    expect(next.pages[0].css).toContain('#c40000');
+    expect(next.pages[1].css).toContain('#c40000');
+  });
+
+  it('matches loosely on whitespace, because Claude often re-indents the css it quotes', () => {
+    // the css has the declarations on separate lines; Claude quoted them on one line
+    const next = applyDelta(site, edits([{ find: '.vinyl-artist { color: #ff0000; font-weight: 700; }', replace: '.vinyl-artist { color: #ff5a5a; font-weight: 700; }', slug: 'index' }]));
+    expect(next.pages[0].css).toBe('.vinyl-artist { color: #ff5a5a; font-weight: 700; }');
+    expect(next.pages[0].css).not.toContain('#ff0000');
+  });
+
+  it('reports an edit that matched nothing, in css and in html, with a sentence for Claude', () => {
+    const delta = normalizeDelta({
+      pages: [],
+      cssEdits: [{ find: '.does-not-exist { color: red }', replace: 'x', slug: 'index' }],
+      htmlEdits: [{ find: 'text that is nowhere', replace: 'y' }],
+    });
+    const { site: next, unmatched } = applyDeltaReport(site, delta);
+    expect(unmatched.map((u) => u.kind)).toEqual(['html', 'css']);
+    expect(next.css).toBe(site.css);
+    const notes = describeUnmatched(unmatched);
+    expect(notes[0]).toContain('[edit] Your html replacement of "text that is nowhere" did not change anything');
+    expect(notes[1]).toContain('in page index');
+    expect(applyDeltaReport(site, edits([{ find: '#111', replace: '#222' }])).unmatched).toEqual([]);
   });
 });
 
