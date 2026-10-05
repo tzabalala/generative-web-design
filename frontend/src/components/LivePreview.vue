@@ -14,7 +14,7 @@ const emit = defineEmits(['select']);
 
 const current = computed(() => props.pages.find((p) => p.slug === props.activeSlug) ?? props.pages[0]);
 
-// Step 14: the iframe + srcdoc is the sandboxing mechanism — it isolates the
+// Step 14: the iframe + srcdoc is the sandboxing mechanism. It isolates the
 // generated code's CSS/JS from the rest of the tool.
 const srcdoc = computed(() => {
   if (!current.value) return '';
@@ -22,7 +22,7 @@ const srcdoc = computed(() => {
 });
 
 // A short label for a tab: the page title before " - Site name", or the slug.
-const label = (page) => (page.title ? page.title.split(/\s[-–—|]\s/)[0] : page.slug);
+const label = (page) => (page.title ? page.title.split(/\s[-\u2013\u2014|]\s/)[0] : page.slug);
 </script>
 
 <template>
@@ -42,7 +42,14 @@ const label = (page) => (page.title ? page.title.split(/\s[-–—|]\s/)[0] : pa
       </button>
     </div>
     <div v-if="!srcdoc" class="live-preview__empty">
-      {{ t('preview.empty') }}
+      <span class="live-preview__empty-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="16" rx="2.5" />
+          <path d="M3 9h18M7 6.5h.01M10 6.5h.01" />
+        </svg>
+      </span>
+      <p class="live-preview__empty-title">{{ t('preview.emptyTitle') }}</p>
+      <p class="live-preview__empty-text">{{ t('preview.empty') }}</p>
     </div>
     <iframe
       v-else
@@ -57,49 +64,86 @@ const label = (page) => (page.title ? page.title.split(/\s[-–—|]\s/)[0] : pa
 <style scoped>
 .live-preview {
   width: 100%;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   overflow: hidden;
-  background: #fff;
+  background: var(--surface);
+  box-shadow: var(--shadow);
 }
 .live-preview__tabs {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.35rem;
-  padding: 0.5rem;
-  background: #f4f4f1;
-  border-bottom: 1px solid #ddd;
+  gap: 0.4rem;
+  padding: 0.6rem;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
 }
 .live-preview__tab {
-  min-height: 2.25rem;
-  padding: 0.3rem 0.85rem;
-  border: 1px solid #c9c9c4;
-  border-radius: 6px;
-  background: #fff;
-  color: #333;
-  font-weight: 600;
+  min-height: 2.3rem;
+  padding: 0.3rem 1rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 650;
+  font-size: 0.9rem;
   cursor: pointer;
 }
+.live-preview__tab:hover:not(.is-active) {
+  border-color: var(--primary);
+}
 .live-preview__tab.is-active {
-  background: #2f6f4f;
-  border-color: #2f6f4f;
-  color: #fff;
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--on-primary);
 }
 /* Tall enough to judge a whole page without scrolling inside a tiny box: about 3/4 of the
-   window height, never smaller than 420px or larger than 900px. */
+   window height, never smaller than 420px or larger than 900px. The frame is always white:
+   the generated website is shown exactly as it was made, whatever the tool's theme is. */
 .live-preview__frame {
   display: block;
   width: 100%;
   height: clamp(420px, 72vh, 900px);
   border: none;
+  background: #fff;
 }
 .live-preview__empty {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 0.35rem;
   height: clamp(420px, 72vh, 900px);
-  color: #595959; /* 7:1 on white; the earlier #888 was only 3.5:1 (found by the end-to-end axe-core check) */
   padding: 2rem;
   text-align: center;
+  background: var(--surface);
+  color: var(--muted);
+}
+.live-preview__empty-icon {
+  display: grid;
+  place-items: center;
+  width: 4rem;
+  height: 4rem;
+  margin-bottom: 0.5rem;
+  border-radius: 20px;
+  background: var(--primary-soft);
+  color: var(--primary-text);
+}
+.live-preview__empty-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 750;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+.live-preview__empty-text {
+  margin: 0;
+  max-width: 38ch;
+}
+@media (max-width: 900px) {
+  .live-preview__empty {
+    height: auto;
+    min-height: 220px;
+  }
 }
 </style>

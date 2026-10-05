@@ -38,22 +38,25 @@ defineProps({
 
 <style scoped>
 .guide {
-  border: 1px solid #f0d090;
-  border-radius: 8px;
-  padding: 0.75rem 1rem;
-  background: #fffaf0;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--warn);
+  border-radius: var(--radius);
+  padding: 1rem 1.15rem;
+  background: var(--surface);
+  box-shadow: var(--shadow);
 }
 .guide__title {
   cursor: pointer;
-  font-weight: 700;
+  font-weight: 750;
   font-size: 1.05rem;
+  letter-spacing: -0.01em;
 }
 .guide__intro {
-  margin: 0.75rem 0 0;
-  font-size: 0.92rem;
+  margin: 0.85rem 0 0;
+  font-size: 0.94rem;
 }
 .guide__heading {
-  margin: 1rem 0 0.3rem;
+  margin: 1.1rem 0 0.35rem;
   font-size: 0.95rem;
 }
 .guide__steps {
@@ -62,15 +65,18 @@ defineProps({
   font-size: 0.92rem;
 }
 .guide__steps li + li {
-  margin-top: 0.4rem;
+  margin-top: 0.45rem;
 }
 .guide__tip {
-  margin: 0.75rem 0 0;
+  margin: 0.8rem 0 0;
+  padding: 0.6rem 0.8rem;
+  border-radius: var(--radius-sm);
+  background: var(--warn-bg);
   font-size: 0.9rem;
 }
 .guide__empty {
   font-size: 0.9rem;
-  color: #666;
+  color: var(--muted);
 }
 .guide__list {
   list-style: none;
@@ -81,10 +87,10 @@ defineProps({
   gap: 0.6rem;
 }
 .guide__item {
-  background: #fff;
-  border: 1px solid #eee;
-  border-radius: 6px;
-  padding: 0.55rem 0.75rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 0.85rem;
 }
 .guide__what {
   margin: 0;
@@ -92,26 +98,28 @@ defineProps({
   font-size: 0.92rem;
 }
 .guide__meta {
-  margin: 0.2rem 0 0;
+  margin: 0.25rem 0 0;
   font-size: 0.85rem;
   overflow-wrap: anywhere;
 }
 .guide__meta span {
-  color: #666;
+  color: var(--muted);
 }
 code {
   font-family: ui-monospace, Consolas, monospace;
   font-size: 0.9em;
-  background: #f2f2f2;
-  padding: 0 0.25rem;
-  border-radius: 3px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 0 0.3rem;
+  border-radius: 4px;
 }
 kbd {
   font-family: ui-monospace, Consolas, monospace;
   font-size: 0.85em;
-  border: 1px solid #ccc;
-  border-radius: 3px;
-  padding: 0 0.3rem;
-  background: #fff;
+  border: 1px solid var(--border-strong);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  padding: 0 0.35rem;
+  background: var(--surface);
 }
 </style>

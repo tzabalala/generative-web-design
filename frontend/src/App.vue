@@ -6,6 +6,7 @@ import { getParticipantCode } from './studyContext.js';
 import { loadSessionId, saveSessionId, forgetSessionId } from './sessionMemory.js';
 import { t, locale, hasMessage } from './i18n.js';
 import LanguageToggle from './components/LanguageToggle.vue';
+import ThemeToggle from './components/ThemeToggle.vue';
 import PromptForm from './components/PromptForm.vue';
 import LivePreview from './components/LivePreview.vue';
 import RefinementPanel from './components/RefinementPanel.vue';
@@ -153,8 +154,8 @@ function handleNewPage() {
 }
 
 // Restore after a reload: asks the backend (which stores it in the database) for the session.
-// Only a 404 (the session no longer exists) makes it forget the id — if the backend is
-// just temporarily down we keep the id so it works on the next attempt.
+// Only a 404 (the session no longer exists) makes it forget the id (if the backend is
+// just temporarily down we keep the id so it works on the next attempt).
 async function restoreSession() {
   const savedId = loadSessionId();
   if (!savedId) return;
@@ -220,8 +221,22 @@ function handleDownload() {
   <div class="app">
     <header class="app__header">
       <div class="app__header-row">
-        <h1>Generative AI-Driven Web Design</h1>
-        <LanguageToggle />
+        <div class="app__brand">
+          <span class="app__logo" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9L12 3z" />
+              <path d="M19 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8.8-2z" />
+            </svg>
+          </span>
+          <div>
+            <h1>Generative AI-Driven Web Design</h1>
+            <p class="app__tagline">{{ t('app.tagline') }}</p>
+          </div>
+        </div>
+        <div class="app__tools">
+          <ThemeToggle />
+          <LanguageToggle />
+        </div>
       </div>
       <p class="app__subtitle">{{ t('app.subtitle') }}</p>
     </header>
@@ -230,7 +245,20 @@ function handleDownload() {
     <div v-if="error" class="app__error" role="alert">{{ errorText(error) }}</div>
     <p v-if="notice" class="app__notice" role="status">{{ t(notice) }}</p>
 
-    <main class="app__layout">
+    <section v-if="!sessionId" class="how" :aria-label="t('how.title')">
+      <h2 class="how__title">{{ t('how.title') }}</h2>
+      <ol class="how__steps">
+        <li v-for="n in 3" :key="n" class="how__step">
+          <span class="how__num" aria-hidden="true">{{ n }}</span>
+          <div>
+            <p class="how__step-title">{{ t(`how.${n}.title`) }}</p>
+            <p class="how__step-text">{{ t(`how.${n}.text`) }}</p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <main class="app__layout" :class="{ 'app__layout--has-site': hasSite }">
       <section class="app__column app__column--controls">
         <PromptForm
           :loading="loading"
@@ -289,64 +317,162 @@ function handleDownload() {
 
 <style scoped>
 .app {
-  max-width: 1400px;
+  max-width: 1440px;
   margin: 0 auto;
-  padding: 1.5rem;
+  padding: 1.25rem 1.5rem 3rem;
 }
-.app__header h1 {
-  font-size: 1.6rem;
-  margin: 0 0 0.25rem;
+
+/* ---- header ---- */
+.app__header {
+  margin-bottom: 1.25rem;
 }
 .app__header-row {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   flex-wrap: wrap;
   gap: 0.75rem 1rem;
 }
-.app__subtitle {
-  color: #555;
-  margin: 0 0 1.25rem;
-  max-width: 60ch;
+.app__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
 }
+.app__logo {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 14px;
+  color: #fff;
+  background: linear-gradient(135deg, #4f46e5, #9333ea);
+  box-shadow: 0 6px 18px rgba(79, 70, 229, 0.35);
+}
+.app__header h1 {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+}
+.app__tagline {
+  margin: 0.1rem 0 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+.app__tools {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.app__subtitle {
+  margin: 1.25rem 0 0;
+  max-width: 62ch;
+  font-size: 1.2rem;
+  line-height: 1.45;
+  font-weight: 550;
+  letter-spacing: -0.01em;
+}
+
+/* ---- how it works ---- */
+.how {
+  margin-bottom: 1.5rem;
+}
+.how__title {
+  margin: 0 0 0.6rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.how__steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+.how__step {
+  display: flex;
+  gap: 0.8rem;
+  align-items: flex-start;
+  padding: 0.95rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.how__num {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 50%;
+  background: var(--primary-soft);
+  color: var(--primary-text);
+  font-weight: 750;
+  font-size: 0.9rem;
+}
+.how__step-title {
+  margin: 0;
+  font-weight: 700;
+}
+.how__step-text {
+  margin: 0.15rem 0 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+/* ---- messages ---- */
 .app__error {
-  background: #fdecec;
-  border: 1px solid #e5a3a3;
-  color: #a12f2f;
-  padding: 0.6rem 0.9rem;
-  border-radius: 6px;
+  background: var(--danger-bg);
+  border: 1px solid var(--danger);
+  color: var(--danger);
+  padding: 0.7rem 1rem;
+  border-radius: var(--radius-sm);
   margin-bottom: 1rem;
+  font-weight: 550;
 }
 .app__notice {
   margin: 0 0 1rem;
-  padding: 0.5rem 0.9rem;
-  border-radius: 6px;
-  background: #eef6f1;
-  border: 1px solid #b9d8c7;
-  color: #245239;
-  font-size: 0.9rem;
+  padding: 0.6rem 1rem;
+  border-radius: var(--radius-sm);
+  background: var(--ok-bg);
+  border: 1px solid var(--ok);
+  color: var(--ok);
+  font-size: 0.92rem;
+  font-weight: 550;
 }
 .app__limit-warning {
-  color: #a15c00;
+  margin: 0;
+  color: var(--warn);
   font-size: 0.85rem;
 }
+
+/* ---- layout ---- */
 .app__layout {
   display: grid;
-  grid-template-columns: minmax(260px, 1fr) minmax(0, 2fr) minmax(220px, 1fr);
-  gap: 1.5rem;
+  grid-template-columns: minmax(280px, 340px) minmax(0, 1fr) minmax(230px, 290px);
+  gap: 1.25rem;
   align-items: start;
 }
 .app__column {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  min-width: 0;
 }
 .app__column--controls,
 .app__column--report {
-  background: #fafafa;
-  border: 1px solid #e5e5e5;
-  border-radius: 8px;
-  padding: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.15rem;
 }
 .app__column--preview {
   min-height: 500px;
@@ -355,47 +481,81 @@ function handleDownload() {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 0.75rem;
 }
 .app__preview-header h2 {
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   margin: 0;
+  letter-spacing: -0.01em;
 }
 .app__new-page {
   align-self: flex-start;
-  padding: 0.4rem 0.9rem;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  background: #fff;
-  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 650;
+  font-size: 0.9rem;
   cursor: pointer;
 }
+.app__new-page:hover:not(:disabled) {
+  background: var(--surface-2);
+}
 .app__new-page:disabled {
-  color: #aaa;
+  color: var(--muted);
+  opacity: 0.6;
   cursor: not-allowed;
 }
 .app__download {
-  padding: 0.4rem 0.9rem;
-  border: 1px solid #2f6f4f;
-  border-radius: 6px;
-  background: #fff;
-  color: #2f6f4f;
-  font-weight: 600;
+  padding: 0.5rem 1.1rem;
+  border: 1px solid var(--primary);
+  border-radius: 999px;
+  background: var(--primary-soft);
+  color: var(--primary-text);
+  font-weight: 700;
+  font-size: 0.9rem;
   cursor: pointer;
 }
+.app__download:hover:not(:disabled) {
+  background: var(--primary);
+  color: var(--on-primary);
+}
 .app__download:disabled {
-  color: #aaa;
-  border-color: #ccc;
+  color: var(--muted);
+  border-color: var(--border);
+  background: transparent;
   cursor: not-allowed;
 }
 
 /* Step 18: the tool itself (not only the generated output) must be responsive */
+@media (max-width: 1100px) {
+  .app__layout {
+    grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+  }
+  .app__column--report {
+    grid-column: 1 / -1;
+  }
+}
 @media (max-width: 900px) {
+  .app {
+    padding: 1rem 1rem 2.5rem;
+  }
   .app__layout {
     grid-template-columns: 1fr;
   }
   .app__column--preview {
-    min-height: 400px;
+    min-height: 0;
+  }
+  /* On a phone the form comes first until there is a website; then the website comes first */
+  .app__layout--has-site .app__column--preview {
     order: -1;
+  }
+  .how__steps {
+    grid-template-columns: 1fr;
+  }
+  .app__subtitle {
+    font-size: 1.05rem;
   }
 }
 </style>

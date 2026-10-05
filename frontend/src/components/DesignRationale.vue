@@ -31,7 +31,7 @@ defineProps({
               <span>
                 <strong>{{ c.name }}</strong>
                 <span v-if="c.hex" class="rationale__hex"> {{ c.hex }}</span>
-                <span v-if="c.why"> — {{ c.why }}</span>
+                <span v-if="c.why">: {{ c.why }}</span>
               </span>
             </li>
           </ul>
@@ -60,31 +60,36 @@ defineProps({
 
 <style scoped>
 .rationale {
-  border: 1px solid #e5e5e5;
-  border-radius: 8px;
-  padding: 0.75rem 1rem;
-  background: #fafafa;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.15rem;
+  background: var(--surface);
+  box-shadow: var(--shadow);
 }
 .rationale__title {
   cursor: pointer;
-  font-weight: 700;
+  font-weight: 750;
   font-size: 1.05rem;
+  letter-spacing: -0.01em;
 }
 .rationale__summary {
-  margin: 0.75rem 0 0;
+  margin: 0.85rem 0 0;
+  font-size: 1rem;
 }
 .rationale__list {
   margin: 0.75rem 0 0;
 }
 .rationale__list dt {
-  margin-top: 0.75rem;
-  font-weight: 700;
-  font-size: 0.9rem;
-  color: #2f6f4f;
+  margin-top: 0.85rem;
+  font-weight: 750;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--primary-text);
 }
 .rationale__list dd {
-  margin: 0.2rem 0 0;
-  font-size: 0.92rem;
+  margin: 0.25rem 0 0;
+  font-size: 0.94rem;
 }
 .rationale__colors {
   list-style: none;
@@ -92,29 +97,31 @@ defineProps({
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.5rem;
 }
 .rationale__color {
   display: flex;
   align-items: flex-start;
-  gap: 0.6rem;
+  gap: 0.65rem;
 }
 .rationale__swatch {
   flex: none;
-  width: 1.1rem;
-  height: 1.1rem;
-  margin-top: 0.15rem;
-  border: 1px solid #0003;
-  border-radius: 4px;
+  width: 1.3rem;
+  height: 1.3rem;
+  margin-top: 0.1rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
 }
 .rationale__hex {
   font-family: ui-monospace, Consolas, monospace;
   font-size: 0.85em;
-  color: #555;
+  color: var(--muted);
 }
 .rationale__note {
-  margin: 0.9rem 0 0;
+  margin: 1rem 0 0;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
   font-size: 0.8rem;
-  color: #666;
+  color: var(--muted);
 }
 </style>

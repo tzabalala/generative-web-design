@@ -6,7 +6,7 @@ const props = defineProps({
   validation: { type: Object, default: null },
 });
 
-// Step 16: plain-language summary — the non-technical user does not need to know
+// Step 16: plain-language summary. The non-technical user does not need to know
 // what "axe-core" or "WCAG" mean, only what was checked and whether it passed.
 // `label` is a translation key.
 const CHECKS = [
@@ -53,14 +53,16 @@ function statusOf(validation, key) {
 .a11y-report {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.75rem;
 }
 .a11y-report h2 {
   font-size: 1.05rem;
   margin: 0;
+  letter-spacing: -0.01em;
 }
 .a11y-report__empty {
-  color: #595959; /* 4.5:1 or better on the panel background */
+  margin: 0;
+  color: var(--muted);
   font-size: 0.9rem;
 }
 .a11y-report__list {
@@ -69,33 +71,47 @@ function statusOf(validation, key) {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.5rem;
 }
 .a11y-report__item {
   display: flex;
   align-items: flex-start;
-  gap: 0.5rem;
+  gap: 0.6rem;
   font-size: 0.9rem;
 }
 .a11y-report__icon {
-  font-weight: 700;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  font-weight: 800;
 }
 .a11y-report__icon.is-ok {
-  color: #2f6f4f;
+  color: var(--ok);
+  background: var(--ok-bg);
 }
 .a11y-report__icon.is-warn {
-  color: #a15c00;
+  color: var(--warn);
+  background: var(--warn-bg);
 }
 .a11y-report__warning {
-  margin-top: 0.5rem;
-  padding: 0.6rem 0.75rem;
-  background: #fff7e6;
-  border: 1px solid #f0d090;
-  border-radius: 6px;
+  padding: 0.75rem 0.9rem;
+  background: var(--warn-bg);
+  border: 1px solid var(--warn);
+  border-radius: var(--radius-sm);
   font-size: 0.85rem;
+  color: var(--text);
+}
+.a11y-report__warning p {
+  margin: 0;
+  font-weight: 650;
 }
 .a11y-report__warning ul {
   margin: 0.4rem 0 0;
   padding-left: 1.1rem;
+  overflow-wrap: anywhere;
 }
 </style>

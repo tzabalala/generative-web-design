@@ -132,14 +132,14 @@ describe('LanguageToggle', () => {
 describe('App with the language toggle', () => {
   it('switches the whole UI to Greek and back', async () => {
     const wrapper = mount(App);
-    expect(wrapper.text()).toContain('Create page');
+    expect(wrapper.text()).toContain('Build my website');
 
     await wrapper.find('.lang__btn[lang="el"]').trigger('click');
-    expect(wrapper.text()).toContain('Δημιουργία σελίδας');
-    expect(wrapper.text()).not.toContain('Create page');
+    expect(wrapper.text()).toContain('Φτιάξε τον ιστότοπό μου');
+    expect(wrapper.text()).not.toContain('Build my website');
 
     await wrapper.find('.lang__btn[lang="en"]').trigger('click');
-    expect(wrapper.text()).toContain('Create page');
+    expect(wrapper.text()).toContain('Build my website');
   });
 
   it('re-translates a notice that is already on screen', async () => {

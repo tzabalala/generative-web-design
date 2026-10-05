@@ -29,28 +29,27 @@ const OPTIONS = [
 <style scoped>
 .lang {
   display: inline-flex;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  overflow: hidden;
+  padding: 0.2rem;
+  gap: 0.15rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: var(--surface);
 }
 .lang__btn {
-  padding: 0.3rem 0.75rem;
+  padding: 0.3rem 0.8rem;
   border: none;
-  background: #fff;
-  color: #333;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text);
   font-size: 0.85rem;
+  font-weight: 600;
   cursor: pointer;
 }
-.lang__btn + .lang__btn {
-  border-left: 1px solid #ccc;
+.lang__btn:hover:not(.is-active) {
+  background: var(--surface-2);
 }
 .lang__btn.is-active {
-  background: #2f6f4f;
-  color: #fff;
-  font-weight: 600;
-}
-.lang__btn:focus-visible {
-  outline: 2px solid #2f6f4f;
-  outline-offset: -2px;
+  background: var(--primary);
+  color: var(--on-primary);
 }
 </style>

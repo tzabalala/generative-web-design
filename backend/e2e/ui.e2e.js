@@ -71,12 +71,12 @@ describe('the tool, end to end', () => {
     try {
       await page.click('.lang__btn[lang="el"]');
       assert.equal(await page.getAttribute('html', 'lang'), 'el');
-      assert.match(await text('.prompt-form__submit'), /Δημιουργία σελίδας/);
+      assert.match(await text('.prompt-form__submit'), /Φτιάξε τον ιστότοπό μου/);
       noViolations(await axeViolations(page), 'on the empty start page (Greek)');
 
       await page.reload();
       assert.equal(await page.getAttribute('html', 'lang'), 'el');
-      assert.match(await text('.prompt-form__submit'), /Δημιουργία σελίδας/);
+      assert.match(await text('.prompt-form__submit'), /Φτιάξε τον ιστότοπό μου/);
     } finally {
       // Whatever happened above, later steps expect English.
       await page.click('.lang__btn[lang="en"]');
@@ -162,6 +162,10 @@ describe('the tool, end to end', () => {
     assert.match(await srcdoc(), /About our teachers \(edited: make the heading calmer\)/); // stays on that page
     assert.equal(await page.locator('.refinement-panel__entry').count(), 2);
     assert.match(await text('.refinement-panel__counter'), /2 \/ 15/);
+    // newest first: the change just made is at the very top, the first idea at the bottom
+    const prompts = await page.locator('.refinement-panel__prompt').allTextContents();
+    assert.deepEqual(prompts, ['make the heading calmer', 'a website for a local yoga studio']);
+    assert.match(await text('.refinement-panel__entry:first-child'), /Latest/);
     assert.deepEqual(harness.fake.calls, ['refine', 'design']); // nothing to fix this time
 
     const session = await fetchSession(harness, await currentSessionId(page));
@@ -254,6 +258,29 @@ describe('the tool, end to end', () => {
     noViolations(await axeViolations(page), 'with a generated website on screen (Greek)');
     assert.deepEqual(await tabNames(page), ['Home', 'About', 'Contact']);
     await page.click('.lang__btn[lang="en"]');
+  });
+
+  it('dark mode: remembered after a reload, and the tool passes the accessibility check in dark mode too (English and Greek)', async () => {
+    try {
+      await page.click('.theme');
+      assert.equal(await page.getAttribute('html', 'data-theme'), 'dark');
+      assert.equal(await page.getAttribute('.theme', 'aria-pressed'), 'true');
+      await page.waitForTimeout(500); // colours fade over 0.2 s; axe must not measure halfway through
+      noViolations(await axeViolations(page), 'in dark mode with a website on screen (English)');
+      await page.click('.lang__btn[lang="el"]');
+      noViolations(await axeViolations(page), 'in dark mode with a website on screen (Greek)');
+      await page.click('.lang__btn[lang="en"]');
+
+      await page.reload();
+      await page.waitForSelector('.live-preview__tab');
+      assert.equal(await page.getAttribute('html', 'data-theme'), 'dark', 'the choice survives a reload');
+      // the generated website itself is NOT darkened: its frame stays as the site was made
+      const frameBackground = await page.$eval('iframe.live-preview__frame', (el) => getComputedStyle(el).backgroundColor);
+      assert.equal(frameBackground, 'rgb(255, 255, 255)');
+    } finally {
+      if ((await page.getAttribute('html', 'data-theme')) === 'dark') await page.click('.theme');
+    }
+    assert.equal(await page.getAttribute('html', 'data-theme'), 'light');
   });
 
   it('the tool itself fits a phone screen: no sideways scrolling, no tiny buttons', async () => {

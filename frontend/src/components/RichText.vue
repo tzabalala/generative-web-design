@@ -35,16 +35,18 @@ const parts = computed(() =>
 code {
   font-family: ui-monospace, Consolas, monospace;
   font-size: 0.9em;
-  background: #f2f2f2;
-  padding: 0 0.25rem;
-  border-radius: 3px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 0 0.3rem;
+  border-radius: 4px;
 }
 kbd {
   font-family: ui-monospace, Consolas, monospace;
   font-size: 0.85em;
-  border: 1px solid #ccc;
-  border-radius: 3px;
-  padding: 0 0.3rem;
-  background: #fff;
+  border: 1px solid var(--border-strong);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  padding: 0 0.35rem;
+  background: var(--surface);
 }
 </style>
