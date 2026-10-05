@@ -17,6 +17,12 @@ import { buildDownload } from './downloadPage.js';
 import { slugFromHash } from './sitePreview.js';
 
 const sessionId = ref(null);
+// Two screens: the START screen (just the idea box) and the WORKSPACE (changes, preview, quality
+// check). The workspace opens as soon as the first idea is sent, and also whenever a saved
+// website is restored. A failed first attempt goes back to the start screen with the text restored.
+const started = ref(false);
+const booting = ref(Boolean(loadSessionId())); // a saved website is being fetched: show neither screen yet
+const prefill = ref(null); // { text, id }: puts the idea back into the box after a failed first attempt
 // The website being shown: a shared stylesheet and 1 to 5 pages [{ slug, title, html, css }].
 const css = ref('');
 const pages = ref([]);
@@ -78,6 +84,7 @@ function showSite(res) {
 }
 
 const mode = computed(() => (sessionId.value ? 'refine' : 'generate'));
+const screen = computed(() => (sessionId.value || started.value ? 'workspace' : 'start'));
 const limitReached = computed(() => iterationsUsed.value >= iterationsLimit.value);
 
 async function handleSubmit(text) {
@@ -89,6 +96,8 @@ async function handleSubmit(text) {
   try {
     let res;
     if (!sessionId.value) {
+      started.value = true; // the workspace opens right away and shows the progress
+      prefill.value = null;
       activeSlug.value = ''; // a new website opens on its home page
       res = await generatePage(text, {
         requestId,
@@ -110,6 +119,11 @@ async function handleSubmit(text) {
     placeholders.value = res.placeholders ?? [];
   } catch (err) {
     error.value = err;
+    if (!sessionId.value) {
+      // the first attempt failed: back to the start screen, with the idea still in the box
+      started.value = false;
+      prefill.value = { text, id: Date.now() };
+    }
   } finally {
     stopProgress();
     loading.value = false;
@@ -140,6 +154,8 @@ async function handleUndo() {
 // /generate (a new page) and not to /refine (a change to the same page).
 function handleNewPage() {
   sessionId.value = null;
+  started.value = false;
+  prefill.value = null;
   pages.value = [];
   css.value = '';
   activeSlug.value = '';
@@ -158,7 +174,10 @@ function handleNewPage() {
 // just temporarily down we keep the id so it works on the next attempt).
 async function restoreSession() {
   const savedId = loadSessionId();
-  if (!savedId) return;
+  if (!savedId) {
+    booting.value = false;
+    return;
+  }
   try {
     const saved = await getSession(savedId);
     const last = saved.history[saved.history.length - 1];
@@ -180,6 +199,8 @@ async function restoreSession() {
     } else {
       notice.value = 'notice.unreachable';
     }
+  } finally {
+    booting.value = false;
   }
 }
 
@@ -224,8 +245,9 @@ function handleDownload() {
         <div class="app__brand">
           <span class="app__logo" aria-hidden="true">
             <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9L12 3z" />
-              <path d="M19 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8.8-2z" />
+              <rect x="3" y="4" width="18" height="16" rx="3" />
+              <path d="M3 9h18" />
+              <path d="M8.5 15.2l2.3 2.3 4.7-4.9" />
             </svg>
           </span>
           <div>
@@ -238,14 +260,28 @@ function handleDownload() {
           <LanguageToggle />
         </div>
       </div>
-      <p class="app__subtitle">{{ t('app.subtitle') }}</p>
+      <p v-if="screen === 'start' && !booting" class="app__subtitle">{{ t('app.subtitle') }}</p>
     </header>
 
     <!-- role="alert": screen readers announce an error as soon as it appears -->
     <div v-if="error" class="app__error" role="alert">{{ errorText(error) }}</div>
     <p v-if="notice" class="app__notice" role="status">{{ t(notice) }}</p>
 
-    <section v-if="!sessionId" class="how" :aria-label="t('how.title')">
+    <!-- SCREEN 1: just the idea box -->
+    <main v-if="screen === 'start' && !booting" class="start">
+      <section class="start__card">
+        <PromptForm
+          hero
+          :loading="loading"
+          :stage="stage"
+          :mode="mode"
+          :disabled="limitReached"
+          :prefill="prefill"
+          @submit="handleSubmit"
+        />
+      </section>
+
+      <section class="how" :aria-label="t('how.title')">
       <h2 class="how__title">{{ t('how.title') }}</h2>
       <ol class="how__steps">
         <li v-for="n in 3" :key="n" class="how__step">
@@ -256,15 +292,18 @@ function handleDownload() {
           </div>
         </li>
       </ol>
-    </section>
+      </section>
+    </main>
 
-    <main class="app__layout" :class="{ 'app__layout--has-site': hasSite }">
+    <!-- SCREEN 2: the workspace -->
+    <main v-else-if="!booting" class="app__layout" :class="{ 'app__layout--has-site': hasSite }">
       <section class="app__column app__column--controls">
         <PromptForm
           :loading="loading"
           :stage="stage"
           :mode="mode"
           :disabled="limitReached"
+          :prefill="prefill"
           @submit="handleSubmit"
         />
         <button
@@ -317,47 +356,54 @@ function handleDownload() {
 
 <style scoped>
 .app {
-  max-width: 1440px;
+  max-width: 1520px;
   margin: 0 auto;
-  padding: 1.25rem 1.5rem 3rem;
+  padding: 1.25rem 2rem 3rem;
 }
 
 /* ---- header ---- */
 .app__header {
   margin-bottom: 1.25rem;
 }
+/* The brand sits in the middle; the switches are on the right (centred under it on a phone) */
 .app__header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: start;
   gap: 0.75rem 1rem;
 }
 .app__brand {
+  grid-column: 2;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.85rem;
+  gap: 0.6rem;
+  text-align: center;
+}
+.app__tools {
+  grid-column: 3;
+  justify-self: end;
 }
 .app__logo {
   flex: none;
   display: grid;
   place-items: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  border-radius: 14px;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 16px;
   color: #fff;
-  background: linear-gradient(135deg, #4f46e5, #9333ea);
-  box-shadow: 0 6px 18px rgba(79, 70, 229, 0.35);
+  background: linear-gradient(135deg, #4f46e5, #06b6d4);
+  box-shadow: 0 8px 22px rgba(6, 140, 190, 0.32);
 }
 .app__header h1 {
   margin: 0;
-  font-size: 1.35rem;
+  font-size: 1.7rem;
   font-weight: 750;
   letter-spacing: -0.02em;
 }
 .app__tagline {
-  margin: 0.1rem 0 0;
-  font-size: 0.9rem;
+  margin: 0.25rem 0 0;
+  font-size: 1rem;
   color: var(--muted);
 }
 .app__tools {
@@ -367,12 +413,29 @@ function handleDownload() {
   gap: 0.6rem;
 }
 .app__subtitle {
-  margin: 1.25rem 0 0;
+  margin: 1.5rem auto 0;
   max-width: 62ch;
+  text-align: center;
   font-size: 1.2rem;
   line-height: 1.45;
   font-weight: 550;
   letter-spacing: -0.01em;
+}
+
+/* ---- start screen ---- */
+.start {
+  max-width: 860px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2.25rem;
+}
+.start__card {
+  padding: 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  box-shadow: var(--shadow);
 }
 
 /* ---- how it works ---- */
@@ -457,7 +520,7 @@ function handleDownload() {
 .app__layout {
   display: grid;
   grid-template-columns: minmax(280px, 340px) minmax(0, 1fr) minmax(230px, 290px);
-  gap: 1.25rem;
+  gap: 2.25rem;
   align-items: start;
 }
 .app__column {
@@ -532,6 +595,7 @@ function handleDownload() {
 @media (max-width: 1100px) {
   .app__layout {
     grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+    gap: 1.75rem;
   }
   .app__column--report {
     grid-column: 1 / -1;
@@ -540,6 +604,21 @@ function handleDownload() {
 @media (max-width: 900px) {
   .app {
     padding: 1rem 1rem 2.5rem;
+  }
+  .app__header-row {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+  .app__brand,
+  .app__tools {
+    grid-column: 1;
+    justify-self: center;
+  }
+  .app__tools {
+    order: -1;
+  }
+  .app__layout {
+    gap: 1.25rem;
   }
   .app__layout {
     grid-template-columns: 1fr;

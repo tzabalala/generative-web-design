@@ -1,6 +1,6 @@
 <script setup>
 import { t, hasMessage } from '../i18n.js';
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 
 const props = defineProps({
   loading: { type: Boolean, default: false },
@@ -8,11 +8,23 @@ const props = defineProps({
   disabled: { type: Boolean, default: false },
   // What the backend is doing right now, e.g. { stage: 'fixing', attempt: 1, max: 3 } (or null).
   stage: { type: Object, default: null },
+  // The large version used on the start screen
+  hero: { type: Boolean, default: false },
+  // { text, id }: puts an idea back into the box (after a failed first attempt)
+  prefill: { type: Object, default: null },
 });
 const emit = defineEmits(['submit']);
 
 const text = ref('');
 const EXAMPLES = [1, 2, 3, 4];
+
+watch(
+  () => props.prefill,
+  (value) => {
+    if (value && typeof value.text === 'string') text.value = value.text;
+  },
+  { immediate: true }
+);
 
 // Text for the current step. An unknown step name (e.g. from a newer backend) shows nothing
 // instead of a raw translation key.
@@ -41,7 +53,7 @@ function onSubmit() {
 </script>
 
 <template>
-  <form class="prompt-form" @submit.prevent="onSubmit">
+  <form class="prompt-form" :class="{ 'prompt-form--hero': hero }" @submit.prevent="onSubmit">
     <label class="prompt-form__label" for="prompt-input">
       {{ mode === 'generate' ? t('form.labelGenerate') : t('form.labelRefine') }}
     </label>
@@ -51,7 +63,7 @@ function onSubmit() {
       class="prompt-form__textarea"
       :placeholder="mode === 'generate' ? t('form.placeholderGenerate') : t('form.placeholderRefine')"
       :disabled="loading || disabled"
-      rows="4"
+      :rows="hero ? 5 : 4"
       @keydown.enter.meta.prevent="onSubmit"
       @keydown.enter.ctrl.prevent="onSubmit"
     />
@@ -140,6 +152,27 @@ function onSubmit() {
   cursor: not-allowed;
 }
 
+.prompt-form--hero .prompt-form__label {
+  font-size: 1.25rem;
+}
+.prompt-form--hero .prompt-form__textarea {
+  padding: 1.1rem 1.2rem;
+  font-size: 1.1rem;
+  border-radius: 14px;
+}
+.prompt-form--hero .prompt-form__submit {
+  padding: 1rem 1.4rem;
+  font-size: 1.1rem;
+}
+.prompt-form--hero .prompt-form__chips {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (max-width: 640px) {
+  .prompt-form--hero .prompt-form__chips {
+    grid-template-columns: 1fr;
+  }
+}
 .prompt-form__examples-title {
   margin: 0.4rem 0 0.4rem;
   font-size: 0.85rem;
