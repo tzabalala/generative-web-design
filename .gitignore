@@ -29,3 +29,6 @@ exports/
 
 # Test coverage reports
 coverage/
+
+# Expert-review folders (rebuilt from benchmark-runs with npm run review-pack)
+expert-review/

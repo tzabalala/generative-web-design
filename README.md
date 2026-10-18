@@ -117,13 +117,25 @@ Measures how much the validation loop improves raw model output, on a fixed list
 ```bash
 cd backend
 npm run benchmark                              # 10 pages, dev model (Haiku)
-npm run benchmark -- --count=35 --yes          # all 35 prompts (7 Greek, the last 5 ask for a whole
-                                               # multi-page website); spends real money
-npm run benchmark -- --count=35 --yes --model=demo   # the same prompts with Sonnet
-npm run benchmark -- --count=35 --yes --resume=benchmark-runs/<run>.json
+npm run benchmark -- --count=45 --yes          # all 45 prompts: the main 35 (7 Greek, the last 5 ask
+                                               # for a whole website) + 10 held-out; spends real money
+npm run benchmark -- --count=35 --yes          # the main 35 only
+npm run benchmark -- --count=45 --yes --model=demo   # the same prompts with Sonnet
+npm run benchmark -- --count=45 --yes --resume=benchmark-runs/<run>.json
                                                # finish an interrupted run (only the missing prompts)
 npm run benchmark:compare -- benchmark-runs/<haiku>.json benchmark-runs/<sonnet>.json
+npm run review-pack -- --run=benchmark-runs/<run>.json   # 6 sites as files for the expert review (free)
 ```
+
+The 10 **held-out** prompts (36 to 45) were written after the one-page rule (`src/pageScope.js`) had
+been designed on the main 35, and were not tried against it first; the summary reports them as their
+own group (`byGroup.heldOut`), to show whether the system also works on requests it was not tuned on.
+
+`review-pack` picks 6 sites from a run (one page and several pages, English and Greek, one still
+failing, one held-out) and writes them to `backend/expert-review/<run>/` as a user would download them,
+under neutral names (site-A to site-F) with an `index.html` for the reviewer. The checker results are
+in `ANSWER-KEY.md`, which is for the researcher and not for the reviewer. It only works for runs made
+since `v6-page-scope`, which save the code of every site.
 
 Results are saved after every page to `backend/benchmark-runs/`. Every row records what failed (the
 axe rule and page of each violation, the text of each layout and site issue), the summary lists the

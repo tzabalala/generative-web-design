@@ -1,4 +1,4 @@
-import { summarize, PROMPTS, isGreek, planResume, isOutOfCredit, details, ruleCounts } from '../scripts/benchmark.js';
+import { summarize, PROMPTS, isGreek, planResume, isOutOfCredit, details, ruleCounts, MAIN_COUNT, promptGroup } from '../scripts/benchmark.js';
 import { compareSummaries, samePrompts } from '../scripts/compareBenchmarks.js';
 
 describe('summarize', () => {
@@ -81,13 +81,25 @@ describe('summarize: the extra figures of the larger benchmark', () => {
 
 describe('benchmark prompt set', () => {
   it('keeps the original 10 prompts first and includes Greek ones', () => {
-    expect(PROMPTS.length).toBe(35);
+    const main = PROMPTS.slice(0, MAIN_COUNT);
+    expect(main.length).toBe(35);
     expect(PROMPTS[0]).toMatch(/freelance photographer/);
     expect(PROMPTS[9]).toMatch(/small business services page/);
-    expect(PROMPTS.filter(isGreek).length).toBe(7);
-    // the last five ask for a whole website of several pages
-    for (const p of PROMPTS.slice(30)) expect(p).toMatch(/website|ιστότοπος/);
+    expect(main.filter(isGreek).length).toBe(7);
+    // the last five of the main list ask for a whole website of several pages
+    for (const p of main.slice(30)) expect(p).toMatch(/website|ιστότοπος/);
     expect(new Set(PROMPTS).size).toBe(PROMPTS.length);
+  });
+
+  it('adds 10 held-out prompts after the main list, reported as their own group', () => {
+    expect(PROMPTS.length).toBe(45);
+    expect(PROMPTS.slice(MAIN_COUNT).filter(isGreek).length).toBe(3);
+    expect(promptGroup(PROMPTS[34])).toBe('main');
+    expect(promptGroup(PROMPTS[35])).toBe('heldOut');
+    const row = (group, passed) => ({ group, before: { passed: false }, after: { passed }, retries: 1 });
+    const s = summarize([row('main', true), row('heldOut', false), row('heldOut', true), { before: { passed: true }, after: { passed: true } }]);
+    expect(s.byGroup.main).toMatchObject({ sampleSize: 2, passedAfter: 2 }); // a row without a group is "main"
+    expect(s.byGroup.heldOut).toMatchObject({ sampleSize: 2, passedAfter: 1, pctFullyPassingAfter: 50 });
   });
 });
 

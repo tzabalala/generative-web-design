@@ -44,7 +44,7 @@ describe('requestedScope', () => {
   });
 
   it('reads the benchmark list as intended: 29 one-page requests and 6 websites', () => {
-    const scopes = PROMPTS.map(requestedScope);
+    const scopes = PROMPTS.slice(0, 35).map(requestedScope); // the main list (the held-out prompts are not tuned on)
     expect(scopes.filter((s) => s === 'one')).toHaveLength(29);
     expect(scopes.filter((s) => s === 'site')).toHaveLength(6);
     expect(scopes[12]).toBe('site'); // "a conference website ..."

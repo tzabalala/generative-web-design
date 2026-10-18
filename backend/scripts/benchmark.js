@@ -19,10 +19,10 @@ import { requestedScope } from '../src/pageScope.js';
 // before/after, the share of pages that pass fully, and the average number of retries.
 //
 //   npm run benchmark                         10 pages, Haiku (the original sample)
-//   npm run benchmark -- --count=30 --yes     all 30 prompts (this spends real money)
+//   npm run benchmark -- --count=45 --yes     all 45 prompts: the main 35 + 10 held-out (real money)
 //   npm run benchmark -- --model=demo         the same prompts with the demo model (Sonnet)
 //   npm run benchmark -- --out=my-run.json    choose the output file
-//   npm run benchmark -- --count=35 --yes --resume=benchmark-runs/dev_x.json
+//   npm run benchmark -- --count=45 --yes --resume=benchmark-runs/dev_x.json
 //                                             finish an interrupted run: keeps its successful
 //                                             pages, runs only the missing ones, same file
 //
@@ -72,7 +72,27 @@ export const PROMPTS = [
   'a website for a local yoga studio, with a class schedule, the teachers, prices and a contact page',
   'ένας ιστότοπος για ένα οδοντιατρείο, με υπηρεσίες και τιμές, την ομάδα των γιατρών και φόρμα για ραντεβού',
   'ένας ιστότοπος για ένα μικρό ξενοδοχείο στη Σαντορίνη, με δωμάτια, φωτογραφίες, δραστηριότητες και επικοινωνία',
+
+  // ---- HELD-OUT prompts (added 2026-10-18, after v6-page-scope) ----
+  // The page-scope rule (src/pageScope.js) was designed while looking at the 35 prompts above,
+  // so a run on them flatters it. These 10 were written afterwards, in varied wording, and were
+  // NOT tried against the rule before being added; their results are reported as a separate
+  // group ("heldOut") to show whether the system works on requests it was not tuned on.
+  'a simple page to promote my guitar lessons, with prices and a way to get in touch',
+  'a homepage for a vegan food truck showing where we park this week and the menu',
+  'a site for a small vet clinic with services, the vets and emergency contact details',
+  'an online shop front for handmade candles, with a few products and an about section',
+  'a portfolio for an illustrator with selected work, a short bio and commission info',
+  "a sign-up page for a children's summer football camp, with dates, costs and a registration form",
+  'web pages for a local book club: what we are reading, past meetings and how to join',
+  'μια σελίδα για ένα συνεργείο αυτοκινήτων με υπηρεσίες, ωράριο και τηλέφωνο',
+  'ένας ιστότοπος για έναν δικηγόρο με τομείς εξειδίκευσης, βιογραφικό και επικοινωνία',
+  'κάτι απλό για το κομμωτήριό μου με τιμές και κρατήσεις',
 ];
+
+// The first MAIN_COUNT prompts are the main list; the rest are the held-out group.
+export const MAIN_COUNT = 35;
+export const promptGroup = (prompt) => (PROMPTS.indexOf(prompt) >= MAIN_COUNT ? 'heldOut' : 'main');
 
 // Rough cost of one SITE (a plan call, one call per page, fixes) WITHOUT the rationale
 // call, only to warn before spending money. A site costs about 2 to 3 times what the old
@@ -172,6 +192,7 @@ export function summarize(allRows) {
     totalOutputTokens: rows.reduce((s, r) => s + num(r.usage?.outputTokens), 0),
     byLanguage,
     bySize: group(rows, (r) => ((r.pages ?? 1) > 1 ? 'severalPages' : 'onePage')),
+    byGroup: group(rows, (r) => r.group ?? 'main'),
     // requests that the code reads as ONE page (pageScope.js) and how many really got one
     oneReadAsOne: (() => {
       const asked = rows.filter((r) => r.scope === 'one');
@@ -294,6 +315,7 @@ async function run() {
         prompt,
         language: isGreek(prompt) ? 'el' : 'en',
         scope: requestedScope(prompt),
+        group: promptGroup(prompt),
         pages: fixed.pages.length,
         before: counts(rawValidation),
         after: counts(fixed.validation),
@@ -329,7 +351,7 @@ async function run() {
     `After validation loop:  avg ${summary.after.avgAccessibilityViolations.toFixed(2)} a11y violations, ` +
       `avg ${summary.after.avgResponsiveIssues.toFixed(2)} responsive issues, ${summary.after.pctFullyPassing.toFixed(0)}% fully passing`
   );
-  for (const [name, g] of Object.entries(summary.bySize)) {
+  for (const [name, g] of [...Object.entries(summary.byGroup), ...Object.entries(summary.bySize)]) {
     console.log(`  ${name}: ${g.sampleSize} sites, ${g.pctFullyPassingBefore.toFixed(0)}% -> ${g.pctFullyPassingAfter.toFixed(0)}% fully passing`);
   }
   console.log(`Requests read as one page: ${summary.oneReadAsOne.asked}, of which ${summary.oneReadAsOne.gotOnePage} got one page`);
