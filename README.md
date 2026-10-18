@@ -119,11 +119,21 @@ cd backend
 npm run benchmark                              # 10 pages, dev model (Haiku)
 npm run benchmark -- --count=35 --yes          # all 35 prompts (7 Greek, the last 5 ask for a whole
                                                # multi-page website); spends real money
-npm run benchmark -- --count=30 --yes --model=demo   # the same prompts with Sonnet
+npm run benchmark -- --count=35 --yes --model=demo   # the same prompts with Sonnet
+npm run benchmark -- --count=35 --yes --resume=benchmark-runs/<run>.json
+                                               # finish an interrupted run (only the missing prompts)
 npm run benchmark:compare -- benchmark-runs/<haiku>.json benchmark-runs/<sonnet>.json
 ```
 
-Results are saved after every page to `backend/benchmark-runs/`. The first 10 prompts are the
+Results are saved after every page to `backend/benchmark-runs/`. A run stops by itself when the API
+credit balance runs out; add credits and finish it with `--resume`, which keeps the pages already
+paid for and refuses to mix runs of a different model or prompt version.
+
+The full 35-prompt run with Haiku 4.5 (`benchmark-runs/dev_2026-10-18-11-51-49.json`, about $3.51):
+fully passing sites 20% before the loop, 77% after (one-page sites 24% to 95%, sites of 2 to 5 pages
+14% to 50%), average accessibility violations 1.46 to 0.20, 1.43 repair attempts and 85 s per site.
+
+The first 10 prompts are the
 original sample, but a run is **no longer directly comparable** with the first benchmark
 (`backend/benchmark-results.json`): the pipeline now plans a site first, checks every page, and
 includes the real layout check and the site check. Do not `import` `scripts/benchmark.js` from

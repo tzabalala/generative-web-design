@@ -1,0 +1,924 @@
+{
+  "generatedAt": "2026-10-18T11:51:49.745Z",
+  "meta": {
+    "startedAt": "2026-10-18T11:51:49.745Z",
+    "resumedAt": [
+      "2026-10-18T12:05:35.677Z"
+    ],
+    "modelProfile": "dev",
+    "model": "claude-haiku-4-5-20251001",
+    "promptVersion": "v5-text-logo",
+    "layoutCheck": true,
+    "pages": 35,
+    "estimatedCostUsd": 3.5094
+  },
+  "summary": {
+    "sampleSize": 35,
+    "failedCount": 0,
+    "before": {
+      "avgAccessibilityViolations": 1.457142857142857,
+      "avgResponsiveIssues": 0.11428571428571428,
+      "avgLayoutIssues": 0.08571428571428572,
+      "pctFullyPassing": 20
+    },
+    "after": {
+      "avgAccessibilityViolations": 0.2,
+      "avgResponsiveIssues": 0.02857142857142857,
+      "avgLayoutIssues": 0.02857142857142857,
+      "pctFullyPassing": 77.14285714285715
+    },
+    "avgRetriesNeeded": 1.4285714285714286,
+    "avgSeconds": 84.73428571428569,
+    "totalInputTokens": 1189106,
+    "totalOutputTokens": 464052,
+    "byLanguage": {
+      "en": {
+        "sampleSize": 28,
+        "pctFullyPassingBefore": 17.857142857142858,
+        "pctFullyPassingAfter": 75
+      },
+      "el": {
+        "sampleSize": 7,
+        "pctFullyPassingBefore": 28.57142857142857,
+        "pctFullyPassingAfter": 85.71428571428571
+      }
+    }
+  },
+  "rows": [
+    {
+      "prompt": "a one-page portfolio for a freelance photographer, with a gallery and a contact form",
+      "language": "en",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true
+      },
+      "retries": 2,
+      "seconds": 62.7,
+      "usage": {
+        "inputTokens": 22240,
+        "outputTokens": 7120
+      }
+    },
+    {
+      "prompt": "a landing page for a local yoga studio with a class schedule and a sign-up button",
+      "language": "en",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true
+      },
+      "retries": 1,
+      "seconds": 55.7,
+      "usage": {
+        "inputTokens": 15970,
+        "outputTokens": 8142
+      }
+    },
+    {
+      "prompt": "a contact page for a small bakery, with a form and opening hours",
+      "language": "en",
+      "pages": 2,
+      "before": {
+        "accessibilityViolations": 2,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true
+      },
+      "retries": 1,
+      "seconds": 51.3,
+      "usage": {
+        "inputTokens": 20221,
+        "outputTokens": 8603
+      }
+    },
+    {
+      "prompt": "a simple blog homepage listing 5 recent posts with titles and short excerpts",
+      "language": "en",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 1,
+        "passed": false
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true
+      },
+      "retries": 1,
+      "seconds": 39.9,
+      "usage": {
+        "inputTokens": 11150,
+        "outputTokens": 5283
+      }
+    },
+    {
+      "prompt": "a product landing page for a reusable water bottle, with a buy button and features list",
+      "language": "en",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true
+      },
+      "retries": 3,
+      "seconds": 60.4,
+      "usage": {
+        "inputTokens": 31143,
+        "outputTokens": 7911
+      }
+    },
+    {
+      "prompt": "an event page for a community charity fundraiser, with a date, location, and RSVP form",
+      "language": "en",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true
+      },
+      "retries": 1,
+      "seconds": 51.3,
+      "usage": {
+        "inputTokens": 13814,
+        "outputTokens": 6456
+      }
+    },
+    {
+      "prompt": "a personal resume/CV page with an about section, skills, and work experience",
+      "language": "en",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true
+      },
+      "retries": 0,
+      "seconds": 76,
+      "usage": {
+        "inputTokens": 5603,
+        "outputTokens": 6280
+      }
+    },
+    {
+      "prompt": "a restaurant homepage with a menu section and a reservation form",
+      "language": "en",
+      "pages": 3,
+      "before": {
+        "accessibilityViolations": 3,
+        "responsiveIssues": 1,
+        "layoutIssues": 1,
+        "siteIssues": 1,
+        "passed": false
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 1,
+        "layoutIssues": 1,
+        "siteIssues": 0,
+        "passed": false
+      },
+      "retries": 3,
+      "seconds": 161,
+      "usage": {
+        "inputTokens": 72339,
+        "outputTokens": 30446
+      }
+    },
+    {
+      "prompt": "a nonprofit organisation homepage explaining its mission and a donate button",
+      "language": "en",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true
+      },
+      "retries": 1,
+      "seconds": 42.8,
+      "usage": {
+        "inputTokens": 12772,
+        "outputTokens": 6011
+      }
+    },
+    {
+      "prompt": "a small business services page listing 3 services with pricing",
+      "language": "en",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true
+      },
+      "retries": 1,
+      "seconds": 48.8,
+      "usage": {
+        "inputTokens": 14252,
+        "outputTokens": 6834
+      }
+    },
+    {
+      "prompt": "a landing page for a mobile app that tracks daily water intake, with screenshots and a download button",
+      "language": "en",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true
+      },
+      "retries": 1,
+      "seconds": 68,
+      "usage": {
+        "inputTokens": 15812,
+        "outputTokens": 8494
+      }
+    },
+    {
+      "prompt": "a photography studio booking page with pricing packages and an enquiry form",
+      "language": "en",
+      "pages": 4,
+      "before": {
+        "accessibilityViolations": 2,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 3,
+        "passed": false
+      },
+      "after": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false
+      },
+      "retries": 3,
+      "seconds": 131.4,
+      "usage": {
+        "inputTokens": 90405,
+        "outputTokens": 25431
+      }
+    },
+    {
+      "prompt": "a conference website with a speaker list, a schedule table, and a ticket button",
+      "language": "en",
+      "pages": 4,
+      "before": {
+        "accessibilityViolations": 4,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false
+      },
+      "after": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false
+      },
+      "retries": 3,
+      "seconds": 188.9,
+      "usage": {
+        "inputTokens": 96340,
+        "outputTokens": 31522
+      }
+    },
+    {
+      "prompt": "a personal finance blog homepage with a newsletter sign-up form",
+      "language": "en",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true
+      },
+      "retries": 0,
+      "seconds": 48.5,
+      "usage": {
+        "inputTokens": 6244,
+        "outputTokens": 6669
+      }
+    },
+    {
+      "prompt": "a gym homepage with membership plans compared in a table",
+      "language": "en",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true
+      },
+      "retries": 0,
+      "seconds": 40.2,
+      "usage": {
+        "inputTokens": 5699,
+        "outputTokens": 6538
+      }
+    },
+    {
+      "prompt": "a hair salon page with services, prices, and an online booking button",
+      "language": "en",
+      "pages": 4,
+      "before": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true
+      },
+      "retries": 0,
+      "seconds": 84.3,
+      "usage": {
+        "inputTokens": 18527,
+        "outputTokens": 18408
+      }
+    },
+    {
+      "prompt": "a landing page for an online coding course with a curriculum list and testimonials",
+      "language": "en",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true
+      },
+      "retries": 1,
+      "seconds": 107.3,
+      "usage": {
+        "inputTokens": 15714,
+        "outputTokens": 8475
+      }
+    },
+    {
+      "prompt": "a local bookshop homepage with featured books and opening hours",
+      "language": "en",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true
+      },
+      "retries": 2,
+      "seconds": 61.9,
+      "usage": {
+        "inputTokens": 21582,
+        "outputTokens": 6897
+      }
+    },
+    {
+      "prompt": "a wedding invitation page with the date, the venue, and an RSVP form",
+      "language": "en",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 2,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true
+      },
+      "retries": 1,
+      "seconds": 41.1,
+      "usage": {
+        "inputTokens": 11783,
+        "outputTokens": 5091
+      }
+    },
+    {
+      "prompt": "a dentist clinic homepage with services, team members, and an appointment form",
+      "language": "en",
+      "pages": 4,
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 1,
+        "layoutIssues": 0,
+        "siteIssues": 1,
+        "passed": false
+      },
+      "after": {
+        "accessibilityViolations": 2,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false
+      },
+      "retries": 3,
+      "seconds": 124,
+      "usage": {
+        "inputTokens": 84198,
+        "outputTokens": 21618
+      }
+    },
+    {
+      "prompt": "a real-estate agency page listing three properties with photos and prices",
+      "language": "en",
+      "pages": 3,
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true
+      },
+      "retries": 1,
+      "seconds": 80.6,
+      "usage": {
+        "inputTokens": 25973,
+        "outputTokens": 11119
+      }
+    },
+    {
+      "prompt": "a FAQ page for a software product with ten questions and answers",
+      "language": "en",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true
+      },
+      "retries": 0,
+      "seconds": 64,
+      "usage": {
+        "inputTokens": 6561,
+        "outputTokens": 8160
+      }
+    },
+    {
+      "prompt": "a pricing page for a SaaS tool with three plans and a feature comparison",
+      "language": "en",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 2,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false
+      },
+      "after": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false
+      },
+      "retries": 3,
+      "seconds": 54.5,
+      "usage": {
+        "inputTokens": 31457,
+        "outputTokens": 7618
+      }
+    },
+    {
+      "prompt": "a volunteer sign-up page for a beach clean-up event",
+      "language": "en",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true
+      },
+      "retries": 1,
+      "seconds": 51.1,
+      "usage": {
+        "inputTokens": 14005,
+        "outputTokens": 7352
+      }
+    },
+    {
+      "prompt": "a landing page for a small coffee roastery with a shop section and a subscription offer",
+      "language": "en",
+      "pages": 3,
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 1,
+        "layoutIssues": 1,
+        "siteIssues": 0,
+        "passed": false
+      },
+      "after": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false
+      },
+      "retries": 3,
+      "seconds": 85.6,
+      "usage": {
+        "inputTokens": 72880,
+        "outputTokens": 18333
+      }
+    },
+    {
+      "prompt": "μια σελίδα για έναν θερινό κινηματογράφο, με πρόγραμμα ταινιών και κράτηση θέσεων",
+      "language": "el",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true
+      },
+      "retries": 1,
+      "seconds": 81.8,
+      "usage": {
+        "inputTokens": 18605,
+        "outputTokens": 10813
+      }
+    },
+    {
+      "prompt": "μια σελίδα επικοινωνίας για ένα μικρό ζαχαροπλαστείο, με φόρμα και ώρες λειτουργίας",
+      "language": "el",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true
+      },
+      "retries": 1,
+      "seconds": 39.1,
+      "usage": {
+        "inputTokens": 11724,
+        "outputTokens": 4775
+      }
+    },
+    {
+      "prompt": "η αρχική σελίδα ενός γυμναστηρίου με προγράμματα συνδρομής και κουμπί εγγραφής",
+      "language": "el",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true
+      },
+      "retries": 2,
+      "seconds": 72.2,
+      "usage": {
+        "inputTokens": 24184,
+        "outputTokens": 8309
+      }
+    },
+    {
+      "prompt": "μια απλή σελίδα για έναν εκπαιδευτή σκύλων με τιμές και φόρμα επικοινωνίας",
+      "language": "el",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true
+      },
+      "retries": 0,
+      "seconds": 59,
+      "usage": {
+        "inputTokens": 5838,
+        "outputTokens": 6695
+      }
+    },
+    {
+      "prompt": "η σελίδα ενός φωτογράφου γάμων με γκαλερί και φόρμα επικοινωνίας",
+      "language": "el",
+      "pages": 4,
+      "before": {
+        "accessibilityViolations": 4,
+        "responsiveIssues": 1,
+        "layoutIssues": 1,
+        "siteIssues": 0,
+        "passed": false
+      },
+      "after": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false
+      },
+      "retries": 3,
+      "seconds": 181,
+      "usage": {
+        "inputTokens": 87848,
+        "outputTokens": 25068
+      }
+    },
+    {
+      "prompt": "a website for a family-run Italian restaurant, with a menu, an about page, a photo gallery and a contact page with a reservation form",
+      "language": "en",
+      "pages": 5,
+      "before": {
+        "accessibilityViolations": 2,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true
+      },
+      "retries": 1,
+      "seconds": 120.7,
+      "usage": {
+        "inputTokens": 55874,
+        "outputTokens": 24357
+      }
+    },
+    {
+      "prompt": "a website for a small architecture studio, with projects, the team, services and a contact page",
+      "language": "en",
+      "pages": 5,
+      "before": {
+        "accessibilityViolations": 6,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 2,
+        "passed": false
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 1,
+        "passed": false
+      },
+      "retries": 3,
+      "seconds": 167.8,
+      "usage": {
+        "inputTokens": 94574,
+        "outputTokens": 24828
+      }
+    },
+    {
+      "prompt": "a website for a local yoga studio, with a class schedule, the teachers, prices and a contact page",
+      "language": "en",
+      "pages": 5,
+      "before": {
+        "accessibilityViolations": 5,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 1,
+        "passed": false
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true
+      },
+      "retries": 2,
+      "seconds": 137.3,
+      "usage": {
+        "inputTokens": 70924,
+        "outputTokens": 26594
+      }
+    },
+    {
+      "prompt": "ένας ιστότοπος για ένα οδοντιατρείο, με υπηρεσίες και τιμές, την ομάδα των γιατρών και φόρμα για ραντεβού",
+      "language": "el",
+      "pages": 4,
+      "before": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true
+      },
+      "retries": 0,
+      "seconds": 97.6,
+      "usage": {
+        "inputTokens": 21385,
+        "outputTokens": 21616
+      }
+    },
+    {
+      "prompt": "ένας ιστότοπος για ένα μικρό ξενοδοχείο στη Σαντορίνη, με δωμάτια, φωτογραφίες, δραστηριότητες και επικοινωνία",
+      "language": "el",
+      "pages": 5,
+      "before": {
+        "accessibilityViolations": 2,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true
+      },
+      "retries": 1,
+      "seconds": 127.9,
+      "usage": {
+        "inputTokens": 61466,
+        "outputTokens": 26186
+      }
+    }
+  ]
+}

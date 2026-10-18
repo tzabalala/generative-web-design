@@ -1,4 +1,4 @@
-import { summarize, PROMPTS, isGreek } from '../scripts/benchmark.js';
+import { summarize, PROMPTS, isGreek, planResume, isOutOfCredit } from '../scripts/benchmark.js';
 import { compareSummaries, samePrompts } from '../scripts/compareBenchmarks.js';
 
 describe('summarize', () => {
@@ -114,5 +114,44 @@ describe('compareSummaries', () => {
     const b = { ...result('y', 1, 1), rows: [{ prompt: 'a' }, { prompt: 'different' }] };
     expect(samePrompts(a, a)).toBe(true);
     expect(samePrompts(a, b)).toBe(false);
+  });
+});
+
+describe('resuming an interrupted benchmark', () => {
+  const prompts = ['a', 'b', 'c', 'd'];
+  const meta = { model: 'haiku', promptVersion: 'v5' };
+  const done = (prompt) => ({ prompt, before: {}, after: {}, retries: 0 });
+
+  it('runs every prompt when there is no earlier run', () => {
+    const { byPrompt, todo } = planResume(prompts, null, 'haiku', 'v5');
+    expect(byPrompt.size).toBe(0);
+    expect(todo).toEqual(prompts);
+  });
+
+  it('keeps the successful pages and runs the failed and missing ones again', () => {
+    const previous = { meta, rows: [done('a'), { prompt: 'b', error: 'credit balance is too low' }, done('c')] };
+    const { byPrompt, todo } = planResume(prompts, previous, 'haiku', 'v5');
+    expect([...byPrompt.keys()]).toEqual(['a', 'c']);
+    expect(todo).toEqual(['b', 'd']);
+  });
+
+  it('ignores earlier rows for prompts outside this run', () => {
+    const previous = { meta, rows: [done('a'), done('old prompt')] };
+    const { byPrompt } = planResume(prompts, previous, 'haiku', 'v5');
+    expect([...byPrompt.keys()]).toEqual(['a']);
+  });
+
+  it('refuses to mix runs of a different model or prompt version', () => {
+    const previous = { meta, rows: [done('a')] };
+    expect(() => planResume(prompts, previous, 'sonnet', 'v5')).toThrow(/Cannot resume/);
+    expect(() => planResume(prompts, previous, 'haiku', 'v6')).toThrow(/Cannot resume/);
+  });
+
+  it('recognises the out-of-credit error of the API and nothing else', () => {
+    const real =
+      '400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API."}}';
+    expect(isOutOfCredit(real)).toBe(true);
+    expect(isOutOfCredit('Claude output was cut off')).toBe(false);
+    expect(isOutOfCredit(undefined)).toBe(false);
   });
 });

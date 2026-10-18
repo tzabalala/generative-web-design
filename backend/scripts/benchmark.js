@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { mkdirSync, writeFileSync } from 'fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 import { fileURLToPath } from 'url';
 import Anthropic from '@anthropic-ai/sdk';
@@ -21,6 +21,12 @@ import { estimateCostUsd } from '../src/studyExport.js';
 //   npm run benchmark -- --count=30 --yes     all 30 prompts (this spends real money)
 //   npm run benchmark -- --model=demo         the same prompts with the demo model (Sonnet)
 //   npm run benchmark -- --out=my-run.json    choose the output file
+//   npm run benchmark -- --count=35 --yes --resume=benchmark-runs/dev_x.json
+//                                             finish an interrupted run: keeps its successful
+//                                             pages, runs only the missing ones, same file
+//
+// A run stops by itself when the API reports that the credit balance is too low (every
+// later request would fail too); its results so far are saved and can be resumed.
 //
 // The first 10 prompts are the original sample, in the original order, so a --count=10 run
 // stays comparable with the first benchmark. It does NOT include the design-rationale call
@@ -140,6 +146,24 @@ export function summarize(allRows) {
   };
 }
 
+// --resume: keep the successful rows of an earlier run (same model and prompt version only,
+// otherwise the two halves would not be comparable) and run only the prompts still missing.
+// Failed rows are run again. Without a previous run, every prompt is to do.
+export function planResume(prompts, previous, model, promptVersion) {
+  if (previous && (previous.meta?.model !== model || previous.meta?.promptVersion !== promptVersion)) {
+    throw new Error(
+      `Cannot resume: that run used ${previous.meta?.model} / ${previous.meta?.promptVersion}, ` +
+        `this one would use ${model} / ${promptVersion}.`
+    );
+  }
+  const kept = (previous?.rows ?? []).filter((r) => !r.error && prompts.includes(r.prompt));
+  const byPrompt = new Map(kept.map((r) => [r.prompt, r]));
+  return { byPrompt, todo: prompts.filter((p) => !byPrompt.has(p)) };
+}
+
+// The API refuses every request once the credit balance runs out, so the run stops there.
+export const isOutOfCredit = (message) => /credit balance is too low/i.test(String(message ?? ''));
+
 function save(path, meta, rows) {
   const summary = summarize(rows);
   const cost = estimateCostUsd(meta.model, summary.totalInputTokens, summary.totalOutputTokens);
@@ -155,10 +179,20 @@ async function run() {
   const model = resolveModel();
   const prompts = PROMPTS.slice(0, args.count);
 
-  const estimate = prompts.length * ROUGH_COST_PER_PAGE[profile];
+  const previous = args.resume ? JSON.parse(readFileSync(resolve(args.resume), 'utf-8')) : null;
+  let byPrompt, todo;
+  try {
+    ({ byPrompt, todo } = planResume(prompts, previous, model, PROMPT_VERSION));
+  } catch (err) {
+    console.log(err.message);
+    process.exit(1);
+  }
+
+  const estimate = todo.length * ROUGH_COST_PER_PAGE[profile];
   console.log(`Benchmark: ${prompts.length} pages, model ${model} (profile ${profile})`);
+  if (previous) console.log(`Resuming ${args.resume}: ${byPrompt.size} pages kept, ${todo.length} to run`);
   console.log(`Rough cost guess: about $${estimate.toFixed(2)} (the real bill is on console.anthropic.com)\n`);
-  if (prompts.length > FREE_LIMIT && !args.yes) {
+  if (todo.length > FREE_LIMIT && !args.yes) {
     console.log(`That is more than ${FREE_LIMIT} pages and it spends real money. Add --yes to go ahead.`);
     process.exit(1);
   }
@@ -166,10 +200,15 @@ async function run() {
   const stamp = new Date().toISOString().replace(/[:T]/g, '-').slice(0, 19);
   const outDir = resolve(fileURLToPath(new URL('..', import.meta.url)), 'benchmark-runs');
   mkdirSync(outDir, { recursive: true });
-  const outPath = args.out ? resolve(args.out) : resolve(outDir, `${profile}_${stamp}.json`);
+  const outPath = args.out
+    ? resolve(args.out)
+    : args.resume
+      ? resolve(args.resume)
+      : resolve(outDir, `${profile}_${stamp}.json`);
 
   const meta = {
-    startedAt: new Date().toISOString(),
+    startedAt: previous?.meta.startedAt ?? new Date().toISOString(),
+    ...(previous ? { resumedAt: [...(previous.meta.resumedAt ?? []), new Date().toISOString()] } : {}),
     modelProfile: profile,
     model,
     promptVersion: PROMPT_VERSION,
@@ -178,10 +217,12 @@ async function run() {
   };
 
   const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-  const rows = [];
+  // rows are always saved in the order of PROMPTS, whatever order they were run in
+  const ordered = () => prompts.map((p) => byPrompt.get(p)).filter(Boolean);
+  let outOfCredit = false;
 
-  for (const [i, prompt] of prompts.entries()) {
-    console.log(`[${i + 1}/${prompts.length}] ${prompt}`);
+  for (const prompt of todo) {
+    console.log(`[${prompts.indexOf(prompt) + 1}/${prompts.length}] ${prompt}`);
     const t0 = Date.now();
     try {
       const initial = await generateSite(anthropic, prompt);
@@ -198,19 +239,24 @@ async function run() {
         seconds: Math.round((Date.now() - t0) / 100) / 10,
         usage: fixed.usage,
       };
-      rows.push(row);
+      byPrompt.set(prompt, row);
       console.log(
         `  before: ${row.before.accessibilityViolations} a11y, ${row.before.responsiveIssues} responsive (${row.before.layoutIssues} layout), passed=${row.before.passed}\n` +
           `  after:  ${row.after.accessibilityViolations} a11y, ${row.after.responsiveIssues} responsive (${row.after.layoutIssues} layout), passed=${row.after.passed}, retries=${row.retries}, ${row.seconds}s`
       );
     } catch (err) {
-      rows.push({ prompt, language: isGreek(prompt) ? 'el' : 'en', error: err.message });
+      byPrompt.set(prompt, { prompt, language: isGreek(prompt) ? 'el' : 'en', error: err.message });
       console.log(`  FAILED: ${err.message}`);
+      outOfCredit = isOutOfCredit(err.message);
     }
-    save(outPath, meta, rows); // after every page: a crash or Ctrl+C never loses paid results
+    save(outPath, meta, ordered()); // after every page: a crash or Ctrl+C never loses paid results
+    if (outOfCredit) {
+      console.log('\nThe API credit balance is too low; stopping. Add credits, then run again with --resume.');
+      break;
+    }
   }
 
-  const { summary, cost } = save(outPath, meta, rows);
+  const { summary, cost } = save(outPath, meta, ordered());
   console.log('\n=== Summary ===');
   console.log(`Sample size: ${summary.sampleSize}${summary.failedCount ? ` (${summary.failedCount} failed, excluded)` : ''}`);
   console.log(
