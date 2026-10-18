@@ -7,6 +7,7 @@ import { refineRouter } from './routes/refine.js';
 import { sessionRouter } from './routes/session.js';
 import { progressRouter } from './routes/progress.js';
 import { modelProfile, resolveModel } from './config.js';
+import { answerText } from './claudeCodeClient.js';
 
 const app = express();
 app.use(cors());
@@ -35,7 +36,7 @@ app.get('/api/test-claude', async (req, res) => {
       max_tokens: 50,
       messages: [{ role: 'user', content: 'Reply with exactly: "Claude API connection OK"' }],
     });
-    res.json({ reply: message.content[0].text });
+    res.json({ reply: answerText(message) });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

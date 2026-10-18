@@ -4,7 +4,9 @@
 // Bump this WHENEVER the prompts below change OR the validation rules change (what counts
 // as a failed check): it is part of the cache key, so answers produced under the old
 // instructions/rules are never served again.
-export const PROMPT_VERSION = 'v6-page-scope';
+import { siteLanguageNote, designLanguageNote } from './language.js';
+
+export const PROMPT_VERSION = 'v8-site-checks';
 
 // What every generated page must satisfy, whatever the user asked for. The same list is used
 // for the first generation, for every change and for every automatic fix.
@@ -157,13 +159,13 @@ export const ONE_PAGE_NOTE =
 // scope: 'one' | 'site' | 'open' (see pageScope.js). retry: the previous plan had more pages
 // than the request asked for.
 export function buildPlanMessages(userPrompt, { scope = 'open', retry = false } = {}) {
-  const notes = [];
+  const notes = [siteLanguageNote(userPrompt)];
   if (scope === 'one') notes.push(ONE_PAGE_NOTE);
   if (retry) notes.push('Your previous plan had several pages. Return a plan with exactly ONE page.');
   return [
     {
       role: 'user',
-      content: `Plan and design a website for this request: ${userPrompt}${notes.length ? `\n\n${notes.join('\n')}` : ''}`,
+      content: `Plan and design a website for this request: ${userPrompt}\n\n${notes.join('\n')}`,
     },
     // Prefill: forces the answer to start with "{" so it is not wrapped in a
     // ```markdown code fence.
@@ -194,7 +196,9 @@ ${plan.css}
 Write the page "${page.slug}" now.
 Title: ${page.title}
 Purpose: ${page.purpose}
-Suggested structure: ${page.layout}${anchors}`,
+Suggested structure: ${page.layout}${anchors}
+
+${siteLanguageNote(userPrompt)}`,
     },
     JSON_PREFILL,
   ];
@@ -243,12 +247,8 @@ Where a report says a colour or a rule is set "in the shared css", the fix belon
 }
 
 // The output language is decided deterministically in code (not by the model): the
-// model tends to answer in English when its instructions are in English.
-function languageInstruction(request) {
-  return /[Ͱ-Ͽ]/.test(request) // Greek characters
-    ? 'Write ALL text values (summary, audience, colour names and reasons, typography, layout, conversion, and the what/where/replaceWith of every placeholder) in Greek (Ελληνικά). Keep "searchText" exactly as it appears in the code.'
-    : 'Write all text values in the same language as the request. Keep "searchText" exactly as it appears in the code.';
-}
+// model tends to answer in English when its instructions are in English (see language.js).
+const languageInstruction = designLanguageNote;
 
 // request: the user's original request (and, on refine, the latest change).
 export function buildDesignMessages(site, request) {

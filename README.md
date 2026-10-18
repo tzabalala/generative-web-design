@@ -144,9 +144,30 @@ final code of each site is written to `benchmark-runs/<run>-sites/`. A run stops
 credit balance runs out; add credits and finish it with `--resume`, which keeps the pages already
 paid for and refuses to mix runs of a different model or prompt version.
 
-The full 35-prompt run with Haiku 4.5 (`benchmark-runs/dev_2026-10-18-11-51-49.json`, about $3.51):
-fully passing sites 20% before the loop, 77% after (one-page sites 24% to 95%, sites of 2 to 5 pages
-14% to 50%), average accessibility violations 1.46 to 0.20, 1.43 repair attempts and 85 s per site.
+`npm run benchmark:rescore -- --run=benchmark-runs/<run>.json` (free) judges the saved raw and final
+code of a run again with the current checks and writes `<run>.rescored.json`, for when a check itself
+is corrected. A row that failed because the answer could not be read keeps that answer in
+`<run>-sites/NN-error.txt`.
+
+Results with the submitted version (45 prompts, one run each; "re-scored" = judged with the corrected
+site check of `v8-site-checks`, see below):
+
+| Run | Model | Fully passing before the loop | After (as run) | After (re-scored) | Cost |
+|---|---|---|---|---|---|
+| `v7_haiku_45.json` | Haiku 4.5 | 39% (44 sites) | 91% | 93% | about $3.48 |
+| `v7_sonnet_45.json` | Sonnet 5 | 40% | 89% | 96% | about $7.07 |
+
+The stronger model writes fewer accessibility violations (0.62 against 1.07 per site) but passes
+first time no more often, so the loop is needed with both. The difference between 93% and 96% is
+within the variation between runs. These runs also found five defects of the application with
+Sonnet 5 (it refuses the JSON prefill, answers with a thinking block first, drifted to other
+languages, sometimes leaves a raw newline in its JSON, and can spend the whole token limit thinking)
+and one false alarm of the site check (a testimonial's `<footer>` was compared with the site footer);
+all six are fixed and covered by tests.
+
+Earlier runs: the 35-prompt run with Haiku 4.5 and `v5-text-logo`
+(`benchmark-runs/dev_2026-10-18-11-51-49.json`, about $3.51): 20% before the loop, 77% after (one-page
+sites 24% to 95%, sites of 2 to 5 pages 14% to 50%); and `v6_haiku_45.json` (87% as run, 89% re-scored).
 
 The first 10 prompts are the
 original sample, but a run is **no longer directly comparable** with the first benchmark

@@ -153,3 +153,42 @@ describe('pages that are copies of each other', () => {
     expect(issuesOf(short)).not.toContain('almost the same content');
   });
 });
+
+describe('a <footer> or <nav> inside the page content is not the site footer or menu', () => {
+  // a false alarm found by the Sonnet 5 benchmark (2026-10-18): a testimonial's <footer> on the
+  // home page was compared with the site footer of the other pages
+  const withContent = (extra) => {
+    const plan = planFor(['index', 'about', 'contact']);
+    return {
+      css: '',
+      pages: plan.pages.map((p) => ({
+        slug: p.slug,
+        title: p.title,
+        html: assemblePage(plan, p, (p.slug === 'index' ? extra : '') + mainFor(p.slug)),
+        css: '',
+      })),
+    };
+  };
+
+  it('a testimonial written as <blockquote> with a <footer> on one page is fine', () => {
+    const site = withContent('<blockquote><p>Lovely classes.</p><footer>Maria Chen, member since 2021</footer></blockquote>');
+    expect(checkSite(site).issues.join(' ')).not.toMatch(/footer/i);
+  });
+
+  it('an in-page <nav> (a table of contents) on one page is fine', () => {
+    const site = withContent('<nav aria-label="On this page"><a href="#a">A</a></nav>');
+    expect(checkSite(site).issues.join(' ')).not.toMatch(/menu/i);
+  });
+
+  it('a site footer that really differs is still caught', () => {
+    const site = withContent('');
+    site.pages[2].html = site.pages[2].html.replace('1 Example Street', '2 Other Street');
+    expect(checkSite(site).issues.join(' ')).toMatch(/footer on contact is different/);
+  });
+
+  it('a page whose only footer is inside the content has no site footer', () => {
+    const site = withContent('');
+    site.pages[1].html = site.pages[1].html.replace(FOOTER, '').replace('</main>', '<footer>quote</footer></main>');
+    expect(checkSite(site).issues.join(' ')).toMatch(/These pages have no footer: about/);
+  });
+});

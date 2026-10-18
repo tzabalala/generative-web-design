@@ -38,10 +38,17 @@ function idsIn(html) {
 
 const isExternal = (href) => /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i.test(href); // https:, mailto:, tel:, //host
 
-// The first <tag ...>...</tag>, with the "current page" marker removed so that the menu of
-// the page you are on does not count as a difference.
-function blockOf(html, tag) {
-  const m = html.match(new RegExp(`<${tag}\\b[\\s\\S]*?<\\/${tag}>`, 'i'));
+// The site's own <tag ...>...</tag> (the shared menu or footer), with the "current page"
+// marker removed so that the menu of the page you are on does not count as a difference.
+// Only what is OUTSIDE <main> counts: the server puts the shared header and footer around
+// <main>, and the content may legitimately hold its own <footer> or <nav>. Taking the first
+// one anywhere was a false alarm found by the Sonnet 5 benchmark (2026-10-18): a testimonial
+// written as <blockquote>...<footer>- Maria Chen</footer></blockquote> on the home page was
+// compared with the site footer of the other pages, the site was reported as failing, and the
+// loop spent all three repairs on a problem that did not exist (3 of the 5 Sonnet failures).
+export function blockOf(html, tag) {
+  const outsideMain = html.replace(/<main\b[\s\S]*<\/main>/i, ' ');
+  const m = outsideMain.match(new RegExp(`<${tag}\\b[\\s\\S]*?<\\/${tag}>`, 'i'));
   if (!m) return null;
   return collapse(m[0].replace(/\s*aria-current\s*=\s*(["'])[^"']*\1/gi, ''));
 }

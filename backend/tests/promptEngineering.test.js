@@ -20,10 +20,12 @@ describe('buildDesignMessages', () => {
     expect(user.content).toContain('searchText');
   });
 
-  it('follows the request language for non-Greek requests', () => {
+  it('says English for an English request, and the request language when it is unclear', () => {
     const [user] = buildDesignMessages(site, 'a page for a bakery');
     expect(user.content).not.toContain('in Greek');
-    expect(user.content).toContain('same language as the request');
+    expect(user.content).toContain('in English');
+    const [other] = buildDesignMessages(site, 'une page pour une boulangerie');
+    expect(other.content).toContain('same language as the request');
   });
 
   it('shows Claude every page of the site', () => {
