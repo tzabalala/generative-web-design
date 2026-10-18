@@ -1,4 +1,4 @@
-import { summarize, PROMPTS, isGreek, planResume, isOutOfCredit } from '../scripts/benchmark.js';
+import { summarize, PROMPTS, isGreek, planResume, isOutOfCredit, details, ruleCounts } from '../scripts/benchmark.js';
 import { compareSummaries, samePrompts } from '../scripts/compareBenchmarks.js';
 
 describe('summarize', () => {
@@ -153,5 +153,56 @@ describe('resuming an interrupted benchmark', () => {
     expect(isOutOfCredit(real)).toBe(true);
     expect(isOutOfCredit('Claude output was cut off')).toBe(false);
     expect(isOutOfCredit(undefined)).toBe(false);
+  });
+});
+
+describe('what failed, not only how much', () => {
+  const validation = {
+    accessibility: {
+      violations: [
+        { id: 'color-contrast', impact: 'serious', page: 'about', nodeCount: 3 },
+        { id: 'link-name', impact: 'serious', nodeCount: 1 },
+      ],
+    },
+    responsive: { issues: [`(page: index) The page is wider than the screen at 375px ${'x'.repeat(300)}`] },
+    site: { issues: ['The home page does not link to: menu.'] },
+  };
+
+  it('keeps the axe rule and page of every violation and the text of every issue, cut short', () => {
+    const d = details(validation);
+    expect(d.accessibility).toEqual([
+      { rule: 'color-contrast', impact: 'serious', page: 'about', elements: 3 },
+      { rule: 'link-name', impact: 'serious', page: 'index', elements: 1 },
+    ]);
+    expect(d.responsive[0].length).toBeLessThanOrEqual(243);
+    expect(d.responsive[0].endsWith('...')).toBe(true);
+    expect(d.site).toEqual(['The home page does not link to: menu.']);
+    expect(details({ ...validation, site: undefined }).site).toEqual([]);
+  });
+
+  it('counts the failing rules over all sites, most frequent first', () => {
+    const row = (before, after) => ({
+      before: { details: { accessibility: before.map((rule) => ({ rule })) } },
+      after: { details: { accessibility: after.map((rule) => ({ rule })) } },
+    });
+    const counts = ruleCounts([row(['color-contrast', 'link-name'], ['color-contrast']), row(['color-contrast'], []), {}]);
+    expect(counts.before).toEqual({ 'color-contrast': 2, 'link-name': 1 });
+    expect(Object.keys(counts.before)[0]).toBe('color-contrast');
+    expect(counts.after).toEqual({ 'color-contrast': 1 });
+  });
+
+  it('splits the result by site size and reports how many one-page requests got one page', () => {
+    const row = (pages, scope, beforePassed, afterPassed) => ({
+      pages,
+      scope,
+      before: { accessibilityViolations: 0, responsiveIssues: 0, passed: beforePassed },
+      after: { accessibilityViolations: 0, responsiveIssues: 0, passed: afterPassed },
+      retries: 1,
+    });
+    const s = summarize([row(1, 'one', false, true), row(3, 'one', false, false), row(5, 'site', true, true)]);
+    expect(s.bySize.onePage).toMatchObject({ sampleSize: 1, pctFullyPassingBefore: 0, pctFullyPassingAfter: 100 });
+    expect(s.bySize.severalPages).toMatchObject({ sampleSize: 2, passedBefore: 1, passedAfter: 1, pctFullyPassingAfter: 50 });
+    expect(s.oneReadAsOne).toEqual({ asked: 2, gotOnePage: 1 });
+    expect(s.failingRules).toEqual({ before: {}, after: {} });
   });
 });

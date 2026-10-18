@@ -67,6 +67,19 @@ describe('buildFixMessages', () => {
 });
 
 describe('generation prompts', () => {
+  it('the plan call says "one page" only when the code has read the request as one page', () => {
+    const [open] = buildPlanMessages('a site for a dentist');
+    expect(open.content).not.toContain('This request is for ONE page');
+
+    const [one] = buildPlanMessages('a contact page for a bakery', { scope: 'one' });
+    expect(one.content).toContain('a contact page for a bakery');
+    expect(one.content).toContain('This request is for ONE page');
+    expect(one.content).not.toContain('previous plan');
+
+    const [again] = buildPlanMessages('a contact page for a bakery', { scope: 'one', retry: true });
+    expect(again.content).toContain('Your previous plan had several pages');
+  });
+
   it('the plan call asks for the request, and the page call carries the shared design', () => {
     const [planUser] = buildPlanMessages('a site for a dentist');
     expect(planUser.content).toContain('a site for a dentist');

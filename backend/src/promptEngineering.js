@@ -4,7 +4,7 @@
 // Bump this WHENEVER the prompts below change OR the validation rules change (what counts
 // as a failed check): it is part of the cache key, so answers produced under the old
 // instructions/rules are never served again.
-export const PROMPT_VERSION = 'v5-text-logo';
+export const PROMPT_VERSION = 'v6-page-scope';
 
 // What every generated page must satisfy, whatever the user asked for. The same list is used
 // for the first generation, for every change and for every automatic fix.
@@ -28,7 +28,7 @@ ${DUMMY_AND_LANGUAGE}
 
 How many pages:
 - Decide what the site needs: 1 to 5 pages, never more than 5.
-- If the request is clearly for ONE page (a landing page, a one-page site, "a page for ...", a single form or invitation), plan exactly ONE page.
+- If the request is clearly for ONE page (a landing page, a one-page site, "a page for ...", "a contact page", "a homepage", a single form or invitation), plan exactly ONE page, even when it lists several parts (a menu, a gallery, prices, a form): those become sections of that one page.
 - If it asks for a website, a site, or lists several areas (for example services, about, contact, menu, gallery, blog), plan the pages a real visitor would expect: usually 3 to 5.
 - The home page has the slug "index". Other slugs are short English words in lowercase letters, digits and hyphens (for example "services", "about", "contact"), even when the site is in another language.
 - Each page's content must follow from what that page presents. The pages must NOT be copies of each other with different headings: give every page its own purpose and its own structure (for example: home = hero + highlights + call to action; services = detailed list or comparison with prices; about = story, values, team; contact = form, address, opening hours; gallery = image grid; FAQ = questions and answers).
@@ -150,11 +150,20 @@ ${site.css}
 ${pages}`;
 }
 
-export function buildPlanMessages(userPrompt) {
+// The note added when the code has decided that the request is for ONE page (pageScope.js).
+export const ONE_PAGE_NOTE =
+  'This request is for ONE page. Plan exactly one page, with the slug "index", and make every part the request mentions a section of that page.';
+
+// scope: 'one' | 'site' | 'open' (see pageScope.js). retry: the previous plan had more pages
+// than the request asked for.
+export function buildPlanMessages(userPrompt, { scope = 'open', retry = false } = {}) {
+  const notes = [];
+  if (scope === 'one') notes.push(ONE_PAGE_NOTE);
+  if (retry) notes.push('Your previous plan had several pages. Return a plan with exactly ONE page.');
   return [
     {
       role: 'user',
-      content: `Plan and design a website for this request: ${userPrompt}`,
+      content: `Plan and design a website for this request: ${userPrompt}${notes.length ? `\n\n${notes.join('\n')}` : ''}`,
     },
     // Prefill: forces the answer to start with "{" so it is not wrapped in a
     // ```markdown code fence.

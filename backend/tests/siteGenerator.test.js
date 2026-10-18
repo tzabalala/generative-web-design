@@ -1,6 +1,6 @@
 import { generateSite } from '../src/siteGenerator.js';
 import { ClaudeOutputError } from '../src/claudeErrors.js';
-import { fakeClaude, reply, rawReply, planFor, mainFor, requestedSlug } from './helpers/fakeClaude.js';
+import { fakeClaude, reply, rawReply, planFor, mainFor, requestedSlug, kindOf, userText } from './helpers/fakeClaude.js';
 
 afterEach(() => {
   delete process.env.PAGE_CONCURRENCY;
@@ -19,6 +19,38 @@ describe('generateSite', () => {
     expect(claude.counts).toMatchObject({ plan: 1, page: 3 });
     expect(claude.messages.create.mock.calls[0][0].system).toContain('You do NOT write the pages themselves');
     expect(site.usage).toEqual({ inputTokens: 40, outputTokens: 80 }); // 4 calls of 10 + 20
+  });
+
+  it('asks for the plan once more when a request for ONE page was planned as several pages', async () => {
+    const claude = fakeClaude({
+      handlers: {
+        plan: (args, n) => reply(n === 1 ? planFor(['index', 'menu', 'contact']) : planFor(['index'])),
+      },
+    });
+    const site = await generateSite(claude, 'a restaurant homepage with a menu section and a reservation form');
+
+    expect(site.pages.map((p) => p.slug)).toEqual(['index']);
+    expect(claude.counts).toMatchObject({ plan: 2, page: 1 });
+    const planCalls = claude.messages.create.mock.calls.filter(([args]) => kindOf(args) === 'plan');
+    expect(userText(planCalls[0][0])).toContain('This request is for ONE page');
+    expect(userText(planCalls[1][0])).toContain('Your previous plan had several pages');
+    expect(site.usage).toEqual({ inputTokens: 30, outputTokens: 60 }); // both plans + one page
+  });
+
+  it('keeps the first plan when the second one is not smaller (a usable site, not an error)', async () => {
+    const claude = fakeClaude({ slugs: ['index', 'about'] });
+    const site = await generateSite(claude, 'a contact page for a small bakery');
+    expect(site.pages.map((p) => p.slug)).toEqual(['index', 'about']);
+    expect(claude.counts).toMatchObject({ plan: 2, page: 2 });
+  });
+
+  it('does not ask again for a website or an unclear request', async () => {
+    for (const request of ['a website for a yoga studio', 'a portfolio with a gallery and a contact page']) {
+      const claude = fakeClaude({ slugs: ['index', 'about', 'contact'] });
+      const site = await generateSite(claude, request);
+      expect(site.pages).toHaveLength(3);
+      expect(claude.counts.plan).toBe(1);
+    }
   });
 
   it('keeps the page order of the plan even when the pages finish in another order', async () => {

@@ -10,6 +10,7 @@ import { runWithValidation } from '../src/validationLoop.js';
 import { closeBrowser } from '../src/validation/browserManager.js';
 import { modelProfile, resolveModel } from '../src/config.js';
 import { estimateCostUsd } from '../src/studyExport.js';
+import { requestedScope } from '../src/pageScope.js';
 
 // Step 21 of the Technical Implementation Plan: answers the evaluation research question
 // "how much does the validation loop improve the accessibility score compared with raw
@@ -101,7 +102,34 @@ const counts = (v) => ({
   // how the pages fit together (links, shared menu, distinct content); 0 for a one-page site
   siteIssues: v.site?.issues?.length ?? 0,
   passed: v.passed,
+  details: details(v),
 });
+
+// WHAT failed, not only how much: the axe rule and page of every violation, and the text of
+// every responsive and site issue (cut short), so failures can be explained afterwards.
+export function details(v) {
+  const short = (s) => (String(s).length > 240 ? `${String(s).slice(0, 240)}...` : String(s));
+  return {
+    accessibility: v.accessibility.violations.map((x) => ({
+      rule: x.id,
+      impact: x.impact,
+      page: x.page ?? 'index',
+      elements: x.nodeCount,
+    })),
+    responsive: v.responsive.issues.map(short),
+    site: (v.site?.issues ?? []).map(short),
+  };
+}
+
+// Counts of the failing axe rules over all rows, before and after the loop, most frequent first.
+export function ruleCounts(rows) {
+  const tally = (when) => {
+    const counts = {};
+    for (const r of rows) for (const a of r[when]?.details?.accessibility ?? []) counts[a.rule] = (counts[a.rule] ?? 0) + 1;
+    return Object.fromEntries(Object.entries(counts).sort((a, b) => b[1] - a[1]));
+  };
+  return { before: tally('before'), after: tally('after') };
+}
 
 export function summarize(allRows) {
   const rows = allRows.filter((r) => !r.error);
@@ -143,7 +171,30 @@ export function summarize(allRows) {
     totalInputTokens: rows.reduce((s, r) => s + num(r.usage?.inputTokens), 0),
     totalOutputTokens: rows.reduce((s, r) => s + num(r.usage?.outputTokens), 0),
     byLanguage,
+    bySize: group(rows, (r) => ((r.pages ?? 1) > 1 ? 'severalPages' : 'onePage')),
+    // requests that the code reads as ONE page (pageScope.js) and how many really got one
+    oneReadAsOne: (() => {
+      const asked = rows.filter((r) => r.scope === 'one');
+      return { asked: asked.length, gotOnePage: asked.filter((r) => (r.pages ?? 1) === 1).length };
+    })(),
+    failingRules: ruleCounts(rows),
   };
+}
+
+// Share of fully passing rows before and after, per group (key(row) names the group)
+function group(rows, key) {
+  const out = {};
+  for (const r of rows) {
+    const g = (out[key(r)] ??= { sampleSize: 0, passedBefore: 0, passedAfter: 0 });
+    g.sampleSize += 1;
+    if (r.before.passed) g.passedBefore += 1;
+    if (r.after.passed) g.passedAfter += 1;
+  }
+  for (const g of Object.values(out)) {
+    g.pctFullyPassingBefore = (g.passedBefore / g.sampleSize) * 100;
+    g.pctFullyPassingAfter = (g.passedAfter / g.sampleSize) * 100;
+  }
+  return out;
 }
 
 // --resume: keep the successful rows of an earlier run (same model and prompt version only,
@@ -205,6 +256,8 @@ async function run() {
     : args.resume
       ? resolve(args.resume)
       : resolve(outDir, `${profile}_${stamp}.json`);
+  const sitesDir = outPath.replace(/\.json$/i, '') + '-sites';
+  mkdirSync(sitesDir, { recursive: true });
 
   const meta = {
     startedAt: previous?.meta.startedAt ?? new Date().toISOString(),
@@ -229,9 +282,18 @@ async function run() {
       const rawValidation = await validateSite(initial);
       const fixed = await runWithValidation(anthropic, initial);
 
+      // the code of the raw and the final site, one file per prompt, to inspect failures later
+      const number = String(prompts.indexOf(prompt) + 1).padStart(2, '0');
+      writeFileSync(
+        resolve(sitesDir, `${number}.json`),
+        JSON.stringify({ prompt, raw: { css: initial.css, pages: initial.pages }, final: { css: fixed.css, pages: fixed.pages } }, null, 2),
+        'utf-8'
+      );
+
       const row = {
         prompt,
         language: isGreek(prompt) ? 'el' : 'en',
+        scope: requestedScope(prompt),
         pages: fixed.pages.length,
         before: counts(rawValidation),
         after: counts(fixed.validation),
@@ -267,6 +329,11 @@ async function run() {
     `After validation loop:  avg ${summary.after.avgAccessibilityViolations.toFixed(2)} a11y violations, ` +
       `avg ${summary.after.avgResponsiveIssues.toFixed(2)} responsive issues, ${summary.after.pctFullyPassing.toFixed(0)}% fully passing`
   );
+  for (const [name, g] of Object.entries(summary.bySize)) {
+    console.log(`  ${name}: ${g.sampleSize} sites, ${g.pctFullyPassingBefore.toFixed(0)}% -> ${g.pctFullyPassingAfter.toFixed(0)}% fully passing`);
+  }
+  console.log(`Requests read as one page: ${summary.oneReadAsOne.asked}, of which ${summary.oneReadAsOne.gotOnePage} got one page`);
+  console.log(`Failing axe rules after the loop: ${JSON.stringify(summary.failingRules.after)}`);
   console.log(`Average retries needed: ${summary.avgRetriesNeeded.toFixed(2)}, average time ${summary.avgSeconds.toFixed(1)}s per page`);
   console.log(`Tokens: ${summary.totalInputTokens} in / ${summary.totalOutputTokens} out, estimated cost ${cost === null ? 'unknown' : '$' + cost}`);
   console.log(`\nFull results written to ${outPath}`);

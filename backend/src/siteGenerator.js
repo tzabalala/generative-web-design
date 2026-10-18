@@ -1,6 +1,7 @@
 import { buildPlanMessages, buildPageMessages } from './promptEngineering.js';
 import { callClaudeForPlan, callClaudeForPage, ClaudeOutputError } from './claudeCodeClient.js';
 import { assemblePage } from './site.js';
+import { requestedScope } from './pageScope.js';
 
 // Generation of a new site, in two steps (this is what replaced the single "write the whole
 // page" call):
@@ -69,8 +70,18 @@ export async function generateSite(anthropic, request, { onStage } = {}) {
   };
 
   stage('planning');
-  const { plan, usage: planUsage } = await callClaudeForPlan(anthropic, buildPlanMessages(request));
+  // A request for ONE page gets one page: the code decides (pageScope.js), tells the model,
+  // and asks once more if the plan still has several pages. A second plan with several
+  // pages is kept (a usable site is better than an error), and the checks run as usual.
+  const scope = requestedScope(request);
+  let { plan, usage: planUsage } = await callClaudeForPlan(anthropic, buildPlanMessages(request, { scope }));
   const usage = { ...planUsage };
+  if (scope === 'one' && plan.pages.length > 1) {
+    const again = await callClaudeForPlan(anthropic, buildPlanMessages(request, { scope, retry: true }));
+    usage.inputTokens += again.usage.inputTokens;
+    usage.outputTokens += again.usage.outputTokens;
+    if (again.plan.pages.length < plan.pages.length) plan = again.plan;
+  }
 
   const total = plan.pages.length;
   let done = 0;

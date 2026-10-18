@@ -125,7 +125,10 @@ npm run benchmark -- --count=35 --yes --resume=benchmark-runs/<run>.json
 npm run benchmark:compare -- benchmark-runs/<haiku>.json benchmark-runs/<sonnet>.json
 ```
 
-Results are saved after every page to `backend/benchmark-runs/`. A run stops by itself when the API
+Results are saved after every page to `backend/benchmark-runs/`. Every row records what failed (the
+axe rule and page of each violation, the text of each layout and site issue), the summary lists the
+failing rules and splits the result into one-page sites and sites of several pages, and the raw and
+final code of each site is written to `benchmark-runs/<run>-sites/`. A run stops by itself when the API
 credit balance runs out; add credits and finish it with `--resume`, which keeps the pages already
 paid for and refuses to mix runs of a different model or prompt version.
 
