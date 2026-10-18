@@ -1,0 +1,3656 @@
+{
+  "generatedAt": "2026-10-18T18:55:40.216Z",
+  "meta": {
+    "startedAt": "2026-10-18T14:31:29.389Z",
+    "modelProfile": "dev",
+    "model": "claude-haiku-4-5-20251001",
+    "promptVersion": "v6-page-scope",
+    "layoutCheck": true,
+    "pages": 45,
+    "estimatedCostUsd": 3.6303,
+    "rescoredAt": "2026-10-18T18:55:40.216Z",
+    "rescoredWithChecksOf": "v8-site-checks"
+  },
+  "summary": {
+    "sampleSize": 45,
+    "failedCount": 0,
+    "before": {
+      "avgAccessibilityViolations": 0.9777777777777777,
+      "avgResponsiveIssues": 0.08888888888888889,
+      "avgLayoutIssues": 0.08888888888888889,
+      "pctFullyPassing": 40
+    },
+    "after": {
+      "avgAccessibilityViolations": 0.13333333333333333,
+      "avgResponsiveIssues": 0.06666666666666667,
+      "avgLayoutIssues": 0.06666666666666667,
+      "pctFullyPassing": 88.88888888888889
+    },
+    "avgRetriesNeeded": 0.9777777777777777,
+    "avgSeconds": 69.9088888888889,
+    "totalInputTokens": 1136326,
+    "totalOutputTokens": 498793,
+    "byLanguage": {
+      "en": {
+        "sampleSize": 35,
+        "pctFullyPassingBefore": 42.857142857142854,
+        "pctFullyPassingAfter": 91.42857142857143
+      },
+      "el": {
+        "sampleSize": 10,
+        "pctFullyPassingBefore": 30,
+        "pctFullyPassingAfter": 80
+      }
+    },
+    "bySize": {
+      "onePage": {
+        "sampleSize": 34,
+        "passedBefore": 17,
+        "passedAfter": 34,
+        "pctFullyPassingBefore": 50,
+        "pctFullyPassingAfter": 100
+      },
+      "severalPages": {
+        "sampleSize": 11,
+        "passedBefore": 1,
+        "passedAfter": 6,
+        "pctFullyPassingBefore": 9.090909090909092,
+        "pctFullyPassingAfter": 54.54545454545454
+      }
+    },
+    "byGroup": {
+      "main": {
+        "sampleSize": 35,
+        "passedBefore": 13,
+        "passedAfter": 31,
+        "pctFullyPassingBefore": 37.142857142857146,
+        "pctFullyPassingAfter": 88.57142857142857
+      },
+      "heldOut": {
+        "sampleSize": 10,
+        "passedBefore": 5,
+        "passedAfter": 9,
+        "pctFullyPassingBefore": 50,
+        "pctFullyPassingAfter": 90
+      }
+    },
+    "oneReadAsOne": {
+      "asked": 33,
+      "gotOnePage": 33
+    },
+    "failingRules": {
+      "before": {
+        "color-contrast": 37,
+        "heading-order": 6,
+        "link-in-text-block": 1
+      },
+      "after": {
+        "color-contrast": 5,
+        "heading-order": 1
+      }
+    }
+  },
+  "rows": [
+    {
+      "prompt": "a one-page portfolio for a freelance photographer, with a gallery and a contact form",
+      "language": "en",
+      "scope": "one",
+      "group": "main",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false,
+        "details": {
+          "accessibility": [
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "index",
+              "elements": 6
+            }
+          ],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 1,
+      "seconds": 41,
+      "usage": {
+        "inputTokens": 13025,
+        "outputTokens": 5917
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 1,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": false,
+          "details": {
+            "accessibility": [
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "index",
+                "elements": 6
+              }
+            ],
+            "responsive": [],
+            "site": []
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "a landing page for a local yoga studio with a class schedule and a sign-up button",
+      "language": "en",
+      "scope": "one",
+      "group": "main",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false,
+        "details": {
+          "accessibility": [
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "index",
+              "elements": 1
+            }
+          ],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 1,
+      "seconds": 60,
+      "usage": {
+        "inputTokens": 15311,
+        "outputTokens": 7712
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 1,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": false,
+          "details": {
+            "accessibility": [
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "index",
+                "elements": 1
+              }
+            ],
+            "responsive": [],
+            "site": []
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "a contact page for a small bakery, with a form and opening hours",
+      "language": "en",
+      "scope": "one",
+      "group": "main",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false,
+        "details": {
+          "accessibility": [
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "index",
+              "elements": 4
+            }
+          ],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 2,
+      "seconds": 39.9,
+      "usage": {
+        "inputTokens": 18483,
+        "outputTokens": 4943
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 1,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": false,
+          "details": {
+            "accessibility": [
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "index",
+                "elements": 4
+              }
+            ],
+            "responsive": [],
+            "site": []
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "a simple blog homepage listing 5 recent posts with titles and short excerpts",
+      "language": "en",
+      "scope": "one",
+      "group": "main",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 2,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 1,
+        "passed": false,
+        "details": {
+          "accessibility": [
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "index",
+              "elements": 6
+            },
+            {
+              "rule": "heading-order",
+              "impact": "moderate",
+              "page": "index",
+              "elements": 1
+            }
+          ],
+          "responsive": [],
+          "site": [
+            "Page \"index\" links to sections that do not exist: #post-1, #post-2, #post-3, #post-4, #post-5. Add an element with that id, or fix the link."
+          ]
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 1,
+      "seconds": 32.8,
+      "usage": {
+        "inputTokens": 10727,
+        "outputTokens": 4422
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 2,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 1,
+          "passed": false,
+          "details": {
+            "accessibility": [
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "index",
+                "elements": 6
+              },
+              {
+                "rule": "heading-order",
+                "impact": "moderate",
+                "page": "index",
+                "elements": 1
+              }
+            ],
+            "responsive": [],
+            "site": [
+              "Page \"index\" links to sections that do not exist: #post-1, #post-2, #post-3, #post-4, #post-5. Add an element with that id, or fix the link."
+            ]
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "a product landing page for a reusable water bottle, with a buy button and features list",
+      "language": "en",
+      "scope": "one",
+      "group": "main",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false,
+        "details": {
+          "accessibility": [
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "index",
+              "elements": 1
+            }
+          ],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 1,
+      "seconds": 49.7,
+      "usage": {
+        "inputTokens": 13918,
+        "outputTokens": 6821
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 1,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": false,
+          "details": {
+            "accessibility": [
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "index",
+                "elements": 1
+              }
+            ],
+            "responsive": [],
+            "site": []
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "an event page for a community charity fundraiser, with a date, location, and RSVP form",
+      "language": "en",
+      "scope": "one",
+      "group": "main",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 0,
+      "seconds": 30.6,
+      "usage": {
+        "inputTokens": 6228,
+        "outputTokens": 5008
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "a personal resume/CV page with an about section, skills, and work experience",
+      "language": "en",
+      "scope": "one",
+      "group": "main",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false,
+        "details": {
+          "accessibility": [
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "index",
+              "elements": 16
+            }
+          ],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 1,
+      "seconds": 57.1,
+      "usage": {
+        "inputTokens": 15251,
+        "outputTokens": 7353
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 1,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": false,
+          "details": {
+            "accessibility": [
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "index",
+                "elements": 16
+              }
+            ],
+            "responsive": [],
+            "site": []
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "a restaurant homepage with a menu section and a reservation form",
+      "language": "en",
+      "scope": "one",
+      "group": "main",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 0,
+      "seconds": 47.7,
+      "usage": {
+        "inputTokens": 5946,
+        "outputTokens": 6180
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "a nonprofit organisation homepage explaining its mission and a donate button",
+      "language": "en",
+      "scope": "one",
+      "group": "main",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false,
+        "details": {
+          "accessibility": [
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "index",
+              "elements": 5
+            }
+          ],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 1,
+      "seconds": 47.5,
+      "usage": {
+        "inputTokens": 14003,
+        "outputTokens": 6747
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 1,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": false,
+          "details": {
+            "accessibility": [
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "index",
+                "elements": 5
+              }
+            ],
+            "responsive": [],
+            "site": []
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "a small business services page listing 3 services with pricing",
+      "language": "en",
+      "scope": "one",
+      "group": "main",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false,
+        "details": {
+          "accessibility": [
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "index",
+              "elements": 4
+            }
+          ],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 1,
+      "seconds": 36.2,
+      "usage": {
+        "inputTokens": 12428,
+        "outputTokens": 5164
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 1,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": false,
+          "details": {
+            "accessibility": [
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "index",
+                "elements": 4
+              }
+            ],
+            "responsive": [],
+            "site": []
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "a landing page for a mobile app that tracks daily water intake, with screenshots and a download button",
+      "language": "en",
+      "scope": "one",
+      "group": "main",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 0,
+      "seconds": 43,
+      "usage": {
+        "inputTokens": 5603,
+        "outputTokens": 6338
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "a photography studio booking page with pricing packages and an enquiry form",
+      "language": "en",
+      "scope": "one",
+      "group": "main",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false,
+        "details": {
+          "accessibility": [
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "index",
+              "elements": 9
+            }
+          ],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 2,
+      "seconds": 51.8,
+      "usage": {
+        "inputTokens": 21808,
+        "outputTokens": 7023
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 1,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": false,
+          "details": {
+            "accessibility": [
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "index",
+                "elements": 9
+              }
+            ],
+            "responsive": [],
+            "site": []
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "a conference website with a speaker list, a schedule table, and a ticket button",
+      "language": "en",
+      "scope": "site",
+      "group": "main",
+      "pages": 4,
+      "before": {
+        "accessibilityViolations": 4,
+        "responsiveIssues": 2,
+        "layoutIssues": 2,
+        "siteIssues": 2,
+        "passed": false,
+        "details": {
+          "accessibility": [
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "index",
+              "elements": 2
+            },
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "schedule",
+              "elements": 1
+            },
+            {
+              "rule": "heading-order",
+              "impact": "moderate",
+              "page": "speakers",
+              "elements": 1
+            },
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "tickets",
+              "elements": 2
+            }
+          ],
+          "responsive": [
+            "(page: tickets) Horizontal scrolling at 375px (mobile): the content is 392px wide, wider than the 375px screen. Elements sticking out: table.tickets-table (376px wide). Use fluid widths (%, max-width: 100%, flex-wrap, grid auto-fit) so noth...",
+            "(page: tickets) Horizontal scrolling at 768px (tablet): the content is 831px wide, wider than the 768px screen. Elements sticking out: article.tickets-card.tickets-card-premium (219px wide). Use fluid widths (%, max-width: 100%, flex-wrap, ..."
+          ],
+          "site": [
+            "Page \"schedule\" links to sections that do not exist: speakers.html#dr-sarah-chen, speakers.html#james-rodriguez, speakers.html#emily-watson, speakers.html#marcus-lee, speakers.html#alex-patel, speakers.html#sophia-moreno and 8 more. Add an ...",
+            "Page \"tickets\" has links that do not lead to a page of this site: contact.html. Link to the pages by file name, exactly: index.html, schedule.html, speakers.html, tickets.html."
+          ]
+        }
+      },
+      "after": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 2,
+        "layoutIssues": 2,
+        "siteIssues": 1,
+        "passed": false,
+        "details": {
+          "accessibility": [
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "tickets",
+              "elements": 1
+            }
+          ],
+          "responsive": [
+            "(page: tickets) Horizontal scrolling at 375px (mobile): the content is 392px wide, wider than the 375px screen. Elements sticking out: table.tickets-table (376px wide). Use fluid widths (%, max-width: 100%, flex-wrap, grid auto-fit) so noth...",
+            "(page: tickets) Horizontal scrolling at 768px (tablet): the content is 831px wide, wider than the 768px screen. Elements sticking out: article.tickets-card.tickets-card-premium (219px wide). Use fluid widths (%, max-width: 100%, flex-wrap, ..."
+          ],
+          "site": [
+            "Page \"schedule\" links to sections that do not exist: speakers.html#david-kim, speakers.html#kevin-chang, speakers.html#jessica-brown, speakers.html#nina-lopez. Add an element with that id, or fix the link."
+          ]
+        }
+      },
+      "retries": 3,
+      "seconds": 208.6,
+      "usage": {
+        "inputTokens": 93701,
+        "outputTokens": 38856
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 4,
+          "responsiveIssues": 2,
+          "layoutIssues": 2,
+          "siteIssues": 2,
+          "passed": false,
+          "details": {
+            "accessibility": [
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "index",
+                "elements": 2
+              },
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "schedule",
+                "elements": 1
+              },
+              {
+                "rule": "heading-order",
+                "impact": "moderate",
+                "page": "speakers",
+                "elements": 1
+              },
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "tickets",
+                "elements": 2
+              }
+            ],
+            "responsive": [
+              "(page: tickets) Horizontal scrolling at 375px (mobile): the content is 392px wide, wider than the 375px screen. Elements sticking out: table.tickets-table (376px wide). Use fluid widths (%, max-width: 100%, flex-wrap, grid auto-fit) so noth...",
+              "(page: tickets) Horizontal scrolling at 768px (tablet): the content is 831px wide, wider than the 768px screen. Elements sticking out: article.tickets-card.tickets-card-premium (219px wide). Use fluid widths (%, max-width: 100%, flex-wrap, ..."
+            ],
+            "site": [
+              "Page \"schedule\" links to sections that do not exist: speakers.html#dr-sarah-chen, speakers.html#james-rodriguez, speakers.html#emily-watson, speakers.html#marcus-lee, speakers.html#alex-patel, speakers.html#sophia-moreno and 8 more. Add an ...",
+              "Page \"tickets\" has links that do not lead to a page of this site: contact.html. Link to the pages by file name, exactly: index.html, schedule.html, speakers.html, tickets.html."
+            ]
+          }
+        },
+        "after": {
+          "accessibilityViolations": 1,
+          "responsiveIssues": 2,
+          "layoutIssues": 2,
+          "siteIssues": 1,
+          "passed": false,
+          "details": {
+            "accessibility": [
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "tickets",
+                "elements": 1
+              }
+            ],
+            "responsive": [
+              "(page: tickets) Horizontal scrolling at 375px (mobile): the content is 392px wide, wider than the 375px screen. Elements sticking out: table.tickets-table (376px wide). Use fluid widths (%, max-width: 100%, flex-wrap, grid auto-fit) so noth...",
+              "(page: tickets) Horizontal scrolling at 768px (tablet): the content is 831px wide, wider than the 768px screen. Elements sticking out: article.tickets-card.tickets-card-premium (219px wide). Use fluid widths (%, max-width: 100%, flex-wrap, ..."
+            ],
+            "site": [
+              "Page \"schedule\" links to sections that do not exist: speakers.html#david-kim, speakers.html#kevin-chang, speakers.html#jessica-brown, speakers.html#nina-lopez. Add an element with that id, or fix the link."
+            ]
+          }
+        }
+      }
+    },
+    {
+      "prompt": "a personal finance blog homepage with a newsletter sign-up form",
+      "language": "en",
+      "scope": "one",
+      "group": "main",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 0,
+      "seconds": 56.3,
+      "usage": {
+        "inputTokens": 5976,
+        "outputTokens": 7124
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "a gym homepage with membership plans compared in a table",
+      "language": "en",
+      "scope": "one",
+      "group": "main",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 0,
+      "seconds": 64.5,
+      "usage": {
+        "inputTokens": 6937,
+        "outputTokens": 8335
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "a hair salon page with services, prices, and an online booking button",
+      "language": "en",
+      "scope": "one",
+      "group": "main",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false,
+        "details": {
+          "accessibility": [
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "index",
+              "elements": 9
+            }
+          ],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 1,
+      "seconds": 54.8,
+      "usage": {
+        "inputTokens": 14512,
+        "outputTokens": 7108
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 1,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": false,
+          "details": {
+            "accessibility": [
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "index",
+                "elements": 9
+              }
+            ],
+            "responsive": [],
+            "site": []
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "a landing page for an online coding course with a curriculum list and testimonials",
+      "language": "en",
+      "scope": "one",
+      "group": "main",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 0,
+      "seconds": 80.6,
+      "usage": {
+        "inputTokens": 5667,
+        "outputTokens": 10400
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "a local bookshop homepage with featured books and opening hours",
+      "language": "en",
+      "scope": "one",
+      "group": "main",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false,
+        "details": {
+          "accessibility": [
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "index",
+              "elements": 1
+            }
+          ],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 1,
+      "seconds": 46.2,
+      "usage": {
+        "inputTokens": 12833,
+        "outputTokens": 5559
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 1,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": false,
+          "details": {
+            "accessibility": [
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "index",
+                "elements": 1
+              }
+            ],
+            "responsive": [],
+            "site": []
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "a wedding invitation page with the date, the venue, and an RSVP form",
+      "language": "en",
+      "scope": "one",
+      "group": "main",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false,
+        "details": {
+          "accessibility": [
+            {
+              "rule": "heading-order",
+              "impact": "moderate",
+              "page": "index",
+              "elements": 1
+            }
+          ],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 2,
+      "seconds": 36.6,
+      "usage": {
+        "inputTokens": 18591,
+        "outputTokens": 5253
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 1,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": false,
+          "details": {
+            "accessibility": [
+              {
+                "rule": "heading-order",
+                "impact": "moderate",
+                "page": "index",
+                "elements": 1
+              }
+            ],
+            "responsive": [],
+            "site": []
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "a dentist clinic homepage with services, team members, and an appointment form",
+      "language": "en",
+      "scope": "one",
+      "group": "main",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false,
+        "details": {
+          "accessibility": [
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "index",
+              "elements": 8
+            }
+          ],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 1,
+      "seconds": 55.6,
+      "usage": {
+        "inputTokens": 15721,
+        "outputTokens": 7478
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 1,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": false,
+          "details": {
+            "accessibility": [
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "index",
+                "elements": 8
+              }
+            ],
+            "responsive": [],
+            "site": []
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "a real-estate agency page listing three properties with photos and prices",
+      "language": "en",
+      "scope": "one",
+      "group": "main",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 0,
+      "seconds": 34.5,
+      "usage": {
+        "inputTokens": 5908,
+        "outputTokens": 5563
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "a FAQ page for a software product with ten questions and answers",
+      "language": "en",
+      "scope": "one",
+      "group": "main",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 0,
+      "seconds": 53.7,
+      "usage": {
+        "inputTokens": 6105,
+        "outputTokens": 6792
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "a pricing page for a SaaS tool with three plans and a feature comparison",
+      "language": "en",
+      "scope": "one",
+      "group": "main",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 0,
+      "seconds": 60.9,
+      "usage": {
+        "inputTokens": 6046,
+        "outputTokens": 8075
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "a volunteer sign-up page for a beach clean-up event",
+      "language": "en",
+      "scope": "one",
+      "group": "main",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 0,
+      "seconds": 42.9,
+      "usage": {
+        "inputTokens": 6091,
+        "outputTokens": 5226
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "a landing page for a small coffee roastery with a shop section and a subscription offer",
+      "language": "en",
+      "scope": "one",
+      "group": "main",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 0,
+      "seconds": 69.7,
+      "usage": {
+        "inputTokens": 6709,
+        "outputTokens": 8781
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "μια σελίδα για έναν θερινό κινηματογράφο, με πρόγραμμα ταινιών και κράτηση θέσεων",
+      "language": "el",
+      "scope": "one",
+      "group": "main",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 0,
+      "seconds": 67.6,
+      "usage": {
+        "inputTokens": 5899,
+        "outputTokens": 8468
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "μια σελίδα επικοινωνίας για ένα μικρό ζαχαροπλαστείο, με φόρμα και ώρες λειτουργίας",
+      "language": "el",
+      "scope": "one",
+      "group": "main",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 0,
+      "seconds": 59.3,
+      "usage": {
+        "inputTokens": 6608,
+        "outputTokens": 7382
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "η αρχική σελίδα ενός γυμναστηρίου με προγράμματα συνδρομής και κουμπί εγγραφής",
+      "language": "el",
+      "scope": "one",
+      "group": "main",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false,
+        "details": {
+          "accessibility": [
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "index",
+              "elements": 1
+            }
+          ],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 1,
+      "seconds": 56.3,
+      "usage": {
+        "inputTokens": 15666,
+        "outputTokens": 8062
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 1,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": false,
+          "details": {
+            "accessibility": [
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "index",
+                "elements": 1
+              }
+            ],
+            "responsive": [],
+            "site": []
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "μια απλή σελίδα για έναν εκπαιδευτή σκύλων με τιμές και φόρμα επικοινωνίας",
+      "language": "el",
+      "scope": "one",
+      "group": "main",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false,
+        "details": {
+          "accessibility": [
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "index",
+              "elements": 1
+            }
+          ],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 1,
+      "seconds": 75.4,
+      "usage": {
+        "inputTokens": 17317,
+        "outputTokens": 9666
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 1,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": false,
+          "details": {
+            "accessibility": [
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "index",
+                "elements": 1
+              }
+            ],
+            "responsive": [],
+            "site": []
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "η σελίδα ενός φωτογράφου γάμων με γκαλερί και φόρμα επικοινωνίας",
+      "language": "el",
+      "scope": "one",
+      "group": "main",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false,
+        "details": {
+          "accessibility": [
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "index",
+              "elements": 1
+            }
+          ],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 1,
+      "seconds": 65.5,
+      "usage": {
+        "inputTokens": 15925,
+        "outputTokens": 8469
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 1,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": false,
+          "details": {
+            "accessibility": [
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "index",
+                "elements": 1
+              }
+            ],
+            "responsive": [],
+            "site": []
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "a website for a family-run Italian restaurant, with a menu, an about page, a photo gallery and a contact page with a reservation form",
+      "language": "en",
+      "scope": "site",
+      "group": "main",
+      "pages": 5,
+      "before": {
+        "accessibilityViolations": 5,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false,
+        "details": {
+          "accessibility": [
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "index",
+              "elements": 2
+            },
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "menu",
+              "elements": 3
+            },
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "gallery",
+              "elements": 2
+            },
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "about",
+              "elements": 2
+            },
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "contact",
+              "elements": 3
+            }
+          ],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 3,
+      "seconds": 102.1,
+      "usage": {
+        "inputTokens": 85466,
+        "outputTokens": 20463
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 5,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 1,
+          "passed": false,
+          "details": {
+            "accessibility": [
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "index",
+                "elements": 2
+              },
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "menu",
+                "elements": 3
+              },
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "gallery",
+                "elements": 2
+              },
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "about",
+                "elements": 2
+              },
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "contact",
+                "elements": 3
+              }
+            ],
+            "responsive": [],
+            "site": [
+              "The footer on menu, gallery, about, contact is different from the one on the home page. It must be identical on every page (only aria-current=\"page\" may differ)."
+            ]
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 1,
+          "passed": false,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": [
+              "The footer on menu, gallery, about, contact is different from the one on the home page. It must be identical on every page (only aria-current=\"page\" may differ)."
+            ]
+          }
+        }
+      }
+    },
+    {
+      "prompt": "a website for a small architecture studio, with projects, the team, services and a contact page",
+      "language": "en",
+      "scope": "site",
+      "group": "main",
+      "pages": 5,
+      "before": {
+        "accessibilityViolations": 5,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 1,
+        "passed": false,
+        "details": {
+          "accessibility": [
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "projects",
+              "elements": 1
+            },
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "services",
+              "elements": 13
+            },
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "team",
+              "elements": 6
+            },
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "contact",
+              "elements": 7
+            },
+            {
+              "rule": "heading-order",
+              "impact": "moderate",
+              "page": "contact",
+              "elements": 1
+            }
+          ],
+          "responsive": [],
+          "site": [
+            "Page \"index\" links to sections that do not exist: projects.html#skyline-residence, projects.html#corporate-campus, projects.html#heritage-district. Add an element with that id, or fix the link."
+          ]
+        }
+      },
+      "after": {
+        "accessibilityViolations": 2,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 1,
+        "passed": false,
+        "details": {
+          "accessibility": [
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "services",
+              "elements": 6
+            },
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "team",
+              "elements": 6
+            }
+          ],
+          "responsive": [],
+          "site": [
+            "Page \"index\" links to sections that do not exist: projects.html#project-skyline-residence, projects.html#project-corporate-campus, projects.html#project-heritage-district. Add an element with that id, or fix the link."
+          ]
+        }
+      },
+      "retries": 3,
+      "seconds": 117.8,
+      "usage": {
+        "inputTokens": 92796,
+        "outputTokens": 23530
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 5,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 1,
+          "passed": false,
+          "details": {
+            "accessibility": [
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "projects",
+                "elements": 1
+              },
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "services",
+                "elements": 13
+              },
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "team",
+                "elements": 6
+              },
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "contact",
+                "elements": 7
+              },
+              {
+                "rule": "heading-order",
+                "impact": "moderate",
+                "page": "contact",
+                "elements": 1
+              }
+            ],
+            "responsive": [],
+            "site": [
+              "Page \"index\" links to sections that do not exist: projects.html#skyline-residence, projects.html#corporate-campus, projects.html#heritage-district. Add an element with that id, or fix the link."
+            ]
+          }
+        },
+        "after": {
+          "accessibilityViolations": 2,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 1,
+          "passed": false,
+          "details": {
+            "accessibility": [
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "services",
+                "elements": 6
+              },
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "team",
+                "elements": 6
+              }
+            ],
+            "responsive": [],
+            "site": [
+              "Page \"index\" links to sections that do not exist: projects.html#project-skyline-residence, projects.html#project-corporate-campus, projects.html#project-heritage-district. Add an element with that id, or fix the link."
+            ]
+          }
+        }
+      }
+    },
+    {
+      "prompt": "a website for a local yoga studio, with a class schedule, the teachers, prices and a contact page",
+      "language": "en",
+      "scope": "site",
+      "group": "main",
+      "pages": 5,
+      "before": {
+        "accessibilityViolations": 4,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false,
+        "details": {
+          "accessibility": [
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "schedule",
+              "elements": 21
+            },
+            {
+              "rule": "heading-order",
+              "impact": "moderate",
+              "page": "schedule",
+              "elements": 1
+            },
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "teachers",
+              "elements": 6
+            },
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "pricing",
+              "elements": 4
+            }
+          ],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 1,
+      "seconds": 107.9,
+      "usage": {
+        "inputTokens": 50030,
+        "outputTokens": 23799
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 4,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": false,
+          "details": {
+            "accessibility": [
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "schedule",
+                "elements": 21
+              },
+              {
+                "rule": "heading-order",
+                "impact": "moderate",
+                "page": "schedule",
+                "elements": 1
+              },
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "teachers",
+                "elements": 6
+              },
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "pricing",
+                "elements": 4
+              }
+            ],
+            "responsive": [],
+            "site": []
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "ένας ιστότοπος για ένα οδοντιατρείο, με υπηρεσίες και τιμές, την ομάδα των γιατρών και φόρμα για ραντεβού",
+      "language": "el",
+      "scope": "site",
+      "group": "main",
+      "pages": 4,
+      "before": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 1,
+        "layoutIssues": 1,
+        "siteIssues": 1,
+        "passed": false,
+        "details": {
+          "accessibility": [],
+          "responsive": [
+            "(page: index) Horizontal scrolling at 768px (tablet): the content is 790px wide, wider than the 768px screen. Elements sticking out: article.card.index-service-card (229px wide). Use fluid widths (%, max-width: 100%, flex-wrap, grid auto-fi..."
+          ],
+          "site": [
+            "Page \"index\" links to sections that do not exist: services.html#general, services.html#cosmetic, services.html#orthodontics. Add an element with that id, or fix the link."
+          ]
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 1,
+        "layoutIssues": 1,
+        "siteIssues": 0,
+        "passed": false,
+        "details": {
+          "accessibility": [],
+          "responsive": [
+            "(page: index) Horizontal scrolling at 768px (tablet): the content is 790px wide, wider than the 768px screen. Elements sticking out: article.card.index-service-card (229px wide). Use fluid widths (%, max-width: 100%, flex-wrap, grid auto-fi..."
+          ],
+          "site": []
+        }
+      },
+      "retries": 3,
+      "seconds": 119.5,
+      "usage": {
+        "inputTokens": 95688,
+        "outputTokens": 24169
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 1,
+          "layoutIssues": 1,
+          "siteIssues": 1,
+          "passed": false,
+          "details": {
+            "accessibility": [],
+            "responsive": [
+              "(page: index) Horizontal scrolling at 768px (tablet): the content is 790px wide, wider than the 768px screen. Elements sticking out: article.card.index-service-card (229px wide). Use fluid widths (%, max-width: 100%, flex-wrap, grid auto-fi..."
+            ],
+            "site": [
+              "Page \"index\" links to sections that do not exist: services.html#general, services.html#cosmetic, services.html#orthodontics. Add an element with that id, or fix the link."
+            ]
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 1,
+          "layoutIssues": 1,
+          "siteIssues": 0,
+          "passed": false,
+          "details": {
+            "accessibility": [],
+            "responsive": [
+              "(page: index) Horizontal scrolling at 768px (tablet): the content is 790px wide, wider than the 768px screen. Elements sticking out: article.card.index-service-card (229px wide). Use fluid widths (%, max-width: 100%, flex-wrap, grid auto-fi..."
+            ],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "ένας ιστότοπος για ένα μικρό ξενοδοχείο στη Σαντορίνη, με δωμάτια, φωτογραφίες, δραστηριότητες και επικοινωνία",
+      "language": "el",
+      "scope": "site",
+      "group": "main",
+      "pages": 5,
+      "before": {
+        "accessibilityViolations": 3,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 1,
+        "passed": false,
+        "details": {
+          "accessibility": [
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "index",
+              "elements": 1
+            },
+            {
+              "rule": "heading-order",
+              "impact": "moderate",
+              "page": "rooms",
+              "elements": 1
+            },
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "activities",
+              "elements": 1
+            }
+          ],
+          "responsive": [],
+          "site": [
+            "Page \"index\" links to sections that do not exist: rooms.html#standard, rooms.html#deluxe, rooms.html#sunset. Add an element with that id, or fix the link."
+          ]
+        }
+      },
+      "after": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false,
+        "details": {
+          "accessibility": [
+            {
+              "rule": "heading-order",
+              "impact": "moderate",
+              "page": "rooms",
+              "elements": 6
+            }
+          ],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 3,
+      "seconds": 219.3,
+      "usage": {
+        "inputTokens": 118309,
+        "outputTokens": 33314
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 3,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 1,
+          "passed": false,
+          "details": {
+            "accessibility": [
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "index",
+                "elements": 1
+              },
+              {
+                "rule": "heading-order",
+                "impact": "moderate",
+                "page": "rooms",
+                "elements": 1
+              },
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "activities",
+                "elements": 1
+              }
+            ],
+            "responsive": [],
+            "site": [
+              "Page \"index\" links to sections that do not exist: rooms.html#standard, rooms.html#deluxe, rooms.html#sunset. Add an element with that id, or fix the link."
+            ]
+          }
+        },
+        "after": {
+          "accessibilityViolations": 1,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": false,
+          "details": {
+            "accessibility": [
+              {
+                "rule": "heading-order",
+                "impact": "moderate",
+                "page": "rooms",
+                "elements": 6
+              }
+            ],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "a simple page to promote my guitar lessons, with prices and a way to get in touch",
+      "language": "en",
+      "scope": "one",
+      "group": "heldOut",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 0,
+      "seconds": 51,
+      "usage": {
+        "inputTokens": 6397,
+        "outputTokens": 6433
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "a homepage for a vegan food truck showing where we park this week and the menu",
+      "language": "en",
+      "scope": "one",
+      "group": "heldOut",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 0,
+      "seconds": 40.1,
+      "usage": {
+        "inputTokens": 5422,
+        "outputTokens": 6040
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "a site for a small vet clinic with services, the vets and emergency contact details",
+      "language": "en",
+      "scope": "site",
+      "group": "heldOut",
+      "pages": 4,
+      "before": {
+        "accessibilityViolations": 2,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 1,
+        "passed": false,
+        "details": {
+          "accessibility": [
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "index",
+              "elements": 4
+            },
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "team",
+              "elements": 6
+            }
+          ],
+          "responsive": [],
+          "site": [
+            "Page \"index\" links to sections that do not exist: services.html#wellness, services.html#dental, services.html#surgical, services.html#diagnostics, services.html#dermatology, services.html#behavior and 5 more. Add an element with that id, or..."
+          ]
+        }
+      },
+      "after": {
+        "accessibilityViolations": 2,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false,
+        "details": {
+          "accessibility": [
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "index",
+              "elements": 6
+            },
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "services",
+              "elements": 1
+            }
+          ],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 3,
+      "seconds": 153.2,
+      "usage": {
+        "inputTokens": 87393,
+        "outputTokens": 27811
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 2,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 1,
+          "passed": false,
+          "details": {
+            "accessibility": [
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "index",
+                "elements": 4
+              },
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "team",
+                "elements": 6
+              }
+            ],
+            "responsive": [],
+            "site": [
+              "Page \"index\" links to sections that do not exist: services.html#wellness, services.html#dental, services.html#surgical, services.html#diagnostics, services.html#dermatology, services.html#behavior and 5 more. Add an element with that id, or..."
+            ]
+          }
+        },
+        "after": {
+          "accessibilityViolations": 2,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": false,
+          "details": {
+            "accessibility": [
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "index",
+                "elements": 6
+              },
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "services",
+                "elements": 1
+              }
+            ],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "an online shop front for handmade candles, with a few products and an about section",
+      "language": "en",
+      "scope": "open",
+      "group": "heldOut",
+      "pages": 4,
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false,
+        "details": {
+          "accessibility": [
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "about",
+              "elements": 4
+            }
+          ],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 1,
+      "seconds": 77.4,
+      "usage": {
+        "inputTokens": 38813,
+        "outputTokens": 17921
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 1,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": false,
+          "details": {
+            "accessibility": [
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "about",
+                "elements": 4
+              }
+            ],
+            "responsive": [],
+            "site": []
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "a portfolio for an illustrator with selected work, a short bio and commission info",
+      "language": "en",
+      "scope": "open",
+      "group": "heldOut",
+      "pages": 2,
+      "before": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 0,
+      "seconds": 49,
+      "usage": {
+        "inputTokens": 9753,
+        "outputTokens": 10739
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "a sign-up page for a children's summer football camp, with dates, costs and a registration form",
+      "language": "en",
+      "scope": "one",
+      "group": "heldOut",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 0,
+      "seconds": 77.4,
+      "usage": {
+        "inputTokens": 6296,
+        "outputTokens": 10092
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "web pages for a local book club: what we are reading, past meetings and how to join",
+      "language": "en",
+      "scope": "site",
+      "group": "heldOut",
+      "pages": 4,
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false,
+        "details": {
+          "accessibility": [
+            {
+              "rule": "link-in-text-block",
+              "impact": "serious",
+              "page": "current-book",
+              "elements": 1
+            }
+          ],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 1,
+      "seconds": 83.4,
+      "usage": {
+        "inputTokens": 35400,
+        "outputTokens": 17074
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 1,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": false,
+          "details": {
+            "accessibility": [
+              {
+                "rule": "link-in-text-block",
+                "impact": "serious",
+                "page": "current-book",
+                "elements": 1
+              }
+            ],
+            "responsive": [],
+            "site": []
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "μια σελίδα για ένα συνεργείο αυτοκινήτων με υπηρεσίες, ωράριο και τηλέφωνο",
+      "language": "el",
+      "scope": "one",
+      "group": "heldOut",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": false,
+        "details": {
+          "accessibility": [
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "index",
+              "elements": 8
+            }
+          ],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 3,
+      "seconds": 63.2,
+      "usage": {
+        "inputTokens": 34492,
+        "outputTokens": 8475
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 1,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": false,
+          "details": {
+            "accessibility": [
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "index",
+                "elements": 8
+              }
+            ],
+            "responsive": [],
+            "site": []
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "ένας ιστότοπος για έναν δικηγόρο με τομείς εξειδίκευσης, βιογραφικό και επικοινωνία",
+      "language": "el",
+      "scope": "site",
+      "group": "heldOut",
+      "pages": 4,
+      "before": {
+        "accessibilityViolations": 1,
+        "responsiveIssues": 1,
+        "layoutIssues": 1,
+        "siteIssues": 1,
+        "passed": false,
+        "details": {
+          "accessibility": [
+            {
+              "rule": "color-contrast",
+              "impact": "serious",
+              "page": "about",
+              "elements": 16
+            }
+          ],
+          "responsive": [
+            "(page: services) Horizontal scrolling at 768px (tablet): the content is 888px wide, wider than the 768px screen. Elements sticking out: div.process-step (184px wide). Use fluid widths (%, max-width: 100%, flex-wrap, grid auto-fit) so nothin..."
+          ],
+          "site": [
+            "Page \"index\" links to sections that do not exist: services.html#commercial, services.html#family, services.html#criminal. Add an element with that id, or fix the link."
+          ]
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 1,
+      "seconds": 98.5,
+      "usage": {
+        "inputTokens": 45125,
+        "outputTokens": 21164
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 1,
+          "responsiveIssues": 1,
+          "layoutIssues": 1,
+          "siteIssues": 1,
+          "passed": false,
+          "details": {
+            "accessibility": [
+              {
+                "rule": "color-contrast",
+                "impact": "serious",
+                "page": "about",
+                "elements": 16
+              }
+            ],
+            "responsive": [
+              "(page: services) Horizontal scrolling at 768px (tablet): the content is 888px wide, wider than the 768px screen. Elements sticking out: div.process-step (184px wide). Use fluid widths (%, max-width: 100%, flex-wrap, grid auto-fit) so nothin..."
+            ],
+            "site": [
+              "Page \"index\" links to sections that do not exist: services.html#commercial, services.html#family, services.html#criminal. Add an element with that id, or fix the link."
+            ]
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    },
+    {
+      "prompt": "κάτι απλό για το κομμωτήριό μου με τιμές και κρατήσεις",
+      "language": "el",
+      "scope": "open",
+      "group": "heldOut",
+      "pages": 1,
+      "before": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "after": {
+        "accessibilityViolations": 0,
+        "responsiveIssues": 0,
+        "layoutIssues": 0,
+        "siteIssues": 0,
+        "passed": true,
+        "details": {
+          "accessibility": [],
+          "responsive": [],
+          "site": []
+        }
+      },
+      "retries": 0,
+      "seconds": 59.8,
+      "usage": {
+        "inputTokens": 6003,
+        "outputTokens": 7544
+      },
+      "asRun": {
+        "before": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        },
+        "after": {
+          "accessibilityViolations": 0,
+          "responsiveIssues": 0,
+          "layoutIssues": 0,
+          "siteIssues": 0,
+          "passed": true,
+          "details": {
+            "accessibility": [],
+            "responsive": [],
+            "site": []
+          }
+        }
+      }
+    }
+  ]
+}
