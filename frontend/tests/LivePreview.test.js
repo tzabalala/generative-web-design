@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, afterEach, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import LivePreview from '../src/components/LivePreview.vue';
 
@@ -59,11 +59,71 @@ describe('LivePreview', () => {
     expect(wrapper.find('iframe').attributes('srcdoc')).toContain('<h1>Home</h1>');
   });
 
+  it('has no size buttons before there is a website', () => {
+    const wrapper = mount(LivePreview, { props: { pages: [], css: '' } });
+    expect(wrapper.find('.live-preview__sizes').exists()).toBe(false);
+  });
+
   it('turns links between pages into links that change only the address hash of the app', () => {
     const wrapper = mount(LivePreview, { props: site });
     const srcdoc = wrapper.find('iframe').attributes('srcdoc');
     expect(srcdoc).toContain('#page=about');
     expect(srcdoc).toContain('target="_top"');
     expect(srcdoc).not.toContain('href="about.html"');
+  });
+});
+
+describe('LivePreview: the preview at the widths of the layout check', () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  const sizeButtons = (wrapper) => wrapper.findAll('.live-preview__size');
+
+  it('offers Fit, Phone 375, Tablet 768 and Desktop 1280, with Fit (the panel width) chosen at first', () => {
+    const wrapper = mount(LivePreview, { props: site });
+    const buttons = sizeButtons(wrapper);
+    expect(buttons.map((b) => b.text())).toEqual(['Fit', 'Phone 375', 'Tablet 768', 'Desktop 1280']);
+    expect(buttons.map((b) => b.attributes('aria-pressed'))).toEqual(['true', 'false', 'false', 'false']);
+    expect(wrapper.find('.live-preview__sizes').attributes('aria-label')).toBe('Preview size');
+    expect(wrapper.find('iframe').attributes('style') ?? '').not.toContain('width');
+  });
+
+  it('makes the frame really as wide as the device, so the page media queries respond', async () => {
+    const wrapper = mount(LivePreview, { props: site });
+    await sizeButtons(wrapper)[1].trigger('click');
+    expect(wrapper.find('iframe').attributes('style')).toContain('width: 375px');
+    expect(sizeButtons(wrapper)[1].attributes('aria-pressed')).toBe('true');
+    expect(sizeButtons(wrapper)[0].attributes('aria-pressed')).toBe('false');
+
+    await sizeButtons(wrapper)[0].trigger('click');
+    expect(wrapper.find('iframe').attributes('style') ?? '').not.toContain('width');
+  });
+
+  it('scales a frame that is wider than the space down to fit, and says so', async () => {
+    // a panel 640 px wide: the 1280 px frame is shown at 50%
+    let report;
+    vi.stubGlobal(
+      'ResizeObserver',
+      class {
+        constructor(callback) {
+          report = (width) => callback([{ contentRect: { width } }]);
+        }
+        observe() {}
+        unobserve() {}
+        disconnect() {}
+      }
+    );
+    const wrapper = mount(LivePreview, { props: site });
+    report(640);
+    await sizeButtons(wrapper)[3].trigger('click');
+
+    const style = wrapper.find('iframe').attributes('style');
+    expect(style).toContain('width: 1280px');
+    expect(style).toContain('scale(0.5)');
+    expect(wrapper.find('.live-preview__note').text()).toBe('Shown 1280 px wide, scaled to 50% to fit.');
+
+    // the phone width fits in 640 px: no scaling, no note
+    await sizeButtons(wrapper)[1].trigger('click');
+    expect(wrapper.find('iframe').attributes('style')).not.toContain('scale');
+    expect(wrapper.find('.live-preview__note').exists()).toBe(false);
   });
 });

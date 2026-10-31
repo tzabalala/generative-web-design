@@ -1,7 +1,20 @@
 <script setup>
 import { t } from '../i18n.js';
-import { computed } from 'vue';
+import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import { previewDocument } from '../sitePreview.js';
+
+// The preview can be shown at the three widths the automatic layout check measures (375, 768
+// and 1280 px; see visualResponsiveChecker.js in the backend), so what the check judged can be
+// seen. The frame really is that wide, so the page's media queries respond as on that device.
+// A frame wider than the space available is scaled down to fit, and a note says so. "Fit" is
+// the original behaviour (the frame fills the panel) and stays the default.
+const SIZES = [
+  { key: 'fit', width: null },
+  { key: 'phone', width: 375 },
+  { key: 'tablet', width: 768 },
+  { key: 'desktop', width: 1280 },
+];
+const FRAME_HEIGHT = 'clamp(420px, 72vh, 900px)';
 
 const props = defineProps({
   // The website: the shared stylesheet and its pages [{ slug, title, html, css }].
@@ -23,6 +36,53 @@ const srcdoc = computed(() => {
 
 // A short label for a tab: the page title before " - Site name", or the slug.
 const label = (page) => (page.title ? page.title.split(/\s[-\u2013\u2014|]\s/)[0] : page.slug);
+
+const size = ref('fit');
+const chosen = computed(() => SIZES.find((s) => s.key === size.value));
+
+// The width available for the frame: measured as soon as the preview appears and whenever a
+// size is chosen (so it never depends on an observer having fired), and kept up to date while
+// the window is resized. A ResizeObserver only reports when the browser paints, which a hidden
+// window does not do.
+const stage = ref(null);
+const stageWidth = ref(0);
+const measure = () => {
+  const width = stage.value?.clientWidth;
+  if (width) stageWidth.value = width; // 0 means "not laid out" (e.g. a test environment): keep the last value
+};
+const observer =
+  typeof ResizeObserver === 'undefined'
+    ? null
+    : new ResizeObserver(([entry]) => {
+        stageWidth.value = entry.contentRect.width;
+      });
+watch(stage, (el, old) => {
+  if (old) observer?.unobserve(old);
+  if (el) observer?.observe(el);
+  measure();
+});
+watch(size, measure);
+onBeforeUnmount(() => observer?.disconnect());
+
+const scale = computed(() => {
+  const width = chosen.value.width;
+  if (!width || !stageWidth.value) return 1;
+  return Math.min(1, stageWidth.value / width);
+});
+
+// The frame keeps the device width; when it is scaled down it is made taller by the same
+// factor, so that it still fills the same visible height.
+const frameStyle = computed(() => {
+  const width = chosen.value.width;
+  if (!width) return {};
+  const s = scale.value;
+  return s < 1
+    ? { width: `${width}px`, height: `calc(${FRAME_HEIGHT} / ${s})`, transform: `scale(${s})`, transformOrigin: 'top left' }
+    : { width: `${width}px` };
+});
+const scaledNote = computed(() =>
+  scale.value < 1 ? t('preview.scaled', { width: chosen.value.width, percent: Math.round(scale.value * 100) }) : ''
+);
 </script>
 
 <template>
@@ -51,13 +111,31 @@ const label = (page) => (page.title ? page.title.split(/\s[-\u2013\u2014|]\s/)[0
       <p class="live-preview__empty-title">{{ t('preview.emptyTitle') }}</p>
       <p class="live-preview__empty-text">{{ t('preview.empty') }}</p>
     </div>
-    <iframe
-      v-else
-      class="live-preview__frame"
-      :srcdoc="srcdoc"
-      sandbox="allow-same-origin allow-top-navigation-by-user-activation"
-      :title="t('preview.frameTitle')"
-    />
+    <template v-else>
+      <div class="live-preview__sizes" role="group" :aria-label="t('preview.sizes')">
+        <button
+          v-for="option in SIZES"
+          :key="option.key"
+          type="button"
+          class="live-preview__size"
+          :class="{ 'is-active': size === option.key }"
+          :aria-pressed="size === option.key"
+          @click="size = option.key"
+        >
+          {{ t(`preview.size.${option.key}`) }} <span v-if="option.width" class="live-preview__px">{{ option.width }}</span>
+        </button>
+        <span v-if="scaledNote" class="live-preview__note">{{ scaledNote }}</span>
+      </div>
+      <div ref="stage" class="live-preview__stage" :class="{ 'is-device': chosen.width }">
+        <iframe
+          class="live-preview__frame"
+          :style="frameStyle"
+          :srcdoc="srcdoc"
+          sandbox="allow-same-origin allow-top-navigation-by-user-activation"
+          :title="t('preview.frameTitle')"
+        />
+      </div>
+    </template>
   </div>
 </template>
 
@@ -106,6 +184,55 @@ const label = (page) => (page.title ? page.title.split(/\s[-\u2013\u2014|]\s/)[0
   height: clamp(420px, 72vh, 900px);
   border: none;
   background: #fff;
+}
+.live-preview__sizes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.6rem;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+}
+.live-preview__size {
+  min-height: 2rem;
+  padding: 0.2rem 0.75rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.live-preview__size:hover:not(.is-active) {
+  border-color: var(--primary);
+}
+.live-preview__size.is-active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--on-primary);
+}
+.live-preview__px {
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.live-preview__note {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+/* The frame at a device width sits in the middle of a neutral area; the area keeps the usual
+   preview height and hides whatever the scaled frame does not need. */
+.live-preview__stage {
+  overflow: hidden;
+}
+.live-preview__stage.is-device {
+  height: clamp(420px, 72vh, 900px);
+  background: var(--surface-2);
+}
+.live-preview__stage.is-device .live-preview__frame {
+  margin: 0 auto;
+  box-shadow: var(--shadow);
 }
 .live-preview__empty {
   display: flex;

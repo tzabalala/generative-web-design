@@ -87,7 +87,8 @@ checked, and fixed if needed. A change to an existing website is usually much fa
 The end-to-end test starts the whole app on spare ports with a throw-away database and a
 **fake Claude** (answers captured from a real run), drives it in headless Chromium, and
 checks: live progress steps, the multi-page generation, the automatic fixes, the layout check,
-switching pages from the tabs and from a menu link inside the preview, a change to one page,
+switching pages from the tabs and from a menu link inside the preview, the preview at phone,
+tablet and desktop width, a change to one page,
 adding a page, undo, reload-restore, the ZIP and single-file downloads, English/Greek, the study
 log and export, and runs axe-core on the tool's own interface. It never touches your real database or API key.
 
@@ -215,6 +216,9 @@ Browser (Vue) --> Express API --> Claude API: 1 plan call, then 1 call per page 
   pages only for new or restructured ones.
 - In the preview, a click on a menu link inside the sandboxed frame (no JavaScript there) asks
   the browser to open `#page=slug` in the top window; the app listens for that and switches page.
+- Above the preview, **Fit / Phone 375 / Tablet 768 / Desktop 1280** show the site at the widths the
+  layout check measures. The frame really is that wide (the page's media queries respond as on the
+  device); a frame wider than the panel is scaled down to fit, and a note says by how much.
 - The download is one `.html` for a one-page site and a `.zip` (one html per page and a shared
   `style.css`) for several pages.
 - Undo reads the session history, calls nothing, and does not refund the edit counter.

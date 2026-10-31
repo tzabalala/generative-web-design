@@ -154,6 +154,35 @@ describe('the tool, end to end', () => {
     await page.locator('.live-preview__tab', { hasText: 'About' }).click();
   });
 
+  it('shows the preview at the widths of the layout check: the page inside really gets that width', async () => {
+    const innerWidth = async () => (await (await page.$('iframe.live-preview__frame')).contentFrame()).evaluate(() => window.innerWidth);
+    const size = (name) => page.locator('.live-preview__size', { hasText: name });
+
+    await size('Phone').click();
+    assert.equal(await size('Phone').getAttribute('aria-pressed'), 'true');
+    assert.equal(await innerWidth(), 375, 'the generated page sees a phone-wide window, so its media queries apply');
+
+    await size('Tablet').click();
+    assert.equal(await innerWidth(), 768);
+
+    // 1280 px does not fit in the preview panel: the frame keeps 1280 px and is scaled down
+    await size('Desktop').click();
+    assert.equal(await innerWidth(), 1280);
+    const shown = await page.locator('iframe.live-preview__frame').boundingBox();
+    const panel = await page.locator('.live-preview__stage').boundingBox();
+    assert.ok(shown.width <= panel.width + 1, `the scaled frame fits the panel (${shown.width} <= ${panel.width})`);
+    assert.match(await text('.live-preview__note'), /Shown 1280 px wide, scaled to \d+% to fit\./);
+    noViolations(await axeViolations(page), 'with the preview at desktop width (light)');
+    await page.locator('.theme').click();
+    await page.waitForTimeout(500); // the colour transition
+    noViolations(await axeViolations(page), 'with the preview at desktop width (dark)');
+    await page.locator('.theme').click();
+    await page.waitForTimeout(500);
+
+    await size('Fit').click();
+    assert.equal(await page.locator('.live-preview__note').count(), 0);
+  });
+
   it('changes only the page being looked at, with a plain instruction (Claude finds the page itself)', async () => {
     harness.fake.resetCalls();
     await submitPrompt(page, 'make the heading calmer');
